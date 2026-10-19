@@ -177,6 +177,7 @@ export const useAiStore = create((set, get) => ({
           connected: res.data.connected ?? state.connected,
           usageStats: {
             ...state.usageStats,
+            dailyLimit: res.data.ai_limit || state.usageStats.dailyLimit,
             interactionsUsed: res.data.ai_limit
               ? res.data.ai_limit - res.data.ai_remaining
               : state.usageStats.interactionsUsed + 1,
