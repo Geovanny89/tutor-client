@@ -125,6 +125,7 @@ export default function PracticePage() {
         sentence: exercise.sentence || exercise.question || '',
         expected: exercise.answer || exercise.word,
         student_answer: answer,
+        hints: exercise.hints || [],
       });
       if (res.success) setResults((prev) => ({ ...prev, [exercise.id]: res.data }));
     } catch (err) {

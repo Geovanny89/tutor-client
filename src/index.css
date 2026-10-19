@@ -65,6 +65,26 @@
   --shadow-lg: 0 12px 32px -4px rgba(15, 23, 42, 0.1), 0 4px 12px -2px rgba(15, 23, 42, 0.05);
   --shadow-green: 0 8px 24px -4px rgba(5, 150, 105, 0.35);
 
+  /* CEFR Colors - Light */
+  --cefr-a1-bg: var(--primary-bg);
+  --cefr-a1-text: var(--primary-text);
+  --cefr-a1-border: var(--primary-soft-2);
+  --cefr-a2-bg: #EFF6FF;
+  --cefr-a2-text: #1E40AF;
+  --cefr-a2-border: #BFDBFE;
+  --cefr-b1-bg: var(--warning-bg);
+  --cefr-b1-text: var(--accent-gold-text);
+  --cefr-b1-border: var(--accent-gold-border);
+  --cefr-b2-bg: #FFF7ED;
+  --cefr-b2-text: #9A3412;
+  --cefr-b2-border: #FDBA74;
+  --cefr-c1-bg: #F5F3FF;
+  --cefr-c1-text: #5B21B6;
+  --cefr-c1-border: #DDD6FE;
+  --cefr-c2-bg: #FDF4FF;
+  --cefr-c2-text: #701A75;
+  --cefr-c2-border: #F0ABFC;
+
   /* Border Radius */
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -81,14 +101,14 @@
    Dark Theme — only overrides tokens, keeping the same brand
    ========================================================= */
 [data-theme="dark"] {
-  --primary: #10B981;
-  --primary-hover: #34D399;
-  --primary-light: #34D399;
-  --primary-soft: #134E4A;
-  --primary-soft-2: #14532D;
+  --primary: #059669;
+  --primary-hover: #10B981;
+  --primary-light: #10B981;
+  --primary-soft: #064E3B;
+  --primary-soft-2: #065F46;
   --primary-bg: #062E26;
-  --primary-dark: #A7F3D0;
-  --primary-text: #6EE7B7;
+  --primary-dark: #022C22;
+  --primary-text: #34D399;
 
   --secondary: #2DD4BF;
   --secondary-soft: #134E4A;
@@ -131,7 +151,27 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.55);
-  --shadow-green: 0 8px 24px -4px rgba(16, 185, 129, 0.28);
+  --shadow-green: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+
+  /* CEFR Colors - Dark */
+  --cefr-a1-bg: rgba(16, 185, 129, 0.1);
+  --cefr-a1-text: #34D399;
+  --cefr-a1-border: rgba(16, 185, 129, 0.3);
+  --cefr-a2-bg: rgba(59, 130, 246, 0.1);
+  --cefr-a2-text: #60A5FA;
+  --cefr-a2-border: rgba(59, 130, 246, 0.3);
+  --cefr-b1-bg: rgba(245, 158, 11, 0.1);
+  --cefr-b1-text: #FBBF24;
+  --cefr-b1-border: rgba(245, 158, 11, 0.3);
+  --cefr-b2-bg: rgba(249, 115, 22, 0.1);
+  --cefr-b2-text: #FB923C;
+  --cefr-b2-border: rgba(249, 115, 22, 0.3);
+  --cefr-c1-bg: rgba(139, 92, 246, 0.1);
+  --cefr-c1-text: #A78BFA;
+  --cefr-c1-border: rgba(139, 92, 246, 0.3);
+  --cefr-c2-bg: rgba(217, 70, 239, 0.1);
+  --cefr-c2-text: #E879F9;
+  --cefr-c2-border: rgba(217, 70, 239, 0.3);
 }
 
 /* Base Reset */

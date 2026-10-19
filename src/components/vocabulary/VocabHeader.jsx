@@ -35,7 +35,7 @@ export default function VocabHeader() {
             backdropFilter: 'blur(8px)',
             flexShrink: 0,
           }}>
-            <Library size={24} color="#6EE7B7" />
+            <Library size={24} color="var(--primary-soft-2)" />
           </div>
           <div>
             <h1 style={{

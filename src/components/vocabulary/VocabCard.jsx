@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Volume2 } from 'lucide-react';
 
 const CEFR_BADGE = {
-  A1: { bg: 'var(--primary-bg)', text: 'var(--primary-text)', border: 'var(--primary-soft-2)' },
-  A2: { bg: '#EFF6FF', text: '#1E40AF', border: '#BFDBFE' },
-  B1: { bg: 'var(--warning-bg)', text: 'var(--accent-gold-text)', border: 'var(--accent-gold-border)' },
-  B2: { bg: '#FFF7ED', text: '#9A3412', border: '#FDBA74' },
-  C1: { bg: '#F5F3FF', text: '#5B21B6', border: '#DDD6FE' },
-  C2: { bg: '#FDF4FF', text: '#701A75', border: '#F0ABFC' },
+  A1: { bg: 'var(--cefr-a1-bg)', text: 'var(--cefr-a1-text)', border: 'var(--cefr-a1-border)' },
+  A2: { bg: 'var(--cefr-a2-bg)', text: 'var(--cefr-a2-text)', border: 'var(--cefr-a2-border)' },
+  B1: { bg: 'var(--cefr-b1-bg)', text: 'var(--cefr-b1-text)', border: 'var(--cefr-b1-border)' },
+  B2: { bg: 'var(--cefr-b2-bg)', text: 'var(--cefr-b2-text)', border: 'var(--cefr-b2-border)' },
+  C1: { bg: 'var(--cefr-c1-bg)', text: 'var(--cefr-c1-text)', border: 'var(--cefr-c1-border)' },
+  C2: { bg: 'var(--cefr-c2-bg)', text: 'var(--cefr-c2-text)', border: 'var(--cefr-c2-border)' },
 };
 
 const TYPE_ICON = {
