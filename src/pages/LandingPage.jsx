@@ -5,89 +5,102 @@ import {
   Mic,
   Award,
   Zap,
-  Globe2,
-  ShieldCheck,
   CheckCircle2,
   ArrowRight,
-  TrendingUp,
+  BookOpen,
   Volume2,
-  PlayCircle
+  Library,
+  Star,
+  Users,
+  ShieldCheck,
+  ChevronRight,
 } from 'lucide-react';
 
 export default function LandingPage() {
   return (
-    <div style={{ overflowX: 'hidden' }}>
+    <div style={{ background: 'var(--bg-base)', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
       
-      {/* Hero Section */}
+      {/* ─── Hero Section ─── */}
       <section style={{
         maxWidth: '1200px',
         margin: '0 auto',
-        padding: '5rem 1.5rem 4rem 1.5rem',
+        padding: '4rem 1.25rem 3.5rem',
         textAlign: 'center',
         position: 'relative',
       }}>
         
-        {/* Badge */}
+        {/* Pill Badge */}
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '0.5rem',
-          padding: '0.4rem 1rem',
+          padding: '0.45rem 1.1rem',
           borderRadius: '999px',
-          background: 'rgba(108, 99, 255, 0.15)',
-          border: '1px solid var(--primary)',
-          fontSize: '0.85rem',
+          background: '#ECFDF5',
+          border: '1.5px solid #A7F3D0',
+          fontSize: '0.86rem',
           fontWeight: 700,
-          color: '#a5b4fc',
+          color: '#047857',
           marginBottom: '1.5rem',
+          boxShadow: '0 2px 8px rgba(5, 150, 105, 0.08)',
         }}>
-          <Sparkles size={16} color="#FFD700" />
-          Aprende Inglés Hablado con Inteligencia Artificial Nativa
+          <Sparkles size={16} color="#059669" />
+          Plataforma de Inglés con Tutor IA Nativo · De A1 a C2
         </div>
 
-        {/* Main Heading */}
+        {/* Main Heading (High contrast deep slate with emerald gradient accents) */}
         <h1 style={{
-          fontSize: 'clamp(2.4rem, 6vw, 4rem)',
+          fontSize: 'clamp(2.3rem, 5.5vw, 3.8rem)',
           fontWeight: 900,
-          lineHeight: '1.15',
+          lineHeight: '1.18',
           fontFamily: 'var(--font-display)',
           letterSpacing: '-0.03em',
-          maxWidth: '900px',
-          margin: '0 auto 1.5rem auto',
-          background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #8B85FF 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          maxWidth: '920px',
+          margin: '0 auto 1.25rem auto',
+          color: '#0F172A',
         }}>
-          Domina el Inglés de <span style={{ color: '#3ECFCF', WebkitTextFillColor: '#3ECFCF' }}>A0 a C2</span> Conversando con IA en Tiempo Real
+          Domina el Inglés Hablado con tu{' '}
+          <span style={{
+            background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            display: 'inline-block',
+          }}>
+            Tutor IA Personal
+          </span>{' '}
+          en Tiempo Real
         </h1>
 
         {/* Subtitle */}
         <p style={{
-          fontSize: 'clamp(1rem, 2vw, 1.25rem)',
-          color: 'var(--text-secondary)',
-          maxWidth: '750px',
-          margin: '0 auto 2.5rem auto',
-          lineHeight: '1.7',
+          fontSize: 'clamp(1.05rem, 2vw, 1.2rem)',
+          color: '#475569',
+          maxWidth: '720px',
+          margin: '0 auto 2.25rem auto',
+          lineHeight: '1.65',
+          fontWeight: 400,
         }}>
-          Una plataforma interactiva por módulos con tutor de voz nativo, evaluaciones por nivel, seguimiento de avance y consumo 100% gratuito sin agotar tus tokens.
+          Aprende hablando desde tu primer día. Practica conversaciones por voz sin miedo a equivocarte, con correcciones fonéticas en vivo, 36 módulos guiados y vocabulario interactivo.
         </p>
 
         {/* CTA Buttons */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.85rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
           <Link
             to="/register"
-            className="btn btn-primary"
+            id="hero-cta-register"
             style={{
-              padding: '0.9rem 2.2rem',
+              padding: '0.85rem 2rem',
               borderRadius: '14px',
-              fontSize: '1.05rem',
+              fontSize: '1rem',
               fontWeight: 800,
-              background: 'linear-gradient(135deg, var(--primary) 0%, #3ECFCF 100%)',
-              boxShadow: '0 8px 30px rgba(108, 99, 255, 0.45)',
+              background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
+              color: '#FFFFFF',
+              boxShadow: '0 6px 20px rgba(5, 150, 105, 0.35)',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.6rem',
+              gap: '0.5rem',
               textDecoration: 'none',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
             Comenzar Gratis Ahora <ArrowRight size={18} />
@@ -95,198 +108,314 @@ export default function LandingPage() {
 
           <Link
             to="/login"
-            className="btn btn-ghost"
+            id="hero-cta-login"
             style={{
-              padding: '0.9rem 1.8rem',
+              padding: '0.85rem 1.8rem',
               borderRadius: '14px',
-              fontSize: '1.05rem',
+              fontSize: '1rem',
               fontWeight: 700,
-              border: '1px solid var(--border)',
-              color: '#ffffff',
+              border: '1.5px solid #CBD5E1',
+              background: '#FFFFFF',
+              color: '#1E293B',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
               textDecoration: 'none',
+              boxShadow: '0 2px 6px rgba(15, 23, 42, 0.04)',
+              transition: 'all 0.2s',
             }}
           >
             Ya tengo una cuenta
           </Link>
         </div>
 
-        {/* Micro guarantees */}
+        {/* Micro Guarantees */}
         <div style={{
           display: 'flex',
           justifyContent: 'center',
-          gap: '2rem',
-          flexWrap: 'wrap',
-          marginTop: '3rem',
-          fontSize: '0.85rem',
-          color: 'var(--text-muted)',
-        }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <CheckCircle2 size={16} color="#22D3A0" /> Modelos de IA 100% Gratuitos
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <CheckCircle2 size={16} color="#22D3A0" /> Voz y Pronunciación en Vivo
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <CheckCircle2 size={16} color="#22D3A0" /> Compatible con APK Móvil
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <CheckCircle2 size={16} color="#22D3A0" /> Arquitectura Multi-Tenant
-          </span>
-        </div>
-      </section>
-
-      {/* Feature Pillars */}
-      <section style={{
-        maxWidth: '1200px',
-        margin: '2rem auto 5rem auto',
-        padding: '0 1.5rem',
-      }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '1.5rem',
+          flexWrap: 'wrap',
+          fontSize: '0.86rem',
+          color: '#64748B',
+          fontWeight: 600,
         }}>
-          {/* Pillar 1 */}
-          <div style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border)',
-            borderRadius: '24px',
-            padding: '2rem',
-            position: 'relative',
-          }}>
-            <div style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '14px',
-              background: 'rgba(62, 207, 207, 0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '1.25rem',
-            }}>
-              <Mic size={24} color="#3ECFCF" />
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <CheckCircle2 size={16} color="#059669" /> Práctica de voz con IA en tiempo real
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <CheckCircle2 size={16} color="#059669" /> 36 Módulos completos (A1 → C2)
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <CheckCircle2 size={16} color="#059669" /> 100+ Palabras con audio y ejemplos
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <CheckCircle2 size={16} color="#059669" /> Acceso 100% gratuito
+          </span>
+        </div>
+      </section>
+
+      {/* ─── Interactive Mockup Showcase Card ─── */}
+      <section style={{ maxWidth: '960px', margin: '0 auto 4rem', padding: '0 1.25rem' }}>
+        <div style={{
+          background: '#FFFFFF',
+          border: '1.5px solid #A7F3D0',
+          borderRadius: '24px',
+          padding: '1.75rem',
+          boxShadow: '0 20px 50px -10px rgba(5, 150, 105, 0.12), 0 2px 8px rgba(15, 23, 42, 0.04)',
+        }}>
+          {/* Card Top Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#ECFDF5', border: '1px solid #A7F3D0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+                👩🏼‍🏫
+              </div>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0F172A' }}>
+                  Beyli <span style={{ fontSize: '0.72rem', background: '#D1FAE5', color: '#047857', padding: '0.15rem 0.5rem', borderRadius: '999px', fontWeight: 700, marginLeft: '0.35rem' }}>Tutora Nativa</span>
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#64748B' }}>En línea · Lista para conversar</div>
+              </div>
             </div>
 
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.5rem 0' }}>
-              Conversación Real por Voz
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>
-              Habla como si estuvieras en Nueva York o Londres. El sistema escucha tu pronunciación, responde con acento nativo y te da consejos en tiempo real.
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#059669', fontSize: '0.8rem', fontWeight: 700, background: '#ECFDF5', padding: '0.3rem 0.75rem', borderRadius: '999px' }}>
+              <Mic size={14} /> Micrófono Activo
+            </div>
           </div>
 
-          {/* Pillar 2 */}
-          <div style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border)',
-            borderRadius: '24px',
-            padding: '2rem',
-            position: 'relative',
-          }}>
+          {/* Simulated Dialogue */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'left' }}>
+            {/* Tutor Bubble */}
             <div style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '14px',
-              background: 'rgba(108, 99, 255, 0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '1.25rem',
+              alignSelf: 'flex-start',
+              background: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              borderRadius: '16px 16px 16px 4px',
+              padding: '1rem 1.25rem',
+              maxWidth: '85%',
             }}>
-              <Award size={24} color="#8B85FF" />
+              <p style={{ margin: 0, fontWeight: 600, color: '#0F172A', fontSize: '0.96rem' }}>
+                "Hello! Welcome to your English lesson. Can you tell me what you did last weekend?"
+              </p>
+              <span style={{ display: 'block', fontSize: '0.8rem', color: '#059669', fontStyle: 'italic', marginTop: '0.3rem' }}>
+                ↳ ¡Hola! Bienvenido a tu lección. ¿Puedes contarme qué hiciste el fin de semana pasado?
+              </span>
             </div>
 
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.5rem 0' }}>
-              Ruta Progresiva A0 a C2
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>
-              Módulos estructurados según el Marco Común Europeo (CEFR). Aprueba la evaluación con 70%+ para avanzar y certificar tu aprendizaje.
-            </p>
-          </div>
-
-          {/* Pillar 3 */}
-          <div style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border)',
-            borderRadius: '24px',
-            padding: '2rem',
-            position: 'relative',
-          }}>
+            {/* Student Bubble with live grading */}
             <div style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '14px',
-              background: 'rgba(255, 215, 0, 0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '1.25rem',
+              alignSelf: 'flex-end',
+              background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
+              color: '#FFFFFF',
+              borderRadius: '16px 16px 4px 16px',
+              padding: '1rem 1.25rem',
+              maxWidth: '85%',
+              boxShadow: '0 4px 14px rgba(5, 150, 105, 0.25)',
             }}>
-              <Zap size={24} color="#FFD700" />
+              <p style={{ margin: 0, fontWeight: 600, fontSize: '0.96rem' }}>
+                "I visited my grandparents and we cooked a delicious dinner together."
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem', fontSize: '0.75rem', color: '#D1FAE5', fontWeight: 700 }}>
+                <span>✨ Pronunciación: 98%</span> · <span>Gramática: Perfecta</span>
+              </div>
             </div>
-
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff', margin: '0 0 0.5rem 0' }}>
-              Cero Gastos en Tokens
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', margin: 0 }}>
-              Diseñado con modelos gratuitos (Groq Llama 3 + Gemini Flash), caché inteligente y control de cuota diaria para que nunca te cobren nada.
-            </p>
           </div>
         </div>
       </section>
 
-      {/* Level Roadmap Preview */}
-      <section style={{
-        maxWidth: '1000px',
-        margin: '0 auto 6rem auto',
-        padding: '2.5rem',
-        background: 'linear-gradient(135deg, rgba(108, 99, 255, 0.1) 0%, rgba(62, 207, 207, 0.08) 100%)',
-        border: '1px solid rgba(108, 99, 255, 0.25)',
-        borderRadius: '32px',
-        textAlign: 'center',
-      }}>
-        <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-display)', margin: '0 0 0.75rem 0' }}>
-          De Principiante Absoluto a Fluidez Nativa
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: '600px', margin: '0 auto 2rem auto' }}>
-          No importa si nunca has estudiado inglés o si buscas perfeccionar tu nivel profesional.
-        </p>
+      {/* ─── 5 Structured Learning Blocks ─── */}
+      <section style={{ maxWidth: '1200px', margin: '0 auto 5rem', padding: '0 1.25rem', textAlign: 'center' }}>
+        <div style={{ marginBottom: '2.5rem' }}>
+          <h2 style={{
+            fontSize: 'clamp(1.75rem, 4vw, 2.4rem)',
+            fontWeight: 800,
+            color: '#0F172A',
+            fontFamily: 'var(--font-display)',
+            margin: '0 0 0.5rem 0',
+          }}>
+            Plan de Estudio en 5 Bloques Estructurados
+          </h2>
+          <p style={{ color: '#64748B', fontSize: '1rem', maxWidth: '650px', margin: '0 auto' }}>
+            Un camino paso a paso desde los primeros sonidos fonéticos hasta el dominio profesional y fluido del idioma.
+          </p>
+        </div>
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
           gap: '1rem',
+          textAlign: 'left',
         }}>
           {[
-            { lvl: 'A1', title: 'Principiante', desc: 'Saludos y frases' },
-            { lvl: 'A2', title: 'Básico', desc: 'Rutinas y viajes' },
-            { lvl: 'B1', title: 'Intermedio', desc: 'Conversación activa' },
-            { lvl: 'B2', title: 'Profesional', desc: 'Trabajo y fluidez' },
-            { lvl: 'C1', title: 'Avanzado', desc: 'Debates y modismos' },
-            { lvl: 'C2', title: 'Nativo', desc: 'Maestría total' },
-          ].map((item, i) => (
+            { badge: 'A1', title: 'Bloque 1: Cimientos', desc: 'Fonética, abecedario, verbo To Be, pronombres y presente simple.', icon: '🌱', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
+            { badge: 'A2', title: 'Bloque 2: Entorno Simple', desc: 'Pasado simple, futuro (will/going to), rutinas y preguntas cotidianas.', icon: '🌿', color: '#0284C7', bg: '#F0F9FF', border: '#BAE6FD' },
+            { badge: 'B1', title: 'Bloque 3: Fluidez Activa', desc: 'Presente perfecto, condicionales, voz pasiva y debates de opinión.', icon: '🚀', color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
+            { badge: 'B2', title: 'Bloque 4: Nivel Profesional', desc: 'Cláusulas relativas, modales deductivos y entrevistas laborales.', icon: '💼', color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
+            { badge: 'C1-C2', title: 'Bloque 5: Maestría Total', desc: 'Inversión gramatical, modismos idiomáticos nativos y refinamiento.', icon: '👑', color: '#BE185D', bg: '#FDF2F8', border: '#FBCFE8' },
+          ].map((b, i) => (
             <div key={i} style={{
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid var(--border)',
-              borderRadius: '16px',
-              padding: '1.25rem 0.5rem',
+              background: '#FFFFFF',
+              border: `1.5px solid ${b.border}`,
+              borderRadius: '18px',
+              padding: '1.4rem 1.2rem',
+              boxShadow: '0 4px 14px rgba(15, 23, 42, 0.03)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
             }}>
-              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#3ECFCF', fontFamily: 'var(--font-display)' }}>
-                {item.lvl}
-              </div>
-              <div style={{ fontWeight: 700, color: '#ffffff', fontSize: '0.85rem', marginTop: '0.2rem' }}>
-                {item.title}
-              </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
-                {item.desc}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <span style={{
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    color: b.color,
+                    background: b.bg,
+                    padding: '0.2rem 0.6rem',
+                    borderRadius: '6px',
+                  }}>
+                    {b.badge}
+                  </span>
+                  <span style={{ fontSize: '1.25rem' }}>{b.icon}</span>
+                </div>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.4rem', lineHeight: 1.3 }}>
+                  {b.title}
+                </h3>
+                <p style={{ color: '#64748B', fontSize: '0.86rem', lineHeight: 1.5, margin: 0 }}>
+                  {b.desc}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* ─── 3 Main Pillars Section ─── */}
+      <section style={{ maxWidth: '1200px', margin: '0 auto 5rem', padding: '0 1.25rem' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+          gap: '1.5rem',
+        }}>
+          {/* Pillar 1 */}
+          <div style={{
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderRadius: '20px',
+            padding: '2rem',
+            boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
+          }}>
+            <div style={{
+              width: '48px', height: '48px', borderRadius: '12px',
+              background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: '1.25rem',
+            }}>
+              <Mic size={24} color="#059669" />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+              Conversación Real por Voz
+            </h3>
+            <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>
+              Habla por micrófono y escucha respuestas fluidas en inglés nativo. El sistema detecta tus errores y te enseña cómo corregirlos con paciencia.
+            </p>
+          </div>
+
+          {/* Pillar 2 */}
+          <div style={{
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderRadius: '20px',
+            padding: '2rem',
+            boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
+          }}>
+            <div style={{
+              width: '48px', height: '48px', borderRadius: '12px',
+              background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: '1.25rem',
+            }}>
+              <Library size={24} color="#059669" />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+              Vocabulario Interactivo con IA
+            </h3>
+            <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>
+              Explora verbos, adjetivos, frases, el abecedario y números. Haz clic en "Generar con IA" para obtener ejemplos personalizados con audio.
+            </p>
+          </div>
+
+          {/* Pillar 3 */}
+          <div style={{
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderRadius: '20px',
+            padding: '2rem',
+            boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
+          }}>
+            <div style={{
+              width: '48px', height: '48px', borderRadius: '12px',
+              background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: '1.25rem',
+            }}>
+              <Award size={24} color="#059669" />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+              Evaluaciones y Certificación
+            </h3>
+            <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>
+              Mide tu nivel con exámenes interactivos al finalizar cada módulo. Obtén más del 70% para desbloquear el siguiente bloque y certificar tu avance.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Final CTA Banner ─── */}
+      <section style={{ maxWidth: '1000px', margin: '0 auto 5rem', padding: '0 1.25rem' }}>
+        <div style={{
+          background: 'linear-gradient(135deg, #064E3B 0%, #065F46 45%, #059669 100%)',
+          borderRadius: '28px',
+          padding: '3rem 2rem',
+          textAlign: 'center',
+          color: '#FFFFFF',
+          boxShadow: '0 20px 40px rgba(6, 78, 59, 0.25)',
+        }}>
+          <h2 style={{
+            fontSize: 'clamp(1.8rem, 4vw, 2.4rem)',
+            fontWeight: 900,
+            color: '#FFFFFF',
+            fontFamily: 'var(--font-display)',
+            margin: '0 0 0.75rem 0',
+          }}>
+            ¿Listo para comenzar a hablar inglés hoy?
+          </h2>
+          <p style={{ color: '#D1FAE5', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto 2rem auto', lineHeight: 1.6 }}>
+            Crea tu cuenta gratuita en menos de 30 segundos y comienza tu primera conversación con Beyli.
+          </p>
+          <Link
+            to="/register"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.9rem 2.2rem',
+              borderRadius: '14px',
+              background: '#FFFFFF',
+              color: '#065F46',
+              fontWeight: 800,
+              fontSize: '1rem',
+              textDecoration: 'none',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.15)',
+              transition: 'transform 0.15s',
+            }}
+          >
+            Comenzar Gratis <ArrowRight size={18} />
+          </Link>
+        </div>
+      </section>
+
+      {/* ─── Footer ─── */}
+      <footer style={{ borderTop: '1px solid #E2E8F0', padding: '2rem 1.25rem', textAlign: 'center', color: '#64748B', fontSize: '0.86rem' }}>
+        <p style={{ margin: 0 }}>
+          © {new Date().getFullYear()} <strong>KDice English</strong> · Aprende Hablando con Inteligencia Artificial. Todos los derechos reservados.
+        </p>
+      </footer>
 
     </div>
   );
