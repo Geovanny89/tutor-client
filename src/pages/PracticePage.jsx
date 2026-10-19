@@ -645,27 +645,58 @@ function ExerciseCard({
         )}
       </div>
 
-      {/* Hints */}
-      {!result && Array.isArray(exercise.hints) && exercise.hints.length > 0 && (
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.75rem' }}>
-          {exercise.hints.map((hint, i) => (
-            <button
-              key={i}
-              onClick={() => onAnswer(hint)}
-              style={{
-                padding: '0.4rem 0.8rem',
-                borderRadius: '999px',
-                border: '1px solid var(--border)',
-                background: 'var(--bg-base)',
-                color: 'var(--text-secondary)',
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              {hint}
-            </button>
-          ))}
+      {/* Options & Hints */}
+      {!result && (
+        <div style={{ marginTop: '0.85rem' }}>
+          {/* Real options to click (if AI provided them) */}
+          {Array.isArray(exercise.options) && exercise.options.length > 0 && (
+            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+              {exercise.options.map((opt, i) => (
+                <button
+                  key={`opt-${i}`}
+                  onClick={() => onAnswer(opt)}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    borderRadius: '12px',
+                    border: answer === opt ? '2px solid var(--primary)' : '1px solid var(--border-strong)',
+                    background: answer === opt ? 'var(--primary-bg)' : 'var(--bg-base)',
+                    color: answer === opt ? 'var(--primary-text)' : 'var(--text-primary)',
+                    fontSize: '0.9rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Descriptive Hints (small, non-clickable unless they are valid short answers) */}
+          {Array.isArray(exercise.hints) && exercise.hints.length > 0 && (
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-subtle)', marginRight: '0.2rem' }}>
+                <Lightbulb size={14} style={{ verticalAlign: 'middle', marginTop: '-2px' }} /> PISTAS:
+              </span>
+              {exercise.hints.map((hint, i) => (
+                <span
+                  key={`hint-${i}`}
+                  style={{
+                    padding: '0.25rem 0.6rem',
+                    borderRadius: '6px',
+                    background: 'var(--bg-muted)',
+                    color: 'var(--text-secondary)',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    border: '1px solid var(--border)',
+                  }}
+                >
+                  {hint}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
