@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import toast from 'react-hot-toast';
-import { Sparkles, Mail, Lock, User, Target, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Sparkles, Mail, Lock, User, Target, ArrowRight, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [targetLevel, setTargetLevel] = useState('B2');
 
   const { register, loading } = useAuthStore();
@@ -171,7 +172,7 @@ export default function RegisterPage() {
             <div style={{ position: 'relative' }}>
               <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
@@ -181,13 +182,34 @@ export default function RegisterPage() {
                   background: 'var(--bg-base)',
                   border: '1px solid var(--border-strong)',
                   borderRadius: '12px',
-                  padding: '0.75rem 1rem 0.75rem 2.5rem',
+                  padding: '0.75rem 2.75rem 0.75rem 2.5rem',
                   color: 'var(--text-primary)',
                   fontSize: '0.95rem',
                   outline: 'none',
                   boxSizing: 'border-box',
                 }}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  padding: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
