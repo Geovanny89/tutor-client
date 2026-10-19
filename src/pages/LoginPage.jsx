@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import toast from 'react-hot-toast';
-import { Sparkles, Mail, Lock, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Sparkles, Mail, Lock, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -26,11 +26,6 @@ export default function LoginPage() {
     } else {
       toast.error(res.message || 'Credenciales incorrectas');
     }
-  };
-
-  const fillSuperAdmin = () => {
-    setEmail('admin@kdice.com');
-    setPassword('Admin123!');
   };
 
   return (
@@ -80,43 +75,6 @@ export default function LoginPage() {
           <p style={{ color: '#64748B', fontSize: '0.92rem', margin: 0 }}>
             Ingresa a tu cuenta de KDice English
           </p>
-        </div>
-
-        {/* Quick Super Admin shortcut */}
-        <div style={{
-          background: '#ECFDF5',
-          border: '1px solid #A7F3D0',
-          borderRadius: '14px',
-          padding: '0.85rem 1rem',
-          marginBottom: '1.5rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <div>
-            <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#065F46', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <ShieldCheck size={15} color="#059669" /> Acceso Super Admin
-            </div>
-            <div style={{ fontSize: '0.74rem', color: '#047857', marginTop: '0.1rem' }}>
-              admin@kdice.com / Admin123!
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={fillSuperAdmin}
-            style={{
-              background: '#059669',
-              border: 'none',
-              color: '#FFFFFF',
-              fontSize: '0.78rem',
-              fontWeight: 700,
-              padding: '0.4rem 0.8rem',
-              borderRadius: '8px',
-              cursor: 'pointer',
-            }}
-          >
-            Autocompletar
-          </button>
         </div>
 
         {/* Form */}
