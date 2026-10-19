@@ -12,7 +12,7 @@ export default function EvaluationHeader({ evaluation, onBack }) {
           gap: '0.4rem',
           background: 'transparent',
           border: 'none',
-          color: '#059669',
+          color: 'var(--primary)',
           cursor: 'pointer',
           fontSize: '0.92rem',
           fontWeight: 700,
@@ -23,8 +23,8 @@ export default function EvaluationHeader({ evaluation, onBack }) {
       </button>
 
       <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border)',
         borderRadius: '24px',
         padding: '2.25rem',
         marginBottom: '2rem',
@@ -35,20 +35,20 @@ export default function EvaluationHeader({ evaluation, onBack }) {
           width: '58px',
           height: '58px',
           borderRadius: '16px',
-          background: '#FFFBEB',
-          border: '1px solid #FDE68A',
+          background: 'var(--warning-bg)',
+          border: '1px solid var(--accent-gold-border)',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: '0.85rem',
         }}>
-          <Award size={32} color="#D97706" />
+          <Award size={32} color="var(--accent-gold-strong)" />
         </div>
 
         <h1 style={{
           fontSize: '2rem',
           fontWeight: 800,
-          color: '#0F172A',
+          color: 'var(--text-primary)',
           fontFamily: 'var(--font-display)',
           margin: '0 0 0.5rem 0',
           letterSpacing: '-0.02em',
@@ -56,7 +56,7 @@ export default function EvaluationHeader({ evaluation, onBack }) {
           {evaluation.title || 'Evaluación del Módulo'}
         </h1>
 
-        <p style={{ color: '#475569', fontSize: '1rem', maxWidth: '600px', margin: '0 auto' }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: '600px', margin: '0 auto' }}>
           Para certificar y aprobar este módulo necesitas al menos un <strong>{evaluation.passing_score || 70}%</strong>.
         </p>
       </div>

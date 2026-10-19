@@ -12,8 +12,8 @@ export default function EvaluationQuestionCard({
   return (
     <div
       style={{
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border)',
         borderRadius: '20px',
         padding: '1.75rem',
         boxShadow: '0 2px 8px rgba(15, 23, 42, 0.03)',
@@ -23,9 +23,9 @@ export default function EvaluationQuestionCard({
         <span style={{
           fontSize: '0.8rem',
           fontWeight: 800,
-          color: '#065F46',
-          background: '#ECFDF5',
-          border: '1px solid #A7F3D0',
+          color: 'var(--primary-text)',
+          background: 'var(--primary-bg)',
+          border: '1px solid var(--primary-soft-2)',
           padding: '0.25rem 0.65rem',
           borderRadius: '999px',
         }}>
@@ -38,7 +38,7 @@ export default function EvaluationQuestionCard({
           style={{
             background: 'transparent',
             border: 'none',
-            color: '#059669',
+            color: 'var(--primary)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -54,7 +54,7 @@ export default function EvaluationQuestionCard({
       <h3 style={{
         fontSize: '1.18rem',
         fontWeight: 700,
-        color: '#0F172A',
+        color: 'var(--text-primary)',
         margin: '0 0 1.25rem 0',
         lineHeight: '1.5',
       }}>
@@ -71,12 +71,12 @@ export default function EvaluationQuestionCard({
                 key={optIndex}
                 onClick={() => onSelectOption(qIndex, optIndex)}
                 style={{
-                  background: isSelected ? '#ECFDF5' : '#F8FAFC',
-                  border: isSelected ? '2px solid #059669' : '1px solid #E2E8F0',
+                  background: isSelected ? 'var(--primary-bg)' : 'var(--bg-base)',
+                  border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border)',
                   borderRadius: '14px',
                   padding: '1rem 1.35rem',
                   textAlign: 'left',
-                  color: isSelected ? '#065F46' : '#334155',
+                  color: isSelected ? 'var(--primary-text)' : 'var(--text-secondary)',
                   fontWeight: isSelected ? 700 : 500,
                   cursor: 'pointer',
                   display: 'flex',
@@ -91,8 +91,8 @@ export default function EvaluationQuestionCard({
                   width: '22px',
                   height: '22px',
                   borderRadius: '50%',
-                  border: isSelected ? '6px solid #059669' : '2px solid #CBD5E1',
-                  background: isSelected ? '#FFFFFF' : 'transparent',
+                  border: isSelected ? '6px solid var(--primary)' : '2px solid var(--border-strong)',
+                  background: isSelected ? 'var(--bg-surface)' : 'transparent',
                 }} />
               </button>
             );
@@ -107,18 +107,18 @@ export default function EvaluationQuestionCard({
             placeholder="Escribe tu respuesta en inglés aquí..."
             style={{
               width: '100%',
-              background: '#F8FAFC',
-              border: '1px solid #CBD5E1',
+              background: 'var(--bg-base)',
+              border: '1px solid var(--border-strong)',
               borderRadius: '12px',
               padding: '0.85rem 1.15rem',
-              color: '#0F172A',
+              color: 'var(--text-primary)',
               fontSize: '1rem',
               outline: 'none',
               boxSizing: 'border-box',
             }}
           />
           {q.hint && (
-            <div style={{ fontSize: '0.82rem', color: '#64748B', marginTop: '0.45rem' }}>
+            <div style={{ fontSize: '0.82rem', color: 'var(--text-subtle)', marginTop: '0.45rem' }}>
               💡 Pista: {q.hint}
             </div>
           )}

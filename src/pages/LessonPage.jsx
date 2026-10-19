@@ -30,6 +30,7 @@ export default function LessonPage() {
   const [tutorChatMessages, setTutorChatMessages] = useState([]);
   const [tutorChatInput, setTutorChatInput] = useState('');
   const [tutorChatLoading, setTutorChatLoading] = useState(false);
+  const [tutorChatSessionId, setTutorChatSessionId] = useState(null);
 
   // Roleplay Interactive State
   const [roleplayTurn, setRoleplayTurn] = useState(0);
@@ -117,10 +118,13 @@ export default function LessonPage() {
     try {
       const res = await api.post('/ai/chat', {
         message: userText,
-        context: `El estudiante está en la lección: "${lesson?.title}". Regla: "${lesson?.content?.grammar?.rule || ''}". Explica con tono amable en español con ejemplos claros en inglés.`,
+        session_id: tutorChatSessionId,
+        mode: 'lesson',
+        context: `Lección: "${lesson?.title}". Nivel: ${lesson?.level || 'A1'}. Regla gramatical: "${lesson?.content?.grammar?.rule || ''}".`,
       });
 
       if (res.success && res.data) {
+        if (res.data.session_id) setTutorChatSessionId(res.data.session_id);
         const reply = res.data.reply || res.data.message || res.data.text || '';
         setTutorChatMessages([
           ...newMessages,
@@ -134,29 +138,62 @@ export default function LessonPage() {
     }
   };
 
-  const handleRoleplaySpoken = (spokenText) => {
+  const handleRoleplaySpoken = async (spokenText) => {
     const dialogue = lesson?.content?.dialogue || [];
     const currentLine = dialogue[roleplayTurn];
-    if (!currentLine) return;
+    if (!currentLine || !spokenText) return;
 
-    setRoleplayFeedback({
-      heard: spokenText,
-      success: true,
-      message: '¡Excelente pronunciación! Has completado tu turno en el diálogo. 👏',
-    });
+    setEvaluating(true);
+    try {
+      const res = await api.post('/ai/grade', {
+        student_answer: spokenText,
+        expected_answer: currentLine.text,
+        level: lesson.level || 'A1',
+      });
 
-    setTimeout(() => {
-      if (roleplayTurn + 1 < dialogue.length) {
-        setRoleplayTurn(roleplayTurn + 1);
-        setRoleplayFeedback(null);
-        const nextLine = dialogue[roleplayTurn + 1];
-        if (nextLine.speaker !== 'Student') {
-          speak(nextLine.text, 0.9, 1.0, 'en-US');
+      if (res.success && res.data) {
+        const isGood = res.data.score >= 65;
+        
+        setRoleplayFeedback({
+          heard: spokenText,
+          success: isGood,
+          score: res.data.score,
+          message: isGood 
+            ? '¡Excelente pronunciación! Has completado tu turno en el diálogo. 👏'
+            : res.data.feedback || 'Casi lo tienes. Intenta pronunciar un poco más claro.',
+          tip: isGood ? '' : res.data.next_tip
+        });
+
+        if (isGood) {
+          setTimeout(() => {
+            if (roleplayTurn + 1 < dialogue.length) {
+              setRoleplayTurn(roleplayTurn + 1);
+              setRoleplayFeedback(null);
+              const nextLine = dialogue[roleplayTurn + 1];
+              if (nextLine && nextLine.speaker !== 'Student') {
+                speak(nextLine.text, 0.9, 1.0, 'en-US');
+              }
+            } else {
+              toast.success('¡Felicidades! Has completado todo el diálogo de la lección 🎉');
+            }
+          }, 2000);
+        } else {
+          toast('Inténtalo de nuevo para mejorar tu puntuación.', { icon: '🎤' });
         }
-      } else {
-        toast.success('¡Felicidades! Has completado todo el diálogo de la lección 🎉');
       }
-    }, 1800);
+    } catch (err) {
+      console.error('Error grading roleplay:', err);
+      // Fallback local simple match if AI fails
+      const isSimpleMatch = spokenText.toLowerCase().includes(currentLine.text.toLowerCase().split(' ')[0]);
+      setRoleplayFeedback({
+        heard: spokenText,
+        success: isSimpleMatch,
+        message: isSimpleMatch ? 'Te hemos entendido, ¡continúa!' : 'No te hemos entendido bien, ¿puedes repetir?',
+      });
+    } finally {
+      setEvaluating(true); // Wait, this should be false, but I need to check how it's used
+      setEvaluating(false);
+    }
   };
 
   const gradeStudentSpoken = async (spokenText) => {
@@ -209,7 +246,7 @@ export default function LessonPage() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '5rem 2rem', color: '#64748B' }}>
+      <div style={{ textAlign: 'center', padding: '5rem 2rem', color: 'var(--text-subtle)' }}>
         <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
         Cargando la lección completa con tu tutora de IA...
       </div>
@@ -218,14 +255,14 @@ export default function LessonPage() {
 
   if (!lesson) {
     return (
-      <div style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center', padding: '2rem', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-        <h2 style={{ color: '#0F172A' }}>Lección no encontrada</h2>
+      <div style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center', padding: '2rem', background: 'var(--bg-surface)', borderRadius: '16px', border: '1px solid var(--border)' }}>
+        <h2 style={{ color: 'var(--text-primary)' }}>Lección no encontrada</h2>
         <button
           onClick={() => navigate('/dashboard')}
           style={{
             marginTop: '1rem',
-            background: '#059669',
-            color: '#FFFFFF',
+            background: 'var(--primary)',
+            color: 'var(--text-on-primary)',
             border: 'none',
             padding: '0.6rem 1.25rem',
             borderRadius: '8px',
@@ -259,7 +296,7 @@ export default function LessonPage() {
   const targetPhrase = getTargetPracticePhrase();
 
   return (
-    <div style={{ maxWidth: '1050px', margin: '0 auto', padding: '2rem 1.25rem 6rem 1.25rem', color: '#0F172A', position: 'relative' }}>
+    <div style={{ maxWidth: '1050px', margin: '0 auto', padding: '2rem 1.25rem 6rem 1.25rem', color: 'var(--text-primary)', position: 'relative' }}>
 
       {/* Header */}
       <LessonHeader
@@ -292,7 +329,15 @@ export default function LessonPage() {
       {activeStep === 'vocabulary' && (
         <LessonVocabularyStep
           vocabulary={vocabulary}
-          onSpeakWord={(text, slow) => speak(text, slow ? 0.65 : 0.85, 1.0, 'en-US')}
+          onSpeakWord={(text, slow) => {
+            let processedText = text;
+            if (slow) {
+              // Replace slash with a clear pause and space for clarity
+              // Also add a bit of space after commas or dots if present
+              processedText = text.replace(/\s*\/\s*/g, ', ... ').replace(/,/g, ', ');
+            }
+            speak(processedText, slow ? 0.5 : 0.85, 1.0, 'en-US');
+          }}
           onSpeakAll={() => {
             const fullText = vocabulary.map((v) => v.word).join('. ');
             speak(fullText, 0.85, 1.0, 'en-US');
@@ -308,6 +353,7 @@ export default function LessonPage() {
           dialogue={dialogue}
           roleplayTurn={roleplayTurn}
           isListening={isListening}
+          evaluating={evaluating}
           roleplayFeedback={roleplayFeedback}
           onStartListening={startListening}
           onStopListening={stopListening}

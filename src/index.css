@@ -1,6 +1,6 @@
 /* =========================================================
-   KDice English Platform - Clean White & Emerald Green Design System
-   Modern, fresh, human-crafted aesthetic (No dark AI neon)
+   KDice English Platform - Design System
+   Light: Clean White & Emerald Green · Dark: Deep Slate & Emerald
    ========================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap');
@@ -11,15 +11,21 @@
   --primary-hover: #047857;    /* Emerald 700 */
   --primary-light: #10B981;    /* Emerald 500 */
   --primary-soft: #D1FAE5;     /* Emerald 100 - Soft tint */
+  --primary-soft-2: #A7F3D0;   /* Emerald 200 - Soft border */
   --primary-bg: #ECFDF5;       /* Emerald 50 - Lightest green bg */
   --primary-dark: #064E3B;     /* Emerald 900 - Deep green */
-  
+  --primary-text: #065F46;     /* Emerald 800 - Green text on soft bg */
+
   /* Complementary Accents */
   --secondary: #0D9488;        /* Teal 600 */
   --secondary-soft: #CCFBF1;   /* Teal 100 */
   --accent-gold: #F59E0B;      /* Amber 500 */
   --accent-gold-soft: #FEF3C7; /* Amber 100 */
-  
+  --accent-gold-border: #FDE68A;
+  --accent-gold-text: #92400E;
+  --accent-gold-strong: #D97706;
+  --accent-purple: #7C3AED;    /* Violet 600 */
+
   /* Background System (Clean White & Slate) */
   --bg-base: #F8FAFC;          /* Clean soft off-white */
   --bg-surface: #FFFFFF;       /* Pure Crisp White */
@@ -30,11 +36,13 @@
   /* Text Colors */
   --text-primary: #0F172A;     /* Slate 900 - High contrast readable */
   --text-secondary: #475569;   /* Slate 600 */
+  --text-subtle: #64748B;      /* Slate 500 */
   --text-muted: #94A3B8;       /* Slate 400 */
   --text-on-primary: #FFFFFF;  /* White on green buttons */
 
   /* Borders & Dividers */
   --border: #E2E8F0;           /* Slate 200 - Crisp borders */
+  --border-strong: #CBD5E1;    /* Slate 300 */
   --border-focus: #10B981;     /* Emerald 500 */
   --border-subtle: #F1F5F9;
 
@@ -44,7 +52,10 @@
   --warning: #F59E0B;
   --warning-bg: #FFFBEB;
   --error: #EF4444;
+  --error-strong: #DC2626;
+  --error-solid: #DC2626;
   --error-bg: #FEF2F2;
+  --error-border: #FECACA;
   --info: #0284C7;
   --info-bg: #F0F9FF;
 
@@ -66,6 +77,63 @@
   --font-display: 'Outfit', sans-serif;
 }
 
+/* =========================================================
+   Dark Theme — only overrides tokens, keeping the same brand
+   ========================================================= */
+[data-theme="dark"] {
+  --primary: #10B981;
+  --primary-hover: #34D399;
+  --primary-light: #34D399;
+  --primary-soft: #134E4A;
+  --primary-soft-2: #14532D;
+  --primary-bg: #062E26;
+  --primary-dark: #A7F3D0;
+  --primary-text: #6EE7B7;
+
+  --secondary: #2DD4BF;
+  --secondary-soft: #134E4A;
+  --accent-gold: #FBBF24;
+  --accent-gold-soft: #3A2A06;
+  --accent-gold-border: #78350F;
+  --accent-gold-text: #FCD34D;
+  --accent-gold-strong: #FBBF24;
+  --accent-purple: #A78BFA;
+
+  --bg-base: #0B1220;
+  --bg-surface: #141C2B;
+  --bg-elevated: #1A2436;
+  --bg-muted: #1E293B;
+  --bg-glass: rgba(20, 28, 43, 0.85);
+
+  --text-primary: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-subtle: #94A3B8;
+  --text-muted: #64748B;
+  --text-on-primary: #FFFFFF;
+
+  --border: #26334A;
+  --border-strong: #334155;
+  --border-focus: #34D399;
+  --border-subtle: #1E293B;
+
+  --success: #34D399;
+  --success-bg: #062E26;
+  --warning: #FBBF24;
+  --warning-bg: #3A2A06;
+  --error: #EF4444;
+  --error-strong: #FCA5A5;
+  --error-solid: #DC2626;
+  --error-bg: #3B1516;
+  --error-border: #7F1D1D;
+  --info: #38BDF8;
+  --info-bg: #0B2A3F;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.55);
+  --shadow-green: 0 8px 24px -4px rgba(16, 185, 129, 0.28);
+}
+
 /* Base Reset */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -76,6 +144,7 @@
 html {
   overflow-x: hidden;
   max-width: 100vw;
+  background-color: var(--bg-base);
 }
 
 body {
@@ -88,7 +157,24 @@ body {
   overflow-x: hidden;
   max-width: 100vw;
   width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ─── Layout & Components ────────────────────────────────────────────────── */
 
 #root {
   min-height: 100vh;
@@ -110,6 +196,11 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.25;
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -128,14 +219,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #059669 0%, #10B981 100%);
-  color: #FFFFFF !important;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: var(--text-on-primary, #FFFFFF);
   box-shadow: var(--shadow-green);
   border: none;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
   transform: translateY(-1px);
   box-shadow: 0 10px 28px -4px rgba(5, 150, 105, 0.45);
 }
@@ -149,13 +240,13 @@ h1, h2, h3, h4, h5, h6 {
 .btn-ghost:hover {
   background: var(--bg-muted);
   color: var(--text-primary);
-  border-color: #CBD5E1;
+  border-color: var(--border-strong);
 }
 
 .btn-soft {
   background: var(--primary-bg);
   color: var(--primary-dark);
-  border: 1px solid var(--primary-soft);
+  border: 1px solid var(--primary-soft-2);
 }
 
 .btn-soft:hover {
@@ -180,12 +271,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .card:hover {
   box-shadow: var(--shadow-md);
-  border-color: #CBD5E1;
+  border-color: var(--border-strong);
 }
 
 /* Glass effect for navbar */
 .glass {
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--bg-glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -199,17 +290,58 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--bg-muted);
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: var(--border-strong);
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: var(--text-muted);
 }
 
 /* Pulse animation */
 @keyframes pulseSlow {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.05); opacity: 0.85; }
+}
+
+/* Spinner used by loading buttons/icons */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ── Theme toggle button ── */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.theme-toggle-btn:hover {
+  background: var(--primary-bg);
+  border-color: var(--primary-soft-2);
+  color: var(--primary);
+}
+
+/* ── Bloque selector grid (collapse behaviour on mobile) ── */
+.bloques-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+.bloques-toggle-mobile {
+  display: none;
 }
 
 /* ── Responsive Utilities ── */
@@ -238,6 +370,16 @@ h1, h2, h3, h4, h5, h6 {
   /* Vocabulary cards: minimum 1 column */
   .vocab-grid {
     grid-template-columns: 1fr !important;
+  }
+
+  /* Collapse block selector: hide every non-selected block */
+  .bloques-grid.is-collapsed .bloque-card:not(.is-selected) {
+    display: none !important;
+  }
+  .bloques-toggle-mobile {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.4rem;
   }
 }
 

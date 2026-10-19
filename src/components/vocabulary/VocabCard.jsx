@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Volume2 } from 'lucide-react';
 
 const CEFR_BADGE = {
-  A1: { bg: '#ECFDF5', text: '#065F46', border: '#A7F3D0' },
+  A1: { bg: 'var(--primary-bg)', text: 'var(--primary-text)', border: 'var(--primary-soft-2)' },
   A2: { bg: '#EFF6FF', text: '#1E40AF', border: '#BFDBFE' },
-  B1: { bg: '#FFFBEB', text: '#92400E', border: '#FDE68A' },
+  B1: { bg: 'var(--warning-bg)', text: 'var(--accent-gold-text)', border: 'var(--accent-gold-border)' },
   B2: { bg: '#FFF7ED', text: '#9A3412', border: '#FDBA74' },
   C1: { bg: '#F5F3FF', text: '#5B21B6', border: '#DDD6FE' },
   C2: { bg: '#FDF4FF', text: '#701A75', border: '#F0ABFC' },
@@ -50,9 +50,13 @@ const TYPE_ICON = {
 };
 
 function speak(text) {
-  if (!window.speechSynthesis) return;
+  if (!window.speechSynthesis || !text) return;
   window.speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(text);
+  
+  // Handle slashes by adding a pause for clarity
+  const processedText = text.replace(/\s*\/\s*/g, ', ... ');
+  
+  const utt = new SpeechSynthesisUtterance(processedText);
   utt.lang = 'en-US';
   utt.rate = 0.85;
   window.speechSynthesis.speak(utt);
@@ -71,7 +75,7 @@ export default function VocabCard({ word, onSelect }) {
       onClick={() => onSelect(word)}
       style={{
         background: 'var(--bg-surface)',
-        border: `1.5px solid ${hovered ? '#10B981' : 'var(--border)'}`,
+        border: `1.5px solid ${hovered ? 'var(--primary-light)' : 'var(--border)'}`,
         borderRadius: '16px',
         padding: '1.25rem',
         cursor: 'pointer',
@@ -104,19 +108,19 @@ export default function VocabCard({ word, onSelect }) {
           fontFamily: 'var(--font-display)',
           fontSize: '1.35rem',
           fontWeight: 800,
-          color: '#0F172A',
+          color: 'var(--text-primary)',
           lineHeight: 1.2,
         }}>
           {word.word}
         </h3>
-        <span style={{ fontSize: '0.8rem', color: '#94A3B8', fontStyle: 'italic' }}>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
           {word.pronunciation}
         </span>
       </div>
 
       {/* Translation */}
       <p style={{
-        color: '#047857',
+        color: 'var(--primary-hover)',
         fontWeight: 600,
         fontSize: '0.95rem',
         marginBottom: '0.75rem',
@@ -126,11 +130,11 @@ export default function VocabCard({ word, onSelect }) {
 
       {/* Example sentence */}
       <p style={{
-        color: '#64748B',
+        color: 'var(--text-subtle)',
         fontSize: '0.83rem',
         fontStyle: 'italic',
         lineHeight: 1.5,
-        borderLeft: '3px solid #D1FAE5',
+        borderLeft: '3px solid var(--primary-soft)',
         paddingLeft: '0.6rem',
         marginBottom: '1rem',
       }}>
@@ -143,8 +147,8 @@ export default function VocabCard({ word, onSelect }) {
           {(word.tags || []).slice(0, 2).map((tag) => (
             <span key={tag} style={{
               padding: '0.15rem 0.5rem',
-              background: '#F1F5F9',
-              color: '#64748B',
+              background: 'var(--bg-muted)',
+              color: 'var(--text-subtle)',
               borderRadius: '6px',
               fontSize: '0.72rem',
               fontWeight: 600,
@@ -162,15 +166,15 @@ export default function VocabCard({ word, onSelect }) {
             width: '32px', height: '32px',
             borderRadius: '50%',
             border: 'none',
-            background: '#ECFDF5',
+            background: 'var(--primary-bg)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer',
             transition: 'background 0.15s',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = '#A7F3D0')}
-          onMouseLeave={(e) => (e.currentTarget.style.background = '#ECFDF5')}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--primary-soft-2)')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--primary-bg)')}
         >
-          <Volume2 size={15} color="#059669" />
+          <Volume2 size={15} color="var(--primary)" />
         </button>
       </div>
     </div>

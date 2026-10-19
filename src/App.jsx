@@ -14,6 +14,7 @@ import VoiceTutorPage from './pages/VoiceTutorPage';
 import ModuleDetailPage from './pages/ModuleDetailPage';
 import LessonPage from './pages/LessonPage';
 import EvaluationPage from './pages/EvaluationPage';
+import PracticePage from './pages/PracticePage';
 import ProgressPage from './pages/ProgressPage';
 import AdminPage from './pages/AdminPage';
 import VocabularyPage from './pages/VocabularyPage';
@@ -47,6 +48,8 @@ export default function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/tutor" element={<VoiceTutorPage />} />
               <Route path="/modules/:id" element={<ModuleDetailPage />} />
+              <Route path="/modules/:id/practice" element={<PracticePage />} />
+              <Route path="/practice" element={<PracticePage />} />
               <Route path="/lessons/:id" element={<LessonPage />} />
               <Route path="/evaluations/:moduleId" element={<EvaluationPage />} />
               <Route path="/progress" element={<ProgressPage />} />
@@ -68,7 +71,7 @@ export default function App() {
           toastOptions={{
             style: {
               background: '#1a1a35',
-              color: '#ffffff',
+              color: 'var(--text-on-primary)',
               border: '1px solid var(--border)',
               borderRadius: '12px',
               fontFamily: 'var(--font-body)',

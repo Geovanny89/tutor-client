@@ -22,7 +22,9 @@ export default function LoginPage() {
     const res = await login(email, password);
     if (res.success) {
       toast.success('¡Bienvenido de vuelta!');
-      navigate('/dashboard');
+      // Admins go straight to their management panel
+      const role = useAuthStore.getState().user?.role;
+      navigate(role === 'super_admin' || role === 'tenant_admin' ? '/admin' : '/dashboard');
     } else {
       toast.error(res.message || 'Credenciales incorrectas');
     }
@@ -35,13 +37,13 @@ export default function LoginPage() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '2rem 1rem',
-      background: '#F8FAFC',
+      background: 'var(--bg-base)',
     }}>
       <div style={{
         maxWidth: '440px',
         width: '100%',
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border)',
         borderRadius: '24px',
         padding: '2.5rem 2rem',
         boxShadow: '0 8px 30px rgba(15, 23, 42, 0.06)',
@@ -52,27 +54,27 @@ export default function LoginPage() {
             width: '52px',
             height: '52px',
             borderRadius: '16px',
-            background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
+            background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: '0 4px 14px rgba(5, 150, 105, 0.25)',
             marginBottom: '1rem',
           }}>
-            <Sparkles size={28} color="#ffffff" />
+            <Sparkles size={28} color="var(--text-on-primary)" />
           </div>
 
           <h1 style={{
             fontSize: '1.75rem',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-primary)',
             margin: '0 0 0.4rem 0',
             fontFamily: 'var(--font-display)',
             letterSpacing: '-0.02em',
           }}>
             Iniciar Sesión
           </h1>
-          <p style={{ color: '#64748B', fontSize: '0.92rem', margin: 0 }}>
+          <p style={{ color: 'var(--text-subtle)', fontSize: '0.92rem', margin: 0 }}>
             Ingresa a tu cuenta de KDice English
           </p>
         </div>
@@ -80,11 +82,11 @@ export default function LoginPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.45rem' }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.45rem' }}>
               Correo Electrónico
             </label>
             <div style={{ position: 'relative' }}>
-              <Mail size={18} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Mail size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="email"
                 value={email}
@@ -93,11 +95,11 @@ export default function LoginPage() {
                 required
                 style={{
                   width: '100%',
-                  background: '#F8FAFC',
-                  border: '1px solid #CBD5E1',
+                  background: 'var(--bg-base)',
+                  border: '1px solid var(--border-strong)',
                   borderRadius: '12px',
                   padding: '0.75rem 1rem 0.75rem 2.5rem',
-                  color: '#0F172A',
+                  color: 'var(--text-primary)',
                   fontSize: '0.95rem',
                   outline: 'none',
                   boxSizing: 'border-box',
@@ -107,11 +109,11 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.45rem' }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.45rem' }}>
               Contraseña
             </label>
             <div style={{ position: 'relative' }}>
-              <Lock size={18} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="password"
                 value={password}
@@ -120,11 +122,11 @@ export default function LoginPage() {
                 required
                 style={{
                   width: '100%',
-                  background: '#F8FAFC',
-                  border: '1px solid #CBD5E1',
+                  background: 'var(--bg-base)',
+                  border: '1px solid var(--border-strong)',
                   borderRadius: '12px',
                   padding: '0.75rem 1rem 0.75rem 2.5rem',
-                  color: '#0F172A',
+                  color: 'var(--text-primary)',
                   fontSize: '0.95rem',
                   outline: 'none',
                   boxSizing: 'border-box',
@@ -146,8 +148,8 @@ export default function LoginPage() {
               justifyContent: 'center',
               gap: '0.5rem',
               marginTop: '0.5rem',
-              background: '#059669',
-              color: '#FFFFFF',
+              background: 'var(--primary)',
+              color: 'var(--text-on-primary)',
               border: 'none',
               cursor: loading ? 'wait' : 'pointer',
               boxShadow: '0 4px 14px rgba(5, 150, 105, 0.25)',
@@ -157,9 +159,9 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.88rem', color: '#64748B' }}>
+        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.88rem', color: 'var(--text-subtle)' }}>
           ¿No tienes una cuenta aún?{' '}
-          <Link to="/register" style={{ color: '#059669', fontWeight: 700, textDecoration: 'none' }}>
+          <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>
             Regístrate Gratis
           </Link>
         </div>

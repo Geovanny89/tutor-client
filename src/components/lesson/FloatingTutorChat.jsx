@@ -17,8 +17,8 @@ export default function FloatingTutorChat({
         <button
           onClick={onOpen}
           style={{
-            background: '#059669',
-            color: '#FFFFFF',
+            background: 'var(--primary)',
+            color: 'var(--text-on-primary)',
             border: 'none',
             borderRadius: '999px',
             padding: '0.85rem 1.4rem',
@@ -41,8 +41,8 @@ export default function FloatingTutorChat({
         <div style={{
           width: '360px',
           height: '480px',
-          background: '#FFFFFF',
-          border: '1px solid #A7F3D0',
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--primary-soft-2)',
           borderRadius: '20px',
           boxShadow: '0 12px 40px rgba(15, 23, 42, 0.18)',
           display: 'flex',
@@ -51,8 +51,8 @@ export default function FloatingTutorChat({
         }}>
           {/* Header */}
           <div style={{
-            background: '#059669',
-            color: '#FFFFFF',
+            background: 'var(--primary)',
+            color: 'var(--text-on-primary)',
             padding: '0.85rem 1.15rem',
             display: 'flex',
             alignItems: 'center',
@@ -67,23 +67,23 @@ export default function FloatingTutorChat({
             </div>
             <button
               onClick={onClose}
-              style={{ background: 'transparent', border: 'none', color: '#FFFFFF', cursor: 'pointer' }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--text-on-primary)', cursor: 'pointer' }}
             >
               <X size={18} />
             </button>
           </div>
 
           {/* Chat Body */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: '#F8FAFC' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'var(--bg-base)' }}>
             {messages.map((m) => (
               <div
                 key={m.id}
                 style={{
                   alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
                   maxWidth: '85%',
-                  background: m.role === 'user' ? '#059669' : '#FFFFFF',
-                  color: m.role === 'user' ? '#FFFFFF' : '#0F172A',
-                  border: m.role === 'user' ? 'none' : '1px solid #E2E8F0',
+                  background: m.role === 'user' ? 'var(--primary)' : 'var(--bg-surface)',
+                  color: m.role === 'user' ? 'var(--bg-surface)' : 'var(--text-primary)',
+                  border: m.role === 'user' ? 'none' : '1px solid var(--border)',
                   borderRadius: m.role === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
                   padding: '0.7rem 0.95rem',
                   fontSize: '0.88rem',
@@ -94,14 +94,14 @@ export default function FloatingTutorChat({
               </div>
             ))}
             {loading && (
-              <div style={{ fontSize: '0.8rem', color: '#059669', fontWeight: 600 }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>
                 Beyli está pensando su respuesta... ●●●
               </div>
             )}
           </div>
 
           {/* Chat Input */}
-          <form onSubmit={onSubmit} style={{ padding: '0.75rem', borderTop: '1px solid #E2E8F0', display: 'flex', gap: '0.5rem', background: '#FFFFFF' }}>
+          <form onSubmit={onSubmit} style={{ padding: '0.75rem', borderTop: '1px solid var(--border)', display: 'flex', gap: '0.5rem', background: 'var(--bg-surface)' }}>
             <input
               type="text"
               value={input}
@@ -109,8 +109,8 @@ export default function FloatingTutorChat({
               placeholder="Pregúntale algo a tu tutora..."
               style={{
                 flex: 1,
-                background: '#F8FAFC',
-                border: '1px solid #CBD5E1',
+                background: 'var(--bg-base)',
+                border: '1px solid var(--border-strong)',
                 borderRadius: '10px',
                 padding: '0.55rem 0.85rem',
                 fontSize: '0.88rem',
@@ -120,9 +120,9 @@ export default function FloatingTutorChat({
             <button
               type="submit"
               style={{
-                background: '#059669',
+                background: 'var(--primary)',
                 border: 'none',
-                color: '#FFFFFF',
+                color: 'var(--text-on-primary)',
                 borderRadius: '10px',
                 padding: '0 0.85rem',
                 cursor: 'pointer',

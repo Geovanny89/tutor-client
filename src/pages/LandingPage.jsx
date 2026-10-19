@@ -36,15 +36,15 @@ export default function LandingPage() {
           gap: '0.5rem',
           padding: '0.45rem 1.1rem',
           borderRadius: '999px',
-          background: '#ECFDF5',
-          border: '1.5px solid #A7F3D0',
+          background: 'var(--primary-bg)',
+          border: '1.5px solid var(--primary-soft-2)',
           fontSize: '0.86rem',
           fontWeight: 700,
-          color: '#047857',
+          color: 'var(--primary-hover)',
           marginBottom: '1.5rem',
           boxShadow: '0 2px 8px rgba(5, 150, 105, 0.08)',
         }}>
-          <Sparkles size={16} color="#059669" />
+          <Sparkles size={16} color="var(--primary)" />
           Plataforma de Inglés con Tutor IA Nativo · De A1 a C2
         </div>
 
@@ -57,11 +57,11 @@ export default function LandingPage() {
           letterSpacing: '-0.03em',
           maxWidth: '920px',
           margin: '0 auto 1.25rem auto',
-          color: '#0F172A',
+          color: 'var(--text-primary)',
         }}>
           Domina el Inglés Hablado con tu{' '}
           <span style={{
-            background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
+            background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             display: 'inline-block',
@@ -74,7 +74,7 @@ export default function LandingPage() {
         {/* Subtitle */}
         <p style={{
           fontSize: 'clamp(1.05rem, 2vw, 1.2rem)',
-          color: '#475569',
+          color: 'var(--text-secondary)',
           maxWidth: '720px',
           margin: '0 auto 2.25rem auto',
           lineHeight: '1.65',
@@ -93,8 +93,8 @@ export default function LandingPage() {
               borderRadius: '14px',
               fontSize: '1rem',
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
-              color: '#FFFFFF',
+              background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)',
+              color: 'var(--text-on-primary)',
               boxShadow: '0 6px 20px rgba(5, 150, 105, 0.35)',
               display: 'inline-flex',
               alignItems: 'center',
@@ -114,9 +114,9 @@ export default function LandingPage() {
               borderRadius: '14px',
               fontSize: '1rem',
               fontWeight: 700,
-              border: '1.5px solid #CBD5E1',
-              background: '#FFFFFF',
-              color: '#1E293B',
+              border: '1.5px solid var(--border-strong)',
+              background: 'var(--bg-surface)',
+              color: 'var(--text-primary)',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
@@ -136,20 +136,20 @@ export default function LandingPage() {
           gap: '1.5rem',
           flexWrap: 'wrap',
           fontSize: '0.86rem',
-          color: '#64748B',
+          color: 'var(--text-subtle)',
           fontWeight: 600,
         }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <CheckCircle2 size={16} color="#059669" /> Práctica de voz con IA en tiempo real
+            <CheckCircle2 size={16} color="var(--primary)" /> Práctica de voz con IA en tiempo real
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <CheckCircle2 size={16} color="#059669" /> 36 Módulos completos (A1 → C2)
+            <CheckCircle2 size={16} color="var(--primary)" /> 36 Módulos completos (A1 → C2)
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <CheckCircle2 size={16} color="#059669" /> 100+ Palabras con audio y ejemplos
+            <CheckCircle2 size={16} color="var(--primary)" /> 100+ Palabras con audio y ejemplos
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <CheckCircle2 size={16} color="#059669" /> Acceso 100% gratuito
+            <CheckCircle2 size={16} color="var(--primary)" /> Acceso 100% gratuito
           </span>
         </div>
       </section>
@@ -157,27 +157,27 @@ export default function LandingPage() {
       {/* ─── Interactive Mockup Showcase Card ─── */}
       <section style={{ maxWidth: '960px', margin: '0 auto 4rem', padding: '0 1.25rem' }}>
         <div style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #A7F3D0',
+          background: 'var(--bg-surface)',
+          border: '1.5px solid var(--primary-soft-2)',
           borderRadius: '24px',
           padding: '1.75rem',
           boxShadow: '0 20px 50px -10px rgba(5, 150, 105, 0.12), 0 2px 8px rgba(15, 23, 42, 0.04)',
         }}>
           {/* Card Top Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #F1F5F9', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--bg-muted)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#ECFDF5', border: '1px solid #A7F3D0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary-bg)', border: '1px solid var(--primary-soft-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
                 👩🏼‍🏫
               </div>
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0F172A' }}>
-                  Beyli <span style={{ fontSize: '0.72rem', background: '#D1FAE5', color: '#047857', padding: '0.15rem 0.5rem', borderRadius: '999px', fontWeight: 700, marginLeft: '0.35rem' }}>Tutora Nativa</span>
+                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                  Beyli <span style={{ fontSize: '0.72rem', background: 'var(--primary-soft)', color: 'var(--primary-hover)', padding: '0.15rem 0.5rem', borderRadius: '999px', fontWeight: 700, marginLeft: '0.35rem' }}>Tutora Nativa</span>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: '#64748B' }}>En línea · Lista para conversar</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-subtle)' }}>En línea · Lista para conversar</div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#059669', fontSize: '0.8rem', fontWeight: 700, background: '#ECFDF5', padding: '0.3rem 0.75rem', borderRadius: '999px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--primary)', fontSize: '0.8rem', fontWeight: 700, background: 'var(--primary-bg)', padding: '0.3rem 0.75rem', borderRadius: '999px' }}>
               <Mic size={14} /> Micrófono Activo
             </div>
           </div>
@@ -187,16 +187,16 @@ export default function LandingPage() {
             {/* Tutor Bubble */}
             <div style={{
               alignSelf: 'flex-start',
-              background: '#F8FAFC',
-              border: '1px solid #E2E8F0',
+              background: 'var(--bg-base)',
+              border: '1px solid var(--border)',
               borderRadius: '16px 16px 16px 4px',
               padding: '1rem 1.25rem',
               maxWidth: '85%',
             }}>
-              <p style={{ margin: 0, fontWeight: 600, color: '#0F172A', fontSize: '0.96rem' }}>
+              <p style={{ margin: 0, fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.96rem' }}>
                 "Hello! Welcome to your English lesson. Can you tell me what you did last weekend?"
               </p>
-              <span style={{ display: 'block', fontSize: '0.8rem', color: '#059669', fontStyle: 'italic', marginTop: '0.3rem' }}>
+              <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--primary)', fontStyle: 'italic', marginTop: '0.3rem' }}>
                 ↳ ¡Hola! Bienvenido a tu lección. ¿Puedes contarme qué hiciste el fin de semana pasado?
               </span>
             </div>
@@ -204,8 +204,8 @@ export default function LandingPage() {
             {/* Student Bubble with live grading */}
             <div style={{
               alignSelf: 'flex-end',
-              background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
-              color: '#FFFFFF',
+              background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)',
+              color: 'var(--text-on-primary)',
               borderRadius: '16px 16px 4px 16px',
               padding: '1rem 1.25rem',
               maxWidth: '85%',
@@ -214,7 +214,7 @@ export default function LandingPage() {
               <p style={{ margin: 0, fontWeight: 600, fontSize: '0.96rem' }}>
                 "I visited my grandparents and we cooked a delicious dinner together."
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem', fontSize: '0.75rem', color: '#D1FAE5', fontWeight: 700 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--primary-soft)', fontWeight: 700 }}>
                 <span>✨ Pronunciación: 98%</span> · <span>Gramática: Perfecta</span>
               </div>
             </div>
@@ -228,13 +228,13 @@ export default function LandingPage() {
           <h2 style={{
             fontSize: 'clamp(1.75rem, 4vw, 2.4rem)',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-primary)',
             fontFamily: 'var(--font-display)',
             margin: '0 0 0.5rem 0',
           }}>
             Plan de Estudio en 5 Bloques Estructurados
           </h2>
-          <p style={{ color: '#64748B', fontSize: '1rem', maxWidth: '650px', margin: '0 auto' }}>
+          <p style={{ color: 'var(--text-subtle)', fontSize: '1rem', maxWidth: '650px', margin: '0 auto' }}>
             Un camino paso a paso desde los primeros sonidos fonéticos hasta el dominio profesional y fluido del idioma.
           </p>
         </div>
@@ -246,14 +246,14 @@ export default function LandingPage() {
           textAlign: 'left',
         }}>
           {[
-            { badge: 'A1', title: 'Bloque 1: Cimientos', desc: 'Fonética, abecedario, verbo To Be, pronombres y presente simple.', icon: '🌱', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0' },
-            { badge: 'A2', title: 'Bloque 2: Entorno Simple', desc: 'Pasado simple, futuro (will/going to), rutinas y preguntas cotidianas.', icon: '🌿', color: '#0284C7', bg: '#F0F9FF', border: '#BAE6FD' },
-            { badge: 'B1', title: 'Bloque 3: Fluidez Activa', desc: 'Presente perfecto, condicionales, voz pasiva y debates de opinión.', icon: '🚀', color: '#7C3AED', bg: '#F5F3FF', border: '#DDD6FE' },
-            { badge: 'B2', title: 'Bloque 4: Nivel Profesional', desc: 'Cláusulas relativas, modales deductivos y entrevistas laborales.', icon: '💼', color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
+            { badge: 'A1', title: 'Bloque 1: Cimientos', desc: 'Fonética, abecedario, verbo To Be, pronombres y presente simple.', icon: '🌱', color: 'var(--primary)', bg: 'var(--primary-bg)', border: 'var(--primary-soft-2)' },
+            { badge: 'A2', title: 'Bloque 2: Entorno Simple', desc: 'Pasado simple, futuro (will/going to), rutinas y preguntas cotidianas.', icon: '🌿', color: 'var(--info)', bg: 'var(--info-bg)', border: '#BAE6FD' },
+            { badge: 'B1', title: 'Bloque 3: Fluidez Activa', desc: 'Presente perfecto, condicionales, voz pasiva y debates de opinión.', icon: '🚀', color: 'var(--accent-purple)', bg: '#F5F3FF', border: '#DDD6FE' },
+            { badge: 'B2', title: 'Bloque 4: Nivel Profesional', desc: 'Cláusulas relativas, modales deductivos y entrevistas laborales.', icon: '💼', color: 'var(--accent-gold-strong)', bg: 'var(--warning-bg)', border: 'var(--accent-gold-border)' },
             { badge: 'C1-C2', title: 'Bloque 5: Maestría Total', desc: 'Inversión gramatical, modismos idiomáticos nativos y refinamiento.', icon: '👑', color: '#BE185D', bg: '#FDF2F8', border: '#FBCFE8' },
           ].map((b, i) => (
             <div key={i} style={{
-              background: '#FFFFFF',
+              background: 'var(--bg-surface)',
               border: `1.5px solid ${b.border}`,
               borderRadius: '18px',
               padding: '1.4rem 1.2rem',
@@ -276,10 +276,10 @@ export default function LandingPage() {
                   </span>
                   <span style={{ fontSize: '1.25rem' }}>{b.icon}</span>
                 </div>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.4rem', lineHeight: 1.3 }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.4rem', lineHeight: 1.3 }}>
                   {b.title}
                 </h3>
-                <p style={{ color: '#64748B', fontSize: '0.86rem', lineHeight: 1.5, margin: 0 }}>
+                <p style={{ color: 'var(--text-subtle)', fontSize: '0.86rem', lineHeight: 1.5, margin: 0 }}>
                   {b.desc}
                 </p>
               </div>
@@ -297,69 +297,69 @@ export default function LandingPage() {
         }}>
           {/* Pillar 1 */}
           <div style={{
-            background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border)',
             borderRadius: '20px',
             padding: '2rem',
             boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
           }}>
             <div style={{
               width: '48px', height: '48px', borderRadius: '12px',
-              background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'var(--primary-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center',
               marginBottom: '1.25rem',
             }}>
-              <Mic size={24} color="#059669" />
+              <Mic size={24} color="var(--primary)" />
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
               Conversación Real por Voz
             </h3>
-            <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>
               Habla por micrófono y escucha respuestas fluidas en inglés nativo. El sistema detecta tus errores y te enseña cómo corregirlos con paciencia.
             </p>
           </div>
 
           {/* Pillar 2 */}
           <div style={{
-            background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border)',
             borderRadius: '20px',
             padding: '2rem',
             boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
           }}>
             <div style={{
               width: '48px', height: '48px', borderRadius: '12px',
-              background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'var(--primary-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center',
               marginBottom: '1.25rem',
             }}>
-              <Library size={24} color="#059669" />
+              <Library size={24} color="var(--primary)" />
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
               Vocabulario Interactivo con IA
             </h3>
-            <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>
               Explora verbos, adjetivos, frases, el abecedario y números. Haz clic en "Generar con IA" para obtener ejemplos personalizados con audio.
             </p>
           </div>
 
           {/* Pillar 3 */}
           <div style={{
-            background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border)',
             borderRadius: '20px',
             padding: '2rem',
             boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
           }}>
             <div style={{
               width: '48px', height: '48px', borderRadius: '12px',
-              background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'var(--primary-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center',
               marginBottom: '1.25rem',
             }}>
-              <Award size={24} color="#059669" />
+              <Award size={24} color="var(--primary)" />
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
               Evaluaciones y Certificación
             </h3>
-            <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', lineHeight: '1.6', margin: 0 }}>
               Mide tu nivel con exámenes interactivos al finalizar cada módulo. Obtén más del 70% para desbloquear el siguiente bloque y certificar tu avance.
             </p>
           </div>
@@ -369,23 +369,23 @@ export default function LandingPage() {
       {/* ─── Final CTA Banner ─── */}
       <section style={{ maxWidth: '1000px', margin: '0 auto 5rem', padding: '0 1.25rem' }}>
         <div style={{
-          background: 'linear-gradient(135deg, #064E3B 0%, #065F46 45%, #059669 100%)',
+          background: 'linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-text) 45%, var(--primary) 100%)',
           borderRadius: '28px',
           padding: '3rem 2rem',
           textAlign: 'center',
-          color: '#FFFFFF',
+          color: 'var(--text-on-primary)',
           boxShadow: '0 20px 40px rgba(6, 78, 59, 0.25)',
         }}>
           <h2 style={{
             fontSize: 'clamp(1.8rem, 4vw, 2.4rem)',
             fontWeight: 900,
-            color: '#FFFFFF',
+            color: 'var(--text-on-primary)',
             fontFamily: 'var(--font-display)',
             margin: '0 0 0.75rem 0',
           }}>
             ¿Listo para comenzar a hablar inglés hoy?
           </h2>
-          <p style={{ color: '#D1FAE5', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto 2rem auto', lineHeight: 1.6 }}>
+          <p style={{ color: 'var(--primary-soft)', fontSize: '1.05rem', maxWidth: '600px', margin: '0 auto 2rem auto', lineHeight: 1.6 }}>
             Crea tu cuenta gratuita en menos de 30 segundos y comienza tu primera conversación con Beyli.
           </p>
           <Link
@@ -396,8 +396,8 @@ export default function LandingPage() {
               gap: '0.5rem',
               padding: '0.9rem 2.2rem',
               borderRadius: '14px',
-              background: '#FFFFFF',
-              color: '#065F46',
+              background: 'var(--bg-surface)',
+              color: 'var(--primary-text)',
               fontWeight: 800,
               fontSize: '1rem',
               textDecoration: 'none',
@@ -411,7 +411,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Footer ─── */}
-      <footer style={{ borderTop: '1px solid #E2E8F0', padding: '2rem 1.25rem', textAlign: 'center', color: '#64748B', fontSize: '0.86rem' }}>
+      <footer style={{ borderTop: '1px solid var(--border)', padding: '2rem 1.25rem', textAlign: 'center', color: 'var(--text-subtle)', fontSize: '0.86rem' }}>
         <p style={{ margin: 0 }}>
           © {new Date().getFullYear()} <strong>KDice English</strong> · Aprende Hablando con Inteligencia Artificial. Todos los derechos reservados.
         </p>

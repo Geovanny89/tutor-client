@@ -22,9 +22,9 @@ export default function LessonStepper({ activeStep, onSelectStep }) {
             key={step.id}
             onClick={() => onSelectStep(step.id)}
             style={{
-              background: isCurrent ? '#059669' : '#FFFFFF',
-              color: isCurrent ? '#FFFFFF' : '#334155',
-              border: isCurrent ? '2px solid #059669' : '1px solid #E2E8F0',
+              background: isCurrent ? 'var(--primary)' : 'var(--bg-surface)',
+              color: isCurrent ? 'var(--text-on-primary)' : 'var(--text-secondary)',
+              border: isCurrent ? '2px solid var(--primary)' : '1px solid var(--border)',
               borderRadius: '14px',
               padding: '0.85rem 1rem',
               fontWeight: 700,

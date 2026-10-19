@@ -48,13 +48,13 @@ export default function RegisterPage() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '2rem 1rem',
-      background: '#F8FAFC',
+      background: 'var(--bg-base)',
     }}>
       <div style={{
         maxWidth: '480px',
         width: '100%',
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border)',
         borderRadius: '24px',
         padding: '2.5rem 2rem',
         boxShadow: '0 8px 30px rgba(15, 23, 42, 0.06)',
@@ -65,57 +65,57 @@ export default function RegisterPage() {
             width: '52px',
             height: '52px',
             borderRadius: '16px',
-            background: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
+            background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: '0 4px 14px rgba(5, 150, 105, 0.25)',
             marginBottom: '0.75rem',
           }}>
-            <Sparkles size={28} color="#ffffff" />
+            <Sparkles size={28} color="var(--text-on-primary)" />
           </div>
 
           <h1 style={{
             fontSize: '1.75rem',
             fontWeight: 800,
-            color: '#0F172A',
+            color: 'var(--text-primary)',
             margin: '0 0 0.4rem 0',
             fontFamily: 'var(--font-display)',
             letterSpacing: '-0.02em',
           }}>
             Crea tu Cuenta Gratuita
           </h1>
-          <p style={{ color: '#64748B', fontSize: '0.92rem', margin: 0 }}>
+          <p style={{ color: 'var(--text-subtle)', fontSize: '0.92rem', margin: 0 }}>
             Aprende inglés hablando con tutores de IA en los 5 Bloques (A1 → C2)
           </p>
         </div>
 
         {/* Free daily guarantee */}
         <div style={{
-          background: '#ECFDF5',
-          border: '1px solid #A7F3D0',
+          background: 'var(--primary-bg)',
+          border: '1px solid var(--primary-soft-2)',
           borderRadius: '14px',
           padding: '0.8rem 1rem',
           marginBottom: '1.5rem',
           fontSize: '0.82rem',
-          color: '#065F46',
+          color: 'var(--primary-text)',
           display: 'flex',
           alignItems: 'center',
           gap: '0.5rem',
           fontWeight: 600,
         }}>
-          <CheckCircle2 size={16} color="#059669" />
+          <CheckCircle2 size={16} color="var(--primary)" />
           <span>Acceso 100% gratuito con 50 interacciones diarias al Tutor de Voz de IA.</span>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.45rem' }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.45rem' }}>
               Tu Nombre Completo
             </label>
             <div style={{ position: 'relative' }}>
-              <User size={18} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <User size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
                 value={name}
@@ -124,11 +124,11 @@ export default function RegisterPage() {
                 required
                 style={{
                   width: '100%',
-                  background: '#F8FAFC',
-                  border: '1px solid #CBD5E1',
+                  background: 'var(--bg-base)',
+                  border: '1px solid var(--border-strong)',
                   borderRadius: '12px',
                   padding: '0.75rem 1rem 0.75rem 2.5rem',
-                  color: '#0F172A',
+                  color: 'var(--text-primary)',
                   fontSize: '0.95rem',
                   outline: 'none',
                   boxSizing: 'border-box',
@@ -138,11 +138,11 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.45rem' }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.45rem' }}>
               Correo Electrónico
             </label>
             <div style={{ position: 'relative' }}>
-              <Mail size={18} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Mail size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="email"
                 value={email}
@@ -151,11 +151,11 @@ export default function RegisterPage() {
                 required
                 style={{
                   width: '100%',
-                  background: '#F8FAFC',
-                  border: '1px solid #CBD5E1',
+                  background: 'var(--bg-base)',
+                  border: '1px solid var(--border-strong)',
                   borderRadius: '12px',
                   padding: '0.75rem 1rem 0.75rem 2.5rem',
-                  color: '#0F172A',
+                  color: 'var(--text-primary)',
                   fontSize: '0.95rem',
                   outline: 'none',
                   boxSizing: 'border-box',
@@ -165,11 +165,11 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.45rem' }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.45rem' }}>
               Contraseña
             </label>
             <div style={{ position: 'relative' }}>
-              <Lock size={18} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Lock size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="password"
                 value={password}
@@ -178,11 +178,11 @@ export default function RegisterPage() {
                 required
                 style={{
                   width: '100%',
-                  background: '#F8FAFC',
-                  border: '1px solid #CBD5E1',
+                  background: 'var(--bg-base)',
+                  border: '1px solid var(--border-strong)',
                   borderRadius: '12px',
                   padding: '0.75rem 1rem 0.75rem 2.5rem',
-                  color: '#0F172A',
+                  color: 'var(--text-primary)',
                   fontSize: '0.95rem',
                   outline: 'none',
                   boxSizing: 'border-box',
@@ -192,7 +192,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.45rem' }}>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.45rem' }}>
               ¿Cuál es tu nivel meta que deseas alcanzar?
             </label>
             <select
@@ -200,11 +200,11 @@ export default function RegisterPage() {
               onChange={(e) => setTargetLevel(e.target.value)}
               style={{
                 width: '100%',
-                background: '#F8FAFC',
-                border: '1px solid #CBD5E1',
+                background: 'var(--bg-base)',
+                border: '1px solid var(--border-strong)',
                 borderRadius: '12px',
                 padding: '0.75rem 1rem',
-                color: '#0F172A',
+                color: 'var(--text-primary)',
                 fontSize: '0.95rem',
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -232,8 +232,8 @@ export default function RegisterPage() {
               justifyContent: 'center',
               gap: '0.5rem',
               marginTop: '0.5rem',
-              background: '#059669',
-              color: '#FFFFFF',
+              background: 'var(--primary)',
+              color: 'var(--text-on-primary)',
               border: 'none',
               cursor: loading ? 'wait' : 'pointer',
               boxShadow: '0 4px 14px rgba(5, 150, 105, 0.25)',
@@ -243,9 +243,9 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.88rem', color: '#64748B' }}>
+        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.88rem', color: 'var(--text-subtle)' }}>
           ¿Ya tienes cuenta?{' '}
-          <Link to="/login" style={{ color: '#059669', fontWeight: 700, textDecoration: 'none' }}>
+          <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>
             Inicia Sesión aquí
           </Link>
         </div>

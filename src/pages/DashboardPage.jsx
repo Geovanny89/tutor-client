@@ -16,7 +16,7 @@ const BLOQUES = [
     level: 'A1',
     title: 'Bloque 1: Cimientos de la Comunicación',
     subtitle: 'Nivel A1 · Estructura mínima para formular tus primeras oraciones',
-    color: '#059669',
+    color: 'var(--primary)',
     badge: 'A1',
     orderMin: 1,
     orderMax: 8,
@@ -26,7 +26,7 @@ const BLOQUES = [
     level: 'A2',
     title: 'Bloque 2: Entorno y Experiencias Simples',
     subtitle: 'Nivel A2 · Conecta ideas en pasado y describe planes elementales',
-    color: '#0D9488',
+    color: 'var(--secondary)',
     badge: 'A2',
     orderMin: 9,
     orderMax: 16,
@@ -46,7 +46,7 @@ const BLOQUES = [
     level: 'B2',
     title: 'Bloque 4: Independencia y Argumentación',
     subtitle: 'Nivel B2 · Debates formales, entorno profesional y oraciones complejas',
-    color: '#7C3AED',
+    color: 'var(--accent-purple)',
     badge: 'B2',
     orderMin: 25,
     orderMax: 32,
@@ -71,6 +71,13 @@ export default function DashboardPage() {
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('B1');
+  const [blocksCollapsed, setBlocksCollapsed] = useState(false);
+
+  // On mobile: selecting a block hides the rest so only that block stays in view.
+  const handleSelectTab = (id) => {
+    setActiveTab(id);
+    setBlocksCollapsed(true);
+  };
 
   useEffect(() => {
     fetchModules();
@@ -100,7 +107,7 @@ export default function DashboardPage() {
       });
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.25rem 1rem 3rem', color: '#0F172A', width: '100%', boxSizing: 'border-box' }}>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.25rem 1rem 3rem', color: 'var(--text-primary)', width: '100%', boxSizing: 'border-box' }}>
       
       {/* Hero Welcome Card */}
       <DashboardHero
@@ -112,22 +119,24 @@ export default function DashboardPage() {
       <BloqueSelectorTabs
         bloques={BLOQUES}
         activeTab={activeTab}
-        onSelectTab={setActiveTab}
+        onSelectTab={handleSelectTab}
+        collapsed={blocksCollapsed}
+        onToggleCollapse={() => setBlocksCollapsed(false)}
       />
 
       {/* Active Bloque Header Info */}
       {currentBlock && activeTab !== 'ALL' && (
         <div style={{
-          background: '#F0FDF4',
-          borderLeft: '4px solid #059669',
+          background: 'var(--primary-bg)',
+          borderLeft: '4px solid var(--primary)',
           padding: '1rem 1.25rem',
           borderRadius: '0 12px 12px 0',
           marginBottom: '1.75rem',
         }}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#065F46', margin: 0 }}>
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-text)', margin: 0 }}>
             {currentBlock.title}
           </h3>
-          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.9rem', color: '#047857' }}>
+          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.9rem', color: 'var(--primary-hover)' }}>
             {currentBlock.subtitle}
           </p>
         </div>
@@ -136,28 +145,28 @@ export default function DashboardPage() {
       {/* Modules Grid */}
       <div>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '4rem 2rem', color: '#64748B', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+          <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--text-subtle)', background: 'var(--bg-surface)', borderRadius: '16px', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⏳</div>
             Cargando módulos educativos...
           </div>
         ) : displayedModules.length === 0 ? (
           <div style={{
-            background: '#FFFFFF',
-            border: '1px dashed #CBD5E1',
+            background: 'var(--bg-surface)',
+            border: '1px dashed var(--border-strong)',
             borderRadius: '20px',
             padding: '3rem 2rem',
             textAlign: 'center',
           }}>
-            <BookOpen size={44} color="#059669" style={{ opacity: 0.6, marginBottom: '0.75rem' }} />
-            <h4 style={{ color: '#0F172A', fontSize: '1.15rem', margin: '0 0 0.5rem 0' }}>
+            <BookOpen size={44} color="var(--primary)" style={{ opacity: 0.6, marginBottom: '0.75rem' }} />
+            <h4 style={{ color: 'var(--text-primary)', fontSize: '1.15rem', margin: '0 0 0.5rem 0' }}>
               No se encontraron módulos para este bloque.
             </h4>
             <button
               onClick={fetchModules}
               style={{
                 marginTop: '1rem',
-                background: '#059669',
-                color: '#FFFFFF',
+                background: 'var(--primary)',
+                color: 'var(--text-on-primary)',
                 border: 'none',
                 padding: '0.6rem 1.25rem',
                 borderRadius: '8px',

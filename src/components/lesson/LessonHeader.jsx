@@ -13,7 +13,7 @@ export default function LessonHeader({ lesson, introText, onBack, onPlayIntro })
           gap: '0.4rem',
           background: 'transparent',
           border: 'none',
-          color: '#059669',
+          color: 'var(--primary)',
           cursor: 'pointer',
           fontSize: '0.92rem',
           fontWeight: 700,
@@ -25,8 +25,8 @@ export default function LessonHeader({ lesson, introText, onBack, onPlayIntro })
 
       {/* Hero Lesson Header */}
       <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border)',
         borderRadius: '24px',
         padding: '2rem 2.25rem',
         marginBottom: '1.5rem',
@@ -36,15 +36,15 @@ export default function LessonHeader({ lesson, introText, onBack, onPlayIntro })
           <span style={{
             fontSize: '0.78rem',
             fontWeight: 800,
-            color: '#065F46',
-            background: '#ECFDF5',
-            border: '1px solid #A7F3D0',
+            color: 'var(--primary-text)',
+            background: 'var(--primary-bg)',
+            border: '1px solid var(--primary-soft-2)',
             padding: '0.25rem 0.65rem',
             borderRadius: '999px',
           }}>
             Lección {lesson.order_index ?? 1}
           </span>
-          <span style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: 600 }}>
+          <span style={{ fontSize: '0.82rem', color: 'var(--text-subtle)', fontWeight: 600 }}>
             ⏱ {lesson.duration_minutes || 15} min estimados
           </span>
         </div>
@@ -52,7 +52,7 @@ export default function LessonHeader({ lesson, introText, onBack, onPlayIntro })
         <h1 style={{
           fontSize: '2.1rem',
           fontWeight: 800,
-          color: '#0F172A',
+          color: 'var(--text-primary)',
           fontFamily: 'var(--font-display)',
           margin: '0 0 0.5rem 0',
           letterSpacing: '-0.02em',
@@ -61,15 +61,15 @@ export default function LessonHeader({ lesson, introText, onBack, onPlayIntro })
         </h1>
 
         {lesson.subtitle && (
-          <p style={{ color: '#059669', fontSize: '1.05rem', margin: '0 0 1.25rem 0', fontWeight: 700 }}>
+          <p style={{ color: 'var(--primary)', fontSize: '1.05rem', margin: '0 0 1.25rem 0', fontWeight: 700 }}>
             {lesson.subtitle}
           </p>
         )}
 
         {/* Live Tutor Coaching Intro Box */}
         <div style={{
-          background: '#ECFDF5',
-          border: '1px solid #A7F3D0',
+          background: 'var(--primary-bg)',
+          border: '1px solid var(--primary-soft-2)',
           borderRadius: '16px',
           padding: '1.15rem 1.4rem',
           display: 'flex',
@@ -83,8 +83,8 @@ export default function LessonHeader({ lesson, introText, onBack, onPlayIntro })
               width: '46px',
               height: '46px',
               borderRadius: '50%',
-              background: '#FFFFFF',
-              border: '2px solid #059669',
+              background: 'var(--bg-surface)',
+              border: '2px solid var(--primary)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -94,10 +94,10 @@ export default function LessonHeader({ lesson, introText, onBack, onPlayIntro })
               👩🏼‍🏫
             </div>
             <div>
-              <strong style={{ color: '#065F46', fontSize: '0.95rem' }}>
+              <strong style={{ color: 'var(--primary-text)', fontSize: '0.95rem' }}>
                 Tutora Beyli te guía en esta lección:
               </strong>
-              <div style={{ color: '#047857', fontSize: '0.88rem', marginTop: '0.15rem' }}>
+              <div style={{ color: 'var(--primary-hover)', fontSize: '0.88rem', marginTop: '0.15rem' }}>
                 "Sigue los 4 pasos guiados abajo. Leeremos la teoría, escucharemos la pronunciación nativa y practicaremos hablando juntos."
               </div>
             </div>
@@ -106,8 +106,8 @@ export default function LessonHeader({ lesson, introText, onBack, onPlayIntro })
           <button
             onClick={onPlayIntro}
             style={{
-              background: '#059669',
-              color: '#FFFFFF',
+              background: 'var(--primary)',
+              color: 'var(--text-on-primary)',
               border: 'none',
               padding: '0.55rem 1rem',
               borderRadius: '10px',

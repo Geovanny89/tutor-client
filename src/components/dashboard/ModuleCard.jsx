@@ -8,8 +8,8 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
   return (
     <div
       style={{
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border)',
         borderRadius: '20px',
         padding: '1.5rem',
         display: 'flex',
@@ -21,12 +21,12 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-2px)';
         e.currentTarget.style.boxShadow = '0 10px 24px rgba(5, 150, 105, 0.1)';
-        e.currentTarget.style.borderColor = '#A7F3D0';
+        e.currentTarget.style.borderColor = 'var(--primary-soft-2)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)';
         e.currentTarget.style.boxShadow = '0 4px 12px rgba(15, 23, 42, 0.04)';
-        e.currentTarget.style.borderColor = '#E2E8F0';
+        e.currentTarget.style.borderColor = 'var(--border)';
       }}
     >
       <div>
@@ -35,9 +35,9 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
           <span style={{
             fontSize: '0.8rem',
             fontWeight: 800,
-            color: '#065F46',
-            background: '#ECFDF5',
-            border: '1px solid #A7F3D0',
+            color: 'var(--primary-text)',
+            background: 'var(--primary-bg)',
+            border: '1px solid var(--primary-soft-2)',
             padding: '0.25rem 0.65rem',
             borderRadius: '999px',
             display: 'flex',
@@ -52,8 +52,8 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
               <span style={{
                 fontSize: '0.75rem',
                 fontWeight: 700,
-                color: '#059669',
-                background: '#D1FAE5',
+                color: 'var(--primary)',
+                background: 'var(--primary-soft)',
                 padding: '0.2rem 0.5rem',
                 borderRadius: '6px',
                 display: 'flex',
@@ -66,8 +66,8 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
             <span style={{
               fontSize: '0.75rem',
               fontWeight: 800,
-              color: '#FFFFFF',
-              background: '#059669',
+              color: 'var(--text-on-primary)',
+              background: 'var(--primary)',
               padding: '0.2rem 0.55rem',
               borderRadius: '6px',
             }}>
@@ -80,7 +80,7 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
         <h3 style={{
           fontSize: '1.15rem',
           fontWeight: 800,
-          color: '#0F172A',
+          color: 'var(--text-primary)',
           margin: '0 0 0.5rem 0',
           lineHeight: '1.35',
           fontFamily: 'var(--font-display)',
@@ -91,7 +91,7 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
         {/* Description */}
         <p style={{
           fontSize: '0.88rem',
-          color: '#475569',
+          color: 'var(--text-secondary)',
           lineHeight: '1.5',
           margin: '0 0 1.1rem 0',
           minHeight: '2.6rem',
@@ -105,16 +105,16 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
           alignItems: 'center',
           gap: '0.85rem',
           fontSize: '0.8rem',
-          color: '#64748B',
+          color: 'var(--text-subtle)',
           marginBottom: '1.25rem',
           paddingBottom: '0.75rem',
-          borderBottom: '1px solid #F1F5F9',
+          borderBottom: '1px solid var(--bg-muted)',
         }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-            <BookOpen size={14} color="#059669" /> {lessonsCount} Lección
+            <BookOpen size={14} color="var(--primary)" /> {lessonsCount} Lección
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-            <Award size={14} color="#D97706" /> Examen +100 XP
+            <Award size={14} color="var(--accent-gold-strong)" /> Examen +100 XP
           </span>
         </div>
       </div>
@@ -134,8 +134,8 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
               borderRadius: '10px',
               fontSize: '0.88rem',
               fontWeight: 700,
-              background: '#059669',
-              color: '#FFFFFF',
+              background: 'var(--primary)',
+              color: 'var(--text-on-primary)',
               border: 'none',
               cursor: 'pointer',
               transition: 'background 0.2s',
@@ -153,15 +153,15 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
               gap: '0.35rem',
               padding: '0.7rem 0.9rem',
               borderRadius: '10px',
-              border: '1px solid #FDE68A',
-              background: '#FFFBEB',
-              color: '#92400E',
+              border: '1px solid var(--accent-gold-border)',
+              background: 'var(--warning-bg)',
+              color: 'var(--accent-gold-text)',
               fontSize: '0.85rem',
               fontWeight: 700,
               cursor: 'pointer',
             }}
           >
-            <Award size={16} color="#D97706" /> Examen
+            <Award size={16} color="var(--accent-gold-strong)" /> Examen
           </button>
         </div>
 
@@ -175,9 +175,9 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
             gap: '0.4rem',
             padding: '0.5rem 0.8rem',
             borderRadius: '8px',
-            background: '#F8FAFC',
-            border: '1px solid #E2E8F0',
-            color: '#059669',
+            background: 'var(--bg-base)',
+            border: '1px solid var(--border)',
+            color: 'var(--primary)',
             fontSize: '0.8rem',
             fontWeight: 600,
             cursor: 'pointer',

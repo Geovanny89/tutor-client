@@ -1,5 +1,36 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+// Keep the mic open long enough to capture full sentences, but close it
+// automatically once the user has clearly stopped talking.
+const SILENCE_TIMEOUT_MS = 2500;
+const INITIAL_SILENCE_TIMEOUT_MS = 8000;
+
+// Name hints used to infer the gender of a browser voice so each tutor
+// persona keeps a consistent voice.
+const MALE_VOICE_HINTS = [
+  'david', 'mark', 'george', 'daniel', 'alex', 'fred', 'guy', 'ryan', 'male',
+  'oliver', 'thomas', 'james', 'roger', 'christopher', 'brian', 'eric', 'liam',
+  'matthew', 'william', 'aaron', 'nathan', 'gordon', 'steffan', 'rishi',
+  'arthur', 'andrew', 'brandon', 'jason', 'kevin', 'justin', 'joey', 'elliot',
+];
+const FEMALE_VOICE_HINTS = [
+  'zira', 'hazel', 'samantha', 'karen', 'susan', 'female', 'victoria', 'tessa',
+  'moira', 'fiona', 'aria', 'jenny', 'michelle', 'emma', 'sonia', 'libby',
+  'sara', 'catherine', 'allison', 'ava', 'joanna', 'kendra', 'kimberly',
+  'salli', 'nicole', 'olivia', 'clara', 'emily', 'linda', 'heather', 'amber',
+  'ashley', 'jessa', 'misty', 'kayla', 'courtney', 'monica', 'paulina',
+  'vicki', 'ximena', 'serena', 'veena',
+];
+
+const voiceGenderOf = (name) => {
+  const n = (name || '').toLowerCase();
+  if (n.includes('female')) return 'female';
+  if (n.includes('male')) return 'male';
+  if (FEMALE_VOICE_HINTS.some((h) => n.includes(h))) return 'female';
+  if (MALE_VOICE_HINTS.some((h) => n.includes(h))) return 'male';
+  return null;
+};
+
 /**
  * useVoice Hook
  * Uses 100% FREE Native Web Speech API
@@ -22,6 +53,7 @@ export function useVoice({
 
   const recognitionRef = useRef(null);
   const currentUtteranceRef = useRef(null);
+  const silenceTimerRef = useRef(null);
 
   // Check support and load voices
   useEffect(() => {
@@ -41,6 +73,10 @@ export function useVoice({
     }
 
     return () => {
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
       if (recognitionRef.current) {
         try {
           recognitionRef.current.abort();
@@ -75,36 +111,57 @@ export function useVoice({
 
       const recognition = new SpeechRecognition();
       recognition.lang = lang;
-      recognition.continuous = false;
+      // Keep listening across short pauses so the student can finish the whole
+      // sentence (e.g. "hola, ¿cómo estás?") instead of only the first word.
+      recognition.continuous = true;
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
+
+      // Accumulates every finalized fragment of the current turn.
+      let finalText = '';
+
+      const clearSilenceTimer = () => {
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
+          silenceTimerRef.current = null;
+        }
+      };
+
+      // Auto-stop after a pause; the accumulated text is emitted on recognition end.
+      const resetSilenceTimer = (delay) => {
+        clearSilenceTimer();
+        silenceTimerRef.current = setTimeout(() => {
+          try {
+            recognition.stop();
+          } catch (e) {
+            // ignore
+          }
+        }, delay);
+      };
 
       recognition.onstart = () => {
         setIsListening(true);
         setTranscript('');
         setInterimTranscript('');
+        resetSilenceTimer(INITIAL_SILENCE_TIMEOUT_MS);
       };
 
       recognition.onresult = (event) => {
-        let final = '';
         let interim = '';
 
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           const item = event.results[i];
           if (item.isFinal) {
-            final += item[0].transcript;
+            finalText += item[0].transcript;
           } else {
             interim += item[0].transcript;
           }
         }
 
-        if (final) {
-          setTranscript(final);
-          setInterimTranscript('');
-          if (onResult) onResult(final);
-        } else {
-          setInterimTranscript(interim);
-        }
+        setTranscript(finalText);
+        setInterimTranscript(interim);
+        // The user is still talking: keep the mic open a little longer.
+        resetSilenceTimer(SILENCE_TIMEOUT_MS);
       };
 
       recognition.onerror = (event) => {
@@ -116,7 +173,15 @@ export function useVoice({
       };
 
       recognition.onend = () => {
+        clearSilenceTimer();
         setIsListening(false);
+        const spoken = finalText.trim();
+        finalText = '';
+        setInterimTranscript('');
+        if (spoken) {
+          setTranscript(spoken);
+          if (onResult) onResult(spoken);
+        }
       };
 
       recognitionRef.current = recognition;
@@ -141,7 +206,7 @@ export function useVoice({
 
   // Speak text with native voice
   const speak = useCallback(
-    (text, customRate = rate, customPitch = pitch, customLang = lang) => {
+    (text, customRate = rate, customPitch = pitch, customLang = lang, customGender = null) => {
       if (!('speechSynthesis' in window) || !text) return;
 
       const cleanText = text
@@ -168,25 +233,41 @@ export function useVoice({
       }
 
       const langPrefix = (customLang || 'en').split('-')[0].toLowerCase();
+      const langPool = availableVoices.filter((v) =>
+        (v.lang || '').toLowerCase().startsWith(langPrefix)
+      );
+      const enPool = availableVoices.filter((v) => (v.lang || '').toLowerCase().includes('en'));
+      const pool = langPool.length ? langPool : enPool;
 
-      // Find best English voice
-      const preferredVoice =
-        availableVoices.find(
-          (v) =>
-            v.lang.toLowerCase().startsWith(langPrefix) &&
-            (v.name.includes('Natural') ||
-              v.name.includes('Google') ||
-              v.name.includes('Samantha') ||
-              v.name.includes('Daniel') ||
-              v.name.includes('Karen') ||
-              v.name.includes('Arthur') ||
-              v.name.includes('Zira') ||
-              v.name.includes('David') ||
-              v.name.includes('Mark'))
-        ) ||
-        availableVoices.find((v) => v.lang.toLowerCase().startsWith(langPrefix)) ||
-        availableVoices.find((v) => v.lang.toLowerCase().includes('en')) ||
-        availableVoices[0];
+      // Prefer high-quality neural/online voices, then Google voices.
+      const qualityRank = (name) => {
+        const n = (name || '').toLowerCase();
+        if (n.includes('natural') || n.includes('online')) return 0;
+        if (n.includes('google')) return 1;
+        return 2;
+      };
+      const pickFrom = (list) =>
+        [...list].sort((a, b) => qualityRank(a.name) - qualityRank(b.name))[0];
+
+      let preferredVoice = null;
+
+      // 1) Same gender as the persona + same accent (e.g. David → male en-GB)
+      if (customGender) {
+        const gendered = pool.filter((v) => voiceGenderOf(v.name) === customGender);
+        if (gendered.length) preferredVoice = pickFrom(gendered);
+      }
+      // 2) Same gender in any English accent (keeps the persona's voice consistent
+      //    when the exact accent has no voice of that gender available)
+      if (!preferredVoice && customGender) {
+        const genderedEn = enPool.filter((v) => voiceGenderOf(v.name) === customGender);
+        if (genderedEn.length) preferredVoice = pickFrom(genderedEn);
+      }
+      // 3) Any voice with the requested accent
+      if (!preferredVoice && pool.length) preferredVoice = pickFrom(pool);
+      // 4) Any English voice
+      if (!preferredVoice && enPool.length) preferredVoice = pickFrom(enPool);
+      // 5) Whatever the browser offers
+      if (!preferredVoice) preferredVoice = availableVoices[0];
 
       if (preferredVoice) {
         utterance.voice = preferredVoice;

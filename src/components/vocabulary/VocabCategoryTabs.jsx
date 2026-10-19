@@ -27,11 +27,11 @@ export default function VocabCategoryTabs({ categories, active, onChange }) {
               gap: '0.45rem',
               padding: '0.55rem 1.1rem',
               borderRadius: '12px',
-              border: isActive ? '1px solid #059669' : '1px solid var(--border)',
+              border: isActive ? '1px solid var(--primary)' : '1px solid var(--border)',
               background: isActive
-                ? 'linear-gradient(135deg, #059669 0%, #10B981 100%)'
+                ? 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)'
                 : 'var(--bg-surface)',
-              color: isActive ? '#FFFFFF' : '#475569',
+              color: isActive ? 'var(--text-on-primary)' : 'var(--text-secondary)',
               fontFamily: 'var(--font-body)',
               fontWeight: isActive ? 700 : 600,
               fontSize: '0.86rem',

@@ -22,8 +22,8 @@ export default function TutorPersonaSelector({ activePersona, onSelectPersona })
               gap: '0.85rem',
               padding: '0.75rem 1.15rem',
               borderRadius: '16px',
-              border: isSelected ? '2px solid #059669' : '1px solid #E2E8F0',
-              background: isSelected ? '#ECFDF5' : '#FFFFFF',
+              border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border)',
+              background: isSelected ? 'var(--primary-bg)' : 'var(--bg-surface)',
               boxShadow: isSelected ? '0 4px 14px rgba(5, 150, 105, 0.12)' : '0 2px 6px rgba(15, 23, 42, 0.02)',
               cursor: 'pointer',
               transition: 'all 0.2s',
@@ -32,10 +32,10 @@ export default function TutorPersonaSelector({ activePersona, onSelectPersona })
           >
             <span style={{ fontSize: '1.75rem' }}>{persona.avatar}</span>
             <div style={{ textAlign: 'left' }}>
-              <div style={{ fontWeight: 800, fontSize: '0.95rem', color: isSelected ? '#065F46' : '#0F172A' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.95rem', color: isSelected ? 'var(--primary-text)' : 'var(--text-primary)' }}>
                 {persona.name}
               </div>
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: isSelected ? '#059669' : '#64748B' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: isSelected ? 'var(--primary)' : 'var(--text-subtle)' }}>
                 {persona.role} ({persona.accent})
               </div>
             </div>

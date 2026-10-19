@@ -3,18 +3,22 @@ import { X, Volume2, Sparkles, Loader2, ChevronRight, RefreshCw } from 'lucide-r
 import api from '../../services/api';
 
 const CEFR_BADGE = {
-  A1: { bg: '#ECFDF5', text: '#065F46', border: '#A7F3D0' },
+  A1: { bg: 'var(--primary-bg)', text: 'var(--primary-text)', border: 'var(--primary-soft-2)' },
   A2: { bg: '#EFF6FF', text: '#1E40AF', border: '#BFDBFE' },
-  B1: { bg: '#FFFBEB', text: '#92400E', border: '#FDE68A' },
+  B1: { bg: 'var(--warning-bg)', text: 'var(--accent-gold-text)', border: 'var(--accent-gold-border)' },
   B2: { bg: '#FFF7ED', text: '#9A3412', border: '#FDBA74' },
   C1: { bg: '#F5F3FF', text: '#5B21B6', border: '#DDD6FE' },
   C2: { bg: '#FDF4FF', text: '#701A75', border: '#F0ABFC' },
 };
 
 function speak(text, rate = 0.85) {
-  if (!window.speechSynthesis) return;
+  if (!window.speechSynthesis || !text) return;
   window.speechSynthesis.cancel();
-  const utt = new SpeechSynthesisUtterance(text);
+  
+  // Handle slashes by adding a pause for clarity
+  const processedText = text.replace(/\s*\/\s*/g, ', ... ');
+  
+  const utt = new SpeechSynthesisUtterance(processedText);
   utt.lang = 'en-US';
   utt.rate = rate;
   window.speechSynthesis.speak(utt);
@@ -130,7 +134,7 @@ Format strictly:
           maxHeight: '88vh',
           overflowY: 'auto',
           WebkitOverflowScrolling: 'touch',
-          background: '#FFFFFF',
+          background: 'var(--bg-surface)',
           borderRadius: '20px',
           boxShadow: '0 25px 60px rgba(15,23,42,0.22)',
           zIndex: 1001,
@@ -151,7 +155,7 @@ Format strictly:
             height: '34px',
             borderRadius: '50%',
             border: '1px solid var(--border)',
-            background: '#F8FAFC',
+            background: 'var(--bg-base)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -159,7 +163,7 @@ Format strictly:
             transition: 'background 0.15s',
           }}
         >
-          <X size={17} color="#64748B" />
+          <X size={17} color="var(--text-subtle)" />
         </button>
 
         {/* CEFR Badge */}
@@ -183,7 +187,7 @@ Format strictly:
             fontFamily: 'var(--font-display)',
             fontSize: 'clamp(1.75rem, 6vw, 2.4rem)',
             fontWeight: 900,
-            color: '#0F172A',
+            color: 'var(--text-primary)',
             lineHeight: 1.1,
             margin: 0,
             wordBreak: 'break-word',
@@ -199,7 +203,7 @@ Format strictly:
               height: '38px',
               borderRadius: '50%',
               border: 'none',
-              background: 'linear-gradient(135deg, #059669, #10B981)',
+              background: 'linear-gradient(135deg, var(--primary), var(--primary-light))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -208,29 +212,29 @@ Format strictly:
               boxShadow: '0 4px 12px rgba(5,150,105,0.25)',
             }}
           >
-            <Volume2 size={18} color="#fff" />
+            <Volume2 size={18} color="var(--text-on-primary)" />
           </button>
         </div>
 
         {/* IPA + type */}
         <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
           <span style={{
-            background: '#F1F5F9',
+            background: 'var(--bg-muted)',
             padding: '0.2rem 0.65rem',
             borderRadius: '8px',
             fontSize: '0.85rem',
-            color: '#334155',
+            color: 'var(--text-secondary)',
             fontStyle: 'italic',
             fontWeight: 600,
           }}>
             {word.pronunciation}
           </span>
           <span style={{
-            background: '#F0FDF4',
+            background: 'var(--primary-bg)',
             padding: '0.2rem 0.65rem',
             borderRadius: '8px',
             fontSize: '0.8rem',
-            color: '#166534',
+            color: 'var(--primary-text)',
             fontWeight: 600,
           }}>
             {word.type}
@@ -239,27 +243,27 @@ Format strictly:
 
         {/* Translation */}
         <div style={{
-          background: '#ECFDF5',
-          border: '1px solid #A7F3D0',
+          background: 'var(--primary-bg)',
+          border: '1px solid var(--primary-soft-2)',
           borderRadius: '12px',
           padding: '0.75rem 1rem',
           marginBottom: '1rem',
         }}>
-          <p style={{ fontSize: '0.74rem', fontWeight: 700, color: '#059669', marginBottom: '0.15rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <p style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.15rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Traducción
           </p>
-          <p style={{ fontSize: '1.05rem', fontWeight: 800, color: '#064E3B', margin: 0 }}>
+          <p style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>
             {word.translation}
           </p>
         </div>
 
         {/* Included example */}
         <div style={{ marginBottom: '1.25rem' }}>
-          <p style={{ fontSize: '0.74rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>
+          <p style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>
             Ejemplo incluido
           </p>
           <div style={{
-            background: '#F8FAFC',
+            background: 'var(--bg-base)',
             border: '1px solid var(--border)',
             borderRadius: '10px',
             padding: '0.75rem 0.85rem',
@@ -267,8 +271,8 @@ Format strictly:
             alignItems: 'flex-start',
             gap: '0.5rem',
           }}>
-            <ChevronRight size={15} color="#10B981" style={{ marginTop: '3px', flexShrink: 0 }} />
-            <p style={{ color: '#0F172A', fontStyle: 'italic', fontSize: '0.92rem', fontWeight: 500, margin: 0 }}>
+            <ChevronRight size={15} color="var(--primary-light)" style={{ marginTop: '3px', flexShrink: 0 }} />
+            <p style={{ color: 'var(--text-primary)', fontStyle: 'italic', fontSize: '0.92rem', fontWeight: 500, margin: 0 }}>
               {word.example}
             </p>
           </div>
@@ -282,7 +286,7 @@ Format strictly:
               gap: '0.35rem',
               background: 'none',
               border: 'none',
-              color: '#059669',
+              color: 'var(--primary)',
               fontSize: '0.8rem',
               fontWeight: 600,
               cursor: 'pointer',
@@ -299,8 +303,8 @@ Format strictly:
             {word.tags.map((tag) => (
               <span key={tag} style={{
                 padding: '0.2rem 0.55rem',
-                background: '#F1F5F9',
-                color: '#64748B',
+                background: 'var(--bg-muted)',
+                color: 'var(--text-subtle)',
                 borderRadius: '6px',
                 fontSize: '0.74rem',
                 fontWeight: 600,
@@ -321,7 +325,7 @@ Format strictly:
             flexWrap: 'wrap',
             gap: '0.5rem',
           }}>
-            <p style={{ fontSize: '0.76rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+            <p style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
               ✨ Ejemplos con IA
             </p>
 
@@ -336,8 +340,8 @@ Format strictly:
                   padding: '0.45rem 0.95rem',
                   borderRadius: '10px',
                   border: 'none',
-                  background: 'linear-gradient(135deg, #059669, #10B981)',
-                  color: '#fff',
+                  background: 'linear-gradient(135deg, var(--primary), var(--primary-light))',
+                  color: 'var(--text-on-primary)',
                   fontFamily: 'var(--font-body)',
                   fontWeight: 700,
                   fontSize: '0.82rem',
@@ -354,8 +358,8 @@ Format strictly:
 
           {/* Loading */}
           {loading && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: '#64748B', padding: '0.85rem 0' }}>
-              <Loader2 size={18} color="#059669" style={{ animation: 'spin 1s linear infinite' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', color: 'var(--text-subtle)', padding: '0.85rem 0' }}>
+              <Loader2 size={18} color="var(--primary)" style={{ animation: 'spin 1s linear infinite' }} />
               <span style={{ fontSize: '0.86rem' }}>Generando ejemplos personalizados...</span>
             </div>
           )}
@@ -363,8 +367,8 @@ Format strictly:
           {/* Error */}
           {error && !loading && (
             <div style={{
-              background: '#FEF2F2',
-              border: '1px solid #FECACA',
+              background: 'var(--error-bg)',
+              border: '1px solid var(--error-border)',
               borderRadius: '10px',
               padding: '0.75rem 0.85rem',
               marginBottom: '0.65rem',
@@ -372,13 +376,13 @@ Format strictly:
               flexDirection: 'column',
               gap: '0.4rem',
             }}>
-              <p style={{ color: '#DC2626', fontSize: '0.82rem', fontWeight: 500, margin: 0 }}>{error}</p>
+              <p style={{ color: 'var(--error-strong)', fontSize: '0.82rem', fontWeight: 500, margin: 0 }}>{error}</p>
               <button
                 onClick={fetchAIExamples}
                 style={{
                   alignSelf: 'flex-start',
-                  background: '#DC2626',
-                  color: '#fff',
+                  background: 'var(--error-strong)',
+                  color: 'var(--text-on-primary)',
                   border: 'none',
                   borderRadius: '6px',
                   padding: '0.25rem 0.65rem',
@@ -397,18 +401,18 @@ Format strictly:
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               {aiExamples.map((ex, i) => (
                 <div key={i} style={{
-                  background: '#F0FDF4',
-                  border: '1px solid #BBF7D0',
+                  background: 'var(--primary-bg)',
+                  border: '1px solid var(--primary-soft-2)',
                   borderRadius: '10px',
                   padding: '0.75rem 0.85rem',
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ color: '#0F172A', fontWeight: 600, fontSize: '0.9rem', marginBottom: ex.translation ? '0.2rem' : 0, wordBreak: 'break-word', margin: 0 }}>
+                      <p style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.9rem', marginBottom: ex.translation ? '0.2rem' : 0, wordBreak: 'break-word', margin: 0 }}>
                         {i + 1}. {ex.sentence}
                       </p>
                       {ex.translation && (
-                        <p style={{ color: '#059669', fontSize: '0.82rem', fontStyle: 'italic', marginTop: '0.2rem', margin: '0.2rem 0 0 0' }}>
+                        <p style={{ color: 'var(--primary)', fontSize: '0.82rem', fontStyle: 'italic', marginTop: '0.2rem', margin: '0.2rem 0 0 0' }}>
                           ↳ {ex.translation}
                         </p>
                       )}
@@ -420,7 +424,7 @@ Format strictly:
                         border: 'none',
                         cursor: 'pointer',
                         padding: '0.2rem',
-                        color: '#059669',
+                        color: 'var(--primary)',
                         flexShrink: 0,
                       }}
                       title="Escuchar"
@@ -435,8 +439,8 @@ Format strictly:
 
           {/* Placeholder when not yet generated */}
           {!aiExamples && !loading && !error && (
-            <p style={{ color: '#94A3B8', fontSize: '0.82rem', fontStyle: 'italic', textAlign: 'center', padding: '0.75rem 0', margin: 0 }}>
-              Toca <strong style={{ color: '#059669' }}>Generar con IA</strong> para obtener oraciones de ejemplo con pronunciación y traducción.
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontStyle: 'italic', textAlign: 'center', padding: '0.75rem 0', margin: 0 }}>
+              Toca <strong style={{ color: 'var(--primary)' }}>Generar con IA</strong> para obtener oraciones de ejemplo con pronunciación y traducción.
             </p>
           )}
         </div>

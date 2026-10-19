@@ -10,18 +10,18 @@ export default function LessonVocabularyStep({
 }) {
   return (
     <div style={{
-      background: '#FFFFFF',
-      border: '1px solid #E2E8F0',
+      background: 'var(--bg-surface)',
+      border: '1px solid var(--border)',
       borderRadius: '24px',
       padding: '2.25rem',
       boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', margin: 0, fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <BookOpen size={24} color="#059669" /> Vocabulario con Pronunciación Nativa
+          <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <BookOpen size={24} color="var(--primary)" /> Vocabulario con Pronunciación Nativa
           </h2>
-          <p style={{ color: '#64748B', fontSize: '0.9rem', margin: '0.25rem 0 0 0' }}>
+          <p style={{ color: 'var(--text-subtle)', fontSize: '0.9rem', margin: '0.25rem 0 0 0' }}>
             Escucha el audio nativo, repite cada palabra en voz alta y fíjate en su fonética y significado.
           </p>
         </div>
@@ -29,9 +29,9 @@ export default function LessonVocabularyStep({
         <button
           onClick={onSpeakAll}
           style={{
-            background: '#ECFDF5',
-            border: '1px solid #A7F3D0',
-            color: '#047857',
+            background: 'var(--primary-bg)',
+            border: '1px solid var(--primary-soft-2)',
+            color: 'var(--primary-hover)',
             padding: '0.5rem 1rem',
             borderRadius: '10px',
             fontWeight: 700,
@@ -51,8 +51,8 @@ export default function LessonVocabularyStep({
           <div
             key={idx}
             style={{
-              background: '#F8FAFC',
-              border: '1px solid #E2E8F0',
+              background: 'var(--bg-base)',
+              border: '1px solid var(--border)',
               borderRadius: '16px',
               padding: '1.25rem 1.4rem',
               display: 'flex',
@@ -63,22 +63,22 @@ export default function LessonVocabularyStep({
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <strong style={{ fontSize: '1.35rem', color: '#0F172A', fontWeight: 800 }}>
+                <strong style={{ fontSize: '1.35rem', color: 'var(--text-primary)', fontWeight: 800 }}>
                   {item.word}
                 </strong>
                 {item.pronunciation && (
-                  <span style={{ fontSize: '0.85rem', color: '#059669', fontStyle: 'italic', fontWeight: 700 }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--primary)', fontStyle: 'italic', fontWeight: 700 }}>
                     /{item.pronunciation}/
                   </span>
                 )}
               </div>
 
-              <div style={{ fontSize: '0.95rem', color: '#475569', marginTop: '0.3rem', fontWeight: 600 }}>
+              <div style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginTop: '0.3rem', fontWeight: 600 }}>
                 {item.translation}
               </div>
 
               {item.example && (
-                <div style={{ fontSize: '0.86rem', color: '#64748B', marginTop: '0.65rem', borderLeft: '3px solid #059669', paddingLeft: '0.6rem', fontStyle: 'italic' }}>
+                <div style={{ fontSize: '0.86rem', color: 'var(--text-subtle)', marginTop: '0.65rem', borderLeft: '3px solid var(--primary)', paddingLeft: '0.6rem', fontStyle: 'italic' }}>
                   "{item.example}"
                 </div>
               )}
@@ -89,9 +89,9 @@ export default function LessonVocabularyStep({
                 onClick={() => onSpeakWord(item.word + '. ' + (item.example || ''), false)}
                 style={{
                   flex: 1,
-                  background: '#ECFDF5',
-                  border: '1px solid #A7F3D0',
-                  color: '#047857',
+                  background: 'var(--primary-bg)',
+                  border: '1px solid var(--primary-soft-2)',
+                  color: 'var(--primary-hover)',
                   borderRadius: '8px',
                   padding: '0.45rem',
                   cursor: 'pointer',
@@ -103,15 +103,15 @@ export default function LessonVocabularyStep({
                   fontWeight: 700,
                 }}
               >
-                <Volume2 size={15} color="#059669" /> Normal
+                <Volume2 size={15} color="var(--primary)" /> Normal
               </button>
 
               <button
                 onClick={() => onSpeakWord(item.word, true)}
                 style={{
-                  background: '#FFFBEB',
-                  border: '1px solid #FDE68A',
-                  color: '#92400E',
+                  background: 'var(--warning-bg)',
+                  border: '1px solid var(--accent-gold-border)',
+                  color: 'var(--accent-gold-text)',
                   borderRadius: '8px',
                   padding: '0.45rem 0.65rem',
                   cursor: 'pointer',
@@ -123,7 +123,7 @@ export default function LessonVocabularyStep({
                 }}
                 title="Reproducir lentamente"
               >
-                <Volume1 size={14} color="#D97706" /> Lento
+                <Volume1 size={14} color="var(--accent-gold-strong)" /> Lento
               </button>
             </div>
           </div>
@@ -134,9 +134,9 @@ export default function LessonVocabularyStep({
         <button
           onClick={onPrev}
           style={{
-            background: '#FFFFFF',
-            border: '1px solid #CBD5E1',
-            color: '#475569',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-strong)',
+            color: 'var(--text-secondary)',
             padding: '0.85rem 1.5rem',
             borderRadius: '12px',
             fontWeight: 700,
@@ -150,8 +150,8 @@ export default function LessonVocabularyStep({
         <button
           onClick={onNext}
           style={{
-            background: '#059669',
-            color: '#FFFFFF',
+            background: 'var(--primary)',
+            color: 'var(--text-on-primary)',
             border: 'none',
             padding: '0.85rem 1.75rem',
             borderRadius: '12px',

@@ -95,7 +95,7 @@ export default function EvaluationPage() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '5rem 2rem', color: '#64748B' }}>
+      <div style={{ textAlign: 'center', padding: '5rem 2rem', color: 'var(--text-subtle)' }}>
         <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
         Cargando evaluación del módulo...
       </div>
@@ -104,14 +104,14 @@ export default function EvaluationPage() {
 
   if (!evaluation) {
     return (
-      <div style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center', padding: '2rem', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
-        <h2 style={{ color: '#0F172A' }}>Evaluación no encontrada</h2>
+      <div style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center', padding: '2rem', background: 'var(--bg-surface)', borderRadius: '16px', border: '1px solid var(--border)' }}>
+        <h2 style={{ color: 'var(--text-primary)' }}>Evaluación no encontrada</h2>
         <button
           onClick={() => navigate('/dashboard')}
           style={{
             marginTop: '1rem',
-            background: '#059669',
-            color: '#FFFFFF',
+            background: 'var(--primary)',
+            color: 'var(--text-on-primary)',
             border: 'none',
             padding: '0.6rem 1.25rem',
             borderRadius: '8px',
@@ -144,7 +144,7 @@ export default function EvaluationPage() {
   ];
 
   return (
-    <div style={{ maxWidth: '860px', margin: '0 auto', padding: '2rem 1.5rem', color: '#0F172A' }}>
+    <div style={{ maxWidth: '860px', margin: '0 auto', padding: '2rem 1.5rem', color: 'var(--text-primary)' }}>
       
       {/* Header */}
       <EvaluationHeader
@@ -195,8 +195,8 @@ export default function EvaluationPage() {
               style={{
                 padding: '0.95rem 2.75rem',
                 borderRadius: '14px',
-                background: '#059669',
-                color: '#FFFFFF',
+                background: 'var(--primary)',
+                color: 'var(--text-on-primary)',
                 fontWeight: 800,
                 fontSize: '1.05rem',
                 border: 'none',

@@ -5,6 +5,7 @@ export default function LessonRoleplayStep({
   dialogue,
   roleplayTurn,
   isListening,
+  evaluating = false,
   roleplayFeedback,
   onStartListening,
   onStopListening,
@@ -14,17 +15,17 @@ export default function LessonRoleplayStep({
 }) {
   return (
     <div style={{
-      background: '#FFFFFF',
-      border: '1px solid #E2E8F0',
+      background: 'var(--bg-surface)',
+      border: '1px solid var(--border)',
       borderRadius: '24px',
       padding: '2.25rem',
       boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)',
     }}>
       <div style={{ marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', margin: 0, fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <MessageSquare size={24} color="#059669" /> Diálogo Interactivo con tu Tutora de IA
+        <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <MessageSquare size={24} color="var(--primary)" /> Diálogo Interactivo con tu Tutora de IA
         </h2>
-        <p style={{ color: '#475569', fontSize: '0.92rem', margin: '0.35rem 0 0 0' }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', margin: '0.35rem 0 0 0' }}>
           Tu tutora dirá su frase en voz alta. Cuando sea tu turno, presiona el micrófono verde y responde.
         </p>
       </div>
@@ -44,30 +45,30 @@ export default function LessonRoleplayStep({
             >
               <div style={{
                 maxWidth: '82%',
-                background: isCurrentTurn ? '#ECFDF5' : (isTeacher ? '#F8FAFC' : '#F1F5F9'),
-                border: isCurrentTurn ? '2px solid #059669' : '1px solid #E2E8F0',
+                background: isCurrentTurn ? 'var(--primary-bg)' : (isTeacher ? 'var(--bg-base)' : 'var(--bg-muted)'),
+                border: isCurrentTurn ? '2px solid var(--primary)' : '1px solid var(--border)',
                 borderRadius: isTeacher ? '20px 20px 20px 4px' : '20px 20px 4px 20px',
                 padding: '1.15rem 1.4rem',
                 boxShadow: isCurrentTurn ? '0 4px 14px rgba(5, 150, 105, 0.15)' : 'none',
                 transition: 'all 0.2s',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.3rem' }}>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: isTeacher ? '#047857' : '#2563EB' }}>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 800, color: isTeacher ? 'var(--primary-hover)' : '#2563EB' }}>
                     {isTeacher ? '👩🏼‍🏫 Beyli (Tutora)' : '👤 Tú (Estudiante)'}
                   </span>
                   {isCurrentTurn && (
-                    <span style={{ fontSize: '0.72rem', fontWeight: 800, background: '#059669', color: '#FFFFFF', padding: '0.15rem 0.5rem', borderRadius: '999px' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, background: 'var(--primary)', color: 'var(--text-on-primary)', padding: '0.15rem 0.5rem', borderRadius: '999px' }}>
                       TURNO ACTUAL
                     </span>
                   )}
                 </div>
 
-                <div style={{ fontSize: '1.1rem', color: '#0F172A', fontWeight: 700 }}>
+                <div style={{ fontSize: '1.1rem', color: 'var(--text-primary)', fontWeight: 700 }}>
                   {line.text}
                 </div>
 
                 {line.translation && (
-                  <div style={{ fontSize: '0.88rem', color: '#64748B', marginTop: '0.35rem' }}>
+                  <div style={{ fontSize: '0.88rem', color: 'var(--text-subtle)', marginTop: '0.35rem' }}>
                     {line.translation}
                   </div>
                 )}
@@ -76,9 +77,9 @@ export default function LessonRoleplayStep({
                   <button
                     onClick={() => onSpeakLine(line.text)}
                     style={{
-                      background: '#FFFFFF',
-                      border: '1px solid #CBD5E1',
-                      color: '#059669',
+                      background: 'var(--bg-surface)',
+                      border: '1px solid var(--border-strong)',
+                      color: 'var(--primary)',
                       cursor: 'pointer',
                       fontSize: '0.78rem',
                       fontWeight: 700,
@@ -100,26 +101,26 @@ export default function LessonRoleplayStep({
 
       {/* Active Speaking Prompt for Student's Turn */}
       <div style={{
-        background: '#F0FDF4',
-        border: '2px dashed #059669',
+        background: 'var(--primary-bg)',
+        border: '2px dashed var(--primary)',
         borderRadius: '20px',
         padding: '1.75rem',
         textAlign: 'center',
       }}>
-        <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#065F46', margin: '0 0 0.5rem 0' }}>
+        <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--primary-text)', margin: '0 0 0.5rem 0' }}>
           🎙️ Es tu turno: Di la siguiente frase en voz alta:
         </h3>
 
         <div style={{
           fontSize: '1.25rem',
           fontWeight: 800,
-          color: '#059669',
+          color: 'var(--primary)',
           margin: '0.85rem auto',
-          background: '#FFFFFF',
+          background: 'var(--bg-surface)',
           padding: '0.85rem 1.25rem',
           borderRadius: '12px',
           maxWidth: '500px',
-          border: '1px solid #A7F3D0',
+          border: '1px solid var(--primary-soft-2)',
         }}>
           "{dialogue[roleplayTurn]?.text || dialogue[0]?.text}"
         </div>
@@ -130,26 +131,28 @@ export default function LessonRoleplayStep({
               if (isListening) onStopListening();
               else onStartListening();
             }}
+            disabled={evaluating}
             style={{
               width: '64px',
               height: '64px',
               borderRadius: '50%',
-              background: isListening ? '#EF4444' : '#059669',
+              background: isListening ? 'var(--error)' : (evaluating ? 'var(--bg-muted)' : 'var(--primary)'),
               border: 'none',
-              color: '#FFFFFF',
-              cursor: 'pointer',
+              color: 'var(--text-on-primary)',
+              cursor: evaluating ? 'default' : 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
               boxShadow: isListening ? '0 0 30px rgba(239, 68, 68, 0.6)' : '0 4px 18px rgba(5, 150, 105, 0.35)',
               transform: isListening ? 'scale(1.1)' : 'scale(1)',
               transition: 'all 0.2s',
+              opacity: evaluating ? 0.7 : 1,
             }}
           >
-            {isListening ? <MicOff size={28} /> : <Mic size={28} />}
+            {isListening ? <MicOff size={28} /> : (evaluating ? <div className="spinner-small" /> : <Mic size={28} />)}
           </button>
-          <div style={{ fontSize: '0.85rem', color: isListening ? '#EF4444' : '#475569', fontWeight: 700, marginTop: '0.5rem' }}>
-            {isListening ? '🎙️ Escuchándote...' : 'Presiona el micrófono verde para hablar'}
+          <div style={{ fontSize: '0.85rem', color: isListening ? 'var(--error)' : (evaluating ? 'var(--primary)' : 'var(--text-secondary)'), fontWeight: 700, marginTop: '0.5rem' }}>
+            {isListening ? '🎙️ Escuchándote...' : (evaluating ? '✨ Validando pronunciación...' : 'Presiona el micrófono verde para hablar')}
           </div>
         </div>
 
@@ -157,17 +160,30 @@ export default function LessonRoleplayStep({
           <div style={{
             marginTop: '1.25rem',
             padding: '0.85rem 1.25rem',
-            background: '#FFFFFF',
+            background: 'var(--bg-surface)',
             borderRadius: '12px',
-            border: '1px solid #A7F3D0',
-            color: '#047857',
+            border: `1px solid ${roleplayFeedback.success ? 'var(--primary-soft-2)' : 'var(--error-border)'}`,
+            color: roleplayFeedback.success ? 'var(--primary-hover)' : 'var(--error-strong)',
             fontSize: '0.92rem',
             fontWeight: 700,
             maxWidth: '500px',
             margin: '1.25rem auto 0 auto',
           }}>
-            <div>Te escuchamos: "{roleplayFeedback.heard}"</div>
-            <div style={{ marginTop: '0.25rem', color: '#059669' }}>{roleplayFeedback.message}</div>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '0.2rem' }}>Te escuchamos:</div>
+            <div style={{ fontStyle: 'italic', marginBottom: '0.4rem' }}>"{roleplayFeedback.heard}"</div>
+            <div style={{ 
+              marginTop: '0.4rem', 
+              color: roleplayFeedback.success ? 'var(--primary)' : 'var(--error)',
+              borderTop: '1px solid var(--border)',
+              paddingTop: '0.4rem'
+            }}>
+              {roleplayFeedback.message}
+            </div>
+            {roleplayFeedback.tip && (
+              <div style={{ marginTop: '0.4rem', color: 'var(--accent-gold-text)', fontSize: '0.82rem', fontWeight: 600 }}>
+                💡 Tip: {roleplayFeedback.tip}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -176,9 +192,9 @@ export default function LessonRoleplayStep({
         <button
           onClick={onPrev}
           style={{
-            background: '#FFFFFF',
-            border: '1px solid #CBD5E1',
-            color: '#475569',
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border-strong)',
+            color: 'var(--text-secondary)',
             padding: '0.85rem 1.5rem',
             borderRadius: '12px',
             fontWeight: 700,
@@ -192,8 +208,8 @@ export default function LessonRoleplayStep({
         <button
           onClick={onNext}
           style={{
-            background: '#059669',
-            color: '#FFFFFF',
+            background: 'var(--primary)',
+            color: 'var(--text-on-primary)',
             border: 'none',
             padding: '0.85rem 1.75rem',
             borderRadius: '12px',

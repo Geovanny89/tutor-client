@@ -14,11 +14,11 @@ export default function VocabCardGrid({ words, category, onSelect }) {
         width: '100%',
         boxSizing: 'border-box',
       }}>
-        <BookX size={44} color="#CBD5E1" style={{ marginBottom: '0.75rem' }} />
-        <p style={{ color: '#94A3B8', fontSize: '1rem', fontWeight: 500 }}>
+        <BookX size={44} color="var(--border-strong)" style={{ marginBottom: '0.75rem' }} />
+        <p style={{ color: 'var(--text-muted)', fontSize: '1rem', fontWeight: 500 }}>
           No se encontraron palabras con ese filtro.
         </p>
-        <p style={{ color: '#CBD5E1', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+        <p style={{ color: 'var(--border-strong)', fontSize: '0.85rem', marginTop: '0.25rem' }}>
           Prueba otro nivel CEFR o borra el texto de búsqueda.
         </p>
       </div>
@@ -27,7 +27,7 @@ export default function VocabCardGrid({ words, category, onSelect }) {
 
   return (
     <div style={{ width: '100%', boxSizing: 'border-box' }}>
-      <p style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: 600, marginBottom: '0.85rem' }}>
+      <p style={{ fontSize: '0.82rem', color: 'var(--text-subtle)', fontWeight: 600, marginBottom: '0.85rem' }}>
         {words.length} {words.length === 1 ? 'entrada' : 'entradas'} encontradas
       </p>
       <div

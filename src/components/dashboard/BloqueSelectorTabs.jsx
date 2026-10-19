@@ -1,51 +1,70 @@
 import React from 'react';
+import { LayoutGrid } from 'lucide-react';
 
-export default function BloqueSelectorTabs({ bloques, activeTab, onSelectTab }) {
+export default function BloqueSelectorTabs({ bloques, activeTab, onSelectTab, collapsed = false, onToggleCollapse }) {
   return (
     <div style={{ marginBottom: '2rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', margin: 0, fontFamily: 'var(--font-display)' }}>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 0, fontFamily: 'var(--font-display)' }}>
             Selecciona tu Bloque de Aprendizaje
           </h2>
-          <p style={{ color: '#64748B', fontSize: '0.9rem', margin: '0.2rem 0 0 0' }}>
+          <p style={{ color: 'var(--text-subtle)', fontSize: '0.9rem', margin: '0.2rem 0 0 0' }}>
             Los 5 bloques estructurados abarcan desde la fonética básica hasta el refinamiento idiomático nativo.
           </p>
         </div>
-        <button
-          onClick={() => onSelectTab('ALL')}
-          style={{
-            background: activeTab === 'ALL' ? '#059669' : '#FFFFFF',
-            color: activeTab === 'ALL' ? '#FFFFFF' : '#475569',
-            border: '1px solid #CBD5E1',
-            padding: '0.4rem 0.9rem',
-            borderRadius: '8px',
-            fontSize: '0.82rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-          }}
-        >
-          Ver Todos (36 Módulos)
-        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {collapsed && (
+            <button
+              type="button"
+              onClick={onToggleCollapse}
+              className="bloques-toggle-mobile"
+              style={{
+                background: 'var(--bg-surface)',
+                color: 'var(--primary)',
+                border: '1px solid var(--primary-soft-2)',
+                padding: '0.45rem 0.9rem',
+                borderRadius: '8px',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              <LayoutGrid size={15} /> Cambiar bloque
+            </button>
+          )}
+
+          <button
+            onClick={() => onSelectTab('ALL')}
+            style={{
+              background: activeTab === 'ALL' ? 'var(--primary)' : 'var(--bg-surface)',
+              color: activeTab === 'ALL' ? 'var(--text-on-primary)' : 'var(--text-secondary)',
+              border: '1px solid var(--border-strong)',
+              padding: '0.4rem 0.9rem',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            Ver Todos
+          </button>
+        </div>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
-        gap: '0.85rem',
-        width: '100%',
-        boxSizing: 'border-box',
-      }}>
+      <div className={`bloques-grid${collapsed ? ' is-collapsed' : ''}`}>
         {bloques.map((b) => {
           const isSelected = activeTab === b.id;
           return (
             <button
               key={b.id}
               onClick={() => onSelectTab(b.id)}
+              className={`bloque-card${isSelected ? ' is-selected' : ''}`}
               style={{
-                background: isSelected ? '#ECFDF5' : '#FFFFFF',
-                border: isSelected ? '2px solid #059669' : '1px solid #E2E8F0',
+                background: isSelected ? 'var(--primary-bg)' : 'var(--bg-surface)',
+                border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border)',
                 borderRadius: '16px',
                 padding: '1.1rem 1rem',
                 textAlign: 'left',
@@ -59,22 +78,22 @@ export default function BloqueSelectorTabs({ bloques, activeTab, onSelectTab }) 
                 <span style={{
                   fontSize: '0.8rem',
                   fontWeight: 800,
-                  color: isSelected ? '#FFFFFF' : '#047857',
-                  background: isSelected ? '#059669' : '#D1FAE5',
+                  color: isSelected ? 'var(--text-on-primary)' : 'var(--primary-hover)',
+                  background: isSelected ? 'var(--primary)' : 'var(--primary-soft)',
                   padding: '0.2rem 0.55rem',
                   borderRadius: '6px',
                 }}>
                   {b.badge}
                 </span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748B' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-subtle)' }}>
                   {b.orderMax - b.orderMin + 1} Módulos
                 </span>
               </div>
 
-              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#0F172A', lineHeight: '1.3' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)', lineHeight: '1.3' }}>
                 {b.title.split(':')[0]}
               </div>
-              <div style={{ fontSize: '0.78rem', color: '#475569', marginTop: '0.25rem', lineHeight: '1.3' }}>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.25rem', lineHeight: '1.3' }}>
                 {b.title.split(':')[1]?.trim()}
               </div>
             </button>

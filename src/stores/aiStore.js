@@ -3,11 +3,12 @@ import api from '../services/api';
 
 export const TUTOR_PERSONAS = [
   {
-    id: 'Beyli',
+    id: 'beyli',
     name: 'Beyli',
     role: 'Friendly Native Tutor',
     avatar: '👩🏼‍🏫',
     accent: 'en-US',
+    voiceGender: 'female',
     voicePitch: 1.0,
     voiceRate: 0.9,
     description: 'Habla con paciencia y ritmo claro. Ideal para niveles A0, A1 y A2.',
@@ -19,17 +20,19 @@ export const TUTOR_PERSONAS = [
     role: 'Daily Life & Travel Coach',
     avatar: '👨🏻‍💼',
     accent: 'en-GB',
+    voiceGender: 'male',
     voicePitch: 0.95,
     voiceRate: 0.95,
     description: 'Acento británico moderno. Conversaciones prácticas de viajes, trabajo y vida cotidiana.',
     welcomeMessage: "Hello! David here. Ready to practice natural British English? Tell me about your plans for this week or where you'd like to travel!",
   },
   {
-    id: 'Gema',
+    id: 'gema',
     name: 'Gema',
     role: 'Advanced Fluency Mentor',
     avatar: '👩🏻‍💻',
     accent: 'en-US',
+    voiceGender: 'female',
     voicePitch: 1.05,
     voiceRate: 1.0,
     description: 'Correcciones avanzadas de modismos, vocabulario rico y debates para niveles B1 a C2.',
@@ -37,12 +40,31 @@ export const TUTOR_PERSONAS = [
   },
 ];
 
+export const TUTOR_MODES = [
+  {
+    id: 'conversation',
+    name: 'Fluidez',
+    description: 'Conversación libre para ganar soltura, con correcciones suaves.',
+    icon: '💬',
+  },
+  {
+    id: 'technical',
+    name: 'Inglés técnico',
+    description: 'Inglés profesional: reuniones, correos, código, negociación.',
+    icon: '🛠️',
+  },
+];
+
 export const useAiStore = create((set, get) => ({
   activePersona: TUTOR_PERSONAS[0],
+  tutorMode: 'conversation',
+  domain: 'software engineering and business English',
   sessionId: null,
   messages: [],
   isLoading: false,
   isSpeaking: false,
+  connected: null, // null = unknown, true/false once checked
+  translatingId: null,
   usageStats: {
     interactionsUsed: 0,
     dailyLimit: 20,
@@ -53,6 +75,7 @@ export const useAiStore = create((set, get) => ({
   setPersona: (persona) => {
     set({
       activePersona: persona,
+      sessionId: null,
       messages: [
         {
           id: Date.now(),
@@ -64,16 +87,38 @@ export const useAiStore = create((set, get) => ({
     });
   },
 
+  setTutorMode: (tutorMode) => {
+    set({ tutorMode, sessionId: null });
+  },
+
+  setDomain: (domain) => set({ domain }),
+
+  // Verify whether the AI provider is actually reachable ("online/offline" indicator)
+  checkStatus: async () => {
+    try {
+      const res = await api.get('/ai/status');
+      if (res.success && res.data) {
+        set({ connected: !!res.data.connected });
+        return res.data;
+      }
+      set({ connected: false });
+      return null;
+    } catch (err) {
+      set({ connected: false });
+      return null;
+    }
+  },
+
   fetchUsage: async () => {
     try {
       const res = await api.get('/ai/usage');
       if (res.success && res.data) {
         set({
           usageStats: {
-            interactionsUsed: res.data.interactions_used || 0,
-            dailyLimit: res.data.daily_limit || 20,
-            interactionsRemaining: Math.max(0, (res.data.daily_limit || 20) - (res.data.interactions_used || 0)),
-            resetTime: res.data.reset_time,
+            interactionsUsed: res.data.used || 0,
+            dailyLimit: res.data.limit || 20,
+            interactionsRemaining: res.data.remaining ?? 20,
+            resetTime: res.data.reset_at,
           },
         });
       }
@@ -82,7 +127,11 @@ export const useAiStore = create((set, get) => ({
     }
   },
 
-  sendMessage: async (userText, context = '') => {
+  /**
+   * @param {string} userText - what the student said
+   * @param {object} options - { context } optional extra context (e.g. lesson title)
+   */
+  sendMessage: async (userText, options = {}) => {
     if (!userText || !userText.trim()) return;
 
     const userMessage = {
@@ -99,10 +148,14 @@ export const useAiStore = create((set, get) => ({
     });
 
     try {
+      const { activePersona, tutorMode, domain } = get();
       const res = await api.post('/ai/chat', {
         message: userText.trim(),
         session_id: get().sessionId,
-        context: `${context} Tutor Persona: ${get().activePersona.name} (${get().activePersona.role})`,
+        mode: tutorMode,
+        domain,
+        persona: `${activePersona.name} (${activePersona.role})`,
+        context: options.context || '',
       });
 
       if (res.success && res.data) {
@@ -114,16 +167,21 @@ export const useAiStore = create((set, get) => ({
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           fromCache: res.data.from_cache,
           provider: res.data.provider,
+          degraded: res.data.connected === false,
         };
 
         set((state) => ({
           sessionId: res.data.session_id || state.sessionId,
           messages: [...state.messages, aiMessage],
           isLoading: false,
+          connected: res.data.connected ?? state.connected,
           usageStats: {
             ...state.usageStats,
-            interactionsUsed: res.data.usage?.interactions_used || state.usageStats.interactionsUsed + 1,
-            interactionsRemaining: res.data.usage?.interactions_remaining ?? (state.usageStats.interactionsRemaining - 1),
+            interactionsUsed: res.data.ai_limit
+              ? res.data.ai_limit - res.data.ai_remaining
+              : state.usageStats.interactionsUsed + 1,
+            interactionsRemaining:
+              res.data.ai_remaining ?? Math.max(0, state.usageStats.interactionsRemaining - 1),
           },
         }));
 
@@ -158,5 +216,29 @@ export const useAiStore = create((set, get) => ({
         },
       ],
     });
+  },
+
+  translateMessage: async (messageId, text) => {
+    if (!text || !text.trim()) return;
+    set({ translatingId: messageId });
+
+    try {
+      const res = await api.post('/ai/translate', { text: text.trim() });
+      if (res.success && res.data) {
+        const translation = res.data.text;
+        set((state) => ({
+          messages: state.messages.map((m) =>
+            m.id === messageId ? { ...m, translation } : m
+          ),
+          translatingId: null,
+        }));
+        return { success: true, translation };
+      }
+      throw new Error(res.message || 'Error al traducir');
+    } catch (err) {
+      console.error('Translation error:', err.message);
+      set({ translatingId: null });
+      return { success: false, message: err.message };
+    }
   },
 }));

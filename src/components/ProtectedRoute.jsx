@@ -9,7 +9,7 @@ export function ProtectedRoute({ requireAdmin = false }) {
     return <Navigate to="/login" replace />;
   }
 
-  if (requireAdmin && user?.role !== 'super_admin') {
+  if (requireAdmin && !['super_admin', 'tenant_admin'].includes(user?.role)) {
     return <Navigate to="/dashboard" replace />;
   }
 

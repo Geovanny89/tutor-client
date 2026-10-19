@@ -4,7 +4,7 @@ import { Library } from 'lucide-react';
 export default function VocabHeader() {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #064E3B 0%, #065F46 40%, #047857 100%)',
+      background: 'linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-text) 40%, var(--primary-hover) 100%)',
       padding: '2rem 1rem 1.75rem',
       marginBottom: '1.5rem',
       position: 'relative',
@@ -42,27 +42,27 @@ export default function VocabHeader() {
               fontFamily: 'var(--font-display)',
               fontSize: 'clamp(1.4rem, 4.5vw, 2.1rem)',
               fontWeight: 900,
-              color: '#FFFFFF',
+              color: 'var(--text-on-primary)',
               letterSpacing: '-0.02em',
               lineHeight: 1.2,
               margin: 0,
             }}>
               Vocabulario Esencial
             </h1>
-            <p style={{ color: '#A7F3D0', fontSize: '0.85rem', fontWeight: 500, marginTop: '0.15rem' }}>
+            <p style={{ color: 'var(--primary-soft-2)', fontSize: '0.85rem', fontWeight: 500, marginTop: '0.15rem' }}>
               Verbos · Adjetivos · Sustantivos · Frases · Números · Alfabeto
             </p>
           </div>
         </div>
 
         <p style={{
-          color: '#D1FAE5',
+          color: 'var(--primary-soft)',
           fontSize: '0.92rem',
           maxWidth: '620px',
           lineHeight: 1.55,
           margin: '0.5rem 0 0 0',
         }}>
-          Explora más de <strong style={{ color: '#fff' }}>100 palabras y frases</strong> organizadas por nivel CEFR.
+          Explora más de <strong style={{ color: 'var(--text-on-primary)' }}>100 palabras y frases</strong> organizadas por nivel CEFR.
           Haz clic en cualquier tarjeta para ver pronunciación, ejemplos y practicar con el tutor IA.
         </p>
       </div>

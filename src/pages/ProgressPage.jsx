@@ -61,7 +61,7 @@ export default function ProgressPage() {
         <h1 style={{
           fontSize: '2rem',
           fontWeight: 800,
-          color: '#ffffff',
+          color: 'var(--text-on-primary)',
           fontFamily: 'var(--font-display)',
           display: 'flex',
           alignItems: 'center',
@@ -156,7 +156,7 @@ export default function ProgressPage() {
         padding: '2rem',
         marginBottom: '2rem',
       }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#ffffff', marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-on-primary)', marginBottom: '1.5rem' }}>
           🗺️ Tu Ruta de Aprendizaje de A0 a C2
         </h2>
 
@@ -227,7 +227,7 @@ export default function ProgressPage() {
         borderRadius: '24px',
         padding: '2rem',
       }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#ffffff', marginBottom: '1.25rem' }}>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-on-primary)', marginBottom: '1.25rem' }}>
           📋 Historial de Evaluaciones y Exámenes Realizados
         </h2>
 
@@ -263,7 +263,7 @@ export default function ProgressPage() {
               }}
             >
               <div>
-                <div style={{ fontWeight: 700, color: '#ffffff', fontSize: '0.95rem' }}>
+                <div style={{ fontWeight: 700, color: 'var(--text-on-primary)', fontSize: '0.95rem' }}>
                   {item.title}
                 </div>
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>

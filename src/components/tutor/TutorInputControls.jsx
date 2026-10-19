@@ -6,6 +6,8 @@ export default function TutorInputControls({
   inputMessage,
   isLoading,
   isListening,
+  recognitionLang = 'en-US',
+  onToggleRecognitionLang,
   starterPrompts,
   onSelectStarter,
   onToggleListen,
@@ -14,8 +16,8 @@ export default function TutorInputControls({
 }) {
   return (
     <div style={{
-      background: '#FFFFFF',
-      border: '1px solid #E2E8F0',
+      background: 'var(--bg-surface)',
+      border: '1px solid var(--border)',
       borderTop: 'none',
       borderRadius: '0 0 24px 24px',
       overflow: 'hidden',
@@ -24,13 +26,13 @@ export default function TutorInputControls({
       {messages.length <= 2 && (
         <div style={{
           padding: '0.6rem 1.25rem',
-          background: '#F0FDF4',
-          borderTop: '1px solid #A7F3D0',
+          background: 'var(--primary-bg)',
+          borderTop: '1px solid var(--primary-soft-2)',
           display: 'flex',
           gap: '0.6rem',
           overflowX: 'auto',
         }}>
-          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#065F46', alignSelf: 'center', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary-text)', alignSelf: 'center', whiteSpace: 'nowrap' }}>
             💡 Preguntas sugeridas:
           </span>
           {starterPrompts.map((prompt, i) => (
@@ -38,9 +40,9 @@ export default function TutorInputControls({
               key={i}
               onClick={() => onSelectStarter(prompt.text)}
               style={{
-                background: '#FFFFFF',
-                border: '1px solid #A7F3D0',
-                color: '#047857',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--primary-soft-2)',
+                color: 'var(--primary-hover)',
                 borderRadius: '999px',
                 padding: '0.35rem 0.85rem',
                 fontSize: '0.8rem',
@@ -59,54 +61,108 @@ export default function TutorInputControls({
       {/* Mic Button & Form */}
       <div style={{
         padding: '1.1rem 1.5rem',
-        borderTop: '1px solid #E2E8F0',
-        background: '#FFFFFF',
+        borderTop: '1px solid var(--border)',
+        background: 'var(--bg-surface)',
         display: 'flex',
         alignItems: 'center',
         gap: '1rem',
       }}>
-        <button
-          onClick={onToggleListen}
-          title={isListening ? 'Detener grabación' : 'Presiona para hablar'}
-          style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: isListening ? '#EF4444' : '#059669',
-            border: 'none',
-            color: '#FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            boxShadow: isListening
-              ? '0 0 25px rgba(239, 68, 68, 0.6)'
-              : '0 4px 18px rgba(5, 150, 105, 0.35)',
-            transition: 'all 0.2s ease',
-            flexShrink: 0,
-            transform: isListening ? 'scale(1.08)' : 'scale(1)',
-          }}
-        >
-          {isListening ? <MicOff size={26} /> : <Mic size={26} />}
-        </button>
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={onToggleListen}
+            title={isListening ? 'Detener grabación' : 'Presiona para hablar'}
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: isListening ? 'var(--error)' : 'var(--primary)',
+              border: 'none',
+              color: 'var(--text-on-primary)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: isListening
+                ? '0 0 25px rgba(239, 68, 68, 0.6)'
+                : '0 4px 18px rgba(5, 150, 105, 0.35)',
+              transition: 'all 0.2s ease',
+              flexShrink: 0,
+              transform: isListening ? 'scale(1.08)' : 'scale(1)',
+            }}
+          >
+            {isListening ? <MicOff size={26} /> : <Mic size={26} />}
+          </button>
+          
+          {/* Language Toggle Badge */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleRecognitionLang();
+            }}
+            disabled={isListening}
+            title={`Cambiado a ${recognitionLang === 'en-US' ? 'Inglés' : 'Español'}. Haz clic para cambiar.`}
+            style={{
+              position: 'absolute',
+              bottom: '-4px',
+              right: '-4px',
+              background: 'var(--bg-elevated)',
+              border: '2px solid var(--primary)',
+              borderRadius: '8px',
+              padding: '3px 6px',
+              fontSize: '0.7rem',
+              fontWeight: 800,
+              color: 'var(--primary-text)',
+              cursor: isListening ? 'default' : 'pointer',
+              boxShadow: 'var(--shadow-sm)',
+              opacity: isListening ? 0.7 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '2px',
+            }}
+          >
+            {recognitionLang === 'en-US' ? '🇺🇸 EN' : '🇪🇸 ES'}
+          </button>
+        </div>
 
         <form
           onSubmit={onSubmitText}
-          style={{ display: 'flex', flex: 1, gap: '0.6rem', alignItems: 'center' }}
+          style={{ display: 'flex', flex: 1, gap: '0.6rem', alignItems: 'center', position: 'relative' }}
         >
+          {isListening && (
+            <div style={{
+              position: 'absolute',
+              top: '-32px',
+              left: '0',
+              right: '0',
+              textAlign: 'center',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              color: 'var(--primary)',
+              background: 'var(--primary-bg)',
+              padding: '2px 8px',
+              borderRadius: '999px',
+              border: '1px solid var(--primary-soft-2)',
+              animation: 'fadeIn 0.2s ease',
+              zIndex: 10,
+            }}>
+              {recognitionLang === 'en-US' 
+                ? '🎙️ Habla en Inglés (o toca 🇺🇸 para cambiar a Español)' 
+                : '🎙️ Habla en Español (o toca 🇪🇸 para cambiar a Inglés)'}
+            </div>
+          )}
           <input
             type="text"
             value={inputMessage}
             onChange={(e) => onChangeInput(e.target.value)}
-            placeholder={isListening ? 'Escuchando tu voz...' : 'Escribe en inglés o presiona el micrófono verde...'}
+            placeholder={isListening ? 'Escuchando...' : `Escribe en ${recognitionLang === 'en-US' ? 'inglés' : 'español'}...`}
             disabled={isLoading || isListening}
             style={{
               flex: 1,
-              background: '#F8FAFC',
-              border: '1px solid #CBD5E1',
+              background: 'var(--bg-base)',
+              border: '1px solid var(--border-strong)',
               borderRadius: '12px',
               padding: '0.85rem 1.15rem',
-              color: '#0F172A',
+              color: 'var(--text-primary)',
               fontSize: '0.98rem',
               outline: 'none',
             }}
@@ -119,9 +175,9 @@ export default function TutorInputControls({
               width: '48px',
               height: '48px',
               borderRadius: '12px',
-              background: inputMessage.trim() ? '#059669' : '#F1F5F9',
+              background: inputMessage.trim() ? 'var(--primary)' : 'var(--bg-muted)',
               border: 'none',
-              color: inputMessage.trim() ? '#FFFFFF' : '#94A3B8',
+              color: inputMessage.trim() ? 'var(--text-on-primary)' : 'var(--text-muted)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -137,18 +193,18 @@ export default function TutorInputControls({
       {/* Footer Info */}
       <div style={{
         padding: '0.75rem 1.5rem',
-        background: '#F8FAFC',
-        borderTop: '1px solid #E2E8F0',
+        background: 'var(--bg-base)',
+        borderTop: '1px solid var(--border)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        color: '#64748B',
+        color: 'var(--text-subtle)',
         fontSize: '0.82rem',
         flexWrap: 'wrap',
         gap: '0.5rem',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-          <CheckCircle2 size={16} color="#059669" />
+          <CheckCircle2 size={16} color="var(--primary)" />
           <span>Voz 100% nativa integrada con Web Speech API.</span>
         </div>
         <div>
