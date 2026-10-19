@@ -1,0 +1,18 @@
+{
+  "short_name": "KDice English",
+  "name": "KDice English - Aprende Inglés con IA",
+  "description": "Aprende inglés desde A0 hasta C2 con tutor de Inteligencia Artificial por voz",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a1a",
+  "theme_color": "#6C63FF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
