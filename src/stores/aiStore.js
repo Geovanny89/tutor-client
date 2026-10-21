@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import api from '../services/api';
+import { useAuthStore } from './authStore';
 
 export const TUTOR_PERSONAS = [
   {
@@ -13,6 +14,7 @@ export const TUTOR_PERSONAS = [
     voiceRate: 0.9,
     description: 'Habla con paciencia y ritmo claro. Ideal para niveles A0, A1 y A2.',
     welcomeMessage: "Hi there! I'm Beyli, your personal English tutor. Don't worry about making mistakes—I'm here to help you practice! How are you doing today?",
+    welcomeMessageKids: "Hello! 👋 I am Beyli. Look! 🍎 How are you?",
   },
   {
     id: 'david',
@@ -25,6 +27,7 @@ export const TUTOR_PERSONAS = [
     voiceRate: 0.95,
     description: 'Acento británico moderno. Conversaciones prácticas de viajes, trabajo y vida cotidiana.',
     welcomeMessage: "Hello! David here. Ready to practice natural British English? Tell me about your plans for this week or where you'd like to travel!",
+    welcomeMessageKids: "Hi! 🦁 I am David. I like lions. And you?",
   },
   {
     id: 'gema',
@@ -37,6 +40,7 @@ export const TUTOR_PERSONAS = [
     voiceRate: 1.0,
     description: 'Correcciones avanzadas de modismos, vocabulario rico y debates para niveles B1 a C2.',
     welcomeMessage: "Hey! Gema here. Let's elevate your English to the next level. What topic are you passionate about discussing today?",
+    welcomeMessageKids: "Hello! 🎨 I am Gema. Do you like colors?",
   },
 ];
 
@@ -71,8 +75,40 @@ export const useAiStore = create((set, get) => ({
     interactionsRemaining: 20,
     resetTime: null,
   },
+  showAdModal: false,
+  adToPlay: null,
+
+  setAdModal: (show, ad = null) => set({ showAdModal: show, adToPlay: ad }),
+
+  checkTokensAndTriggerAd: async () => {
+    if (get().usageStats.interactionsRemaining > 0) return true;
+
+    // Los estudiantes de una academia no ven publicidad: al agotar sus tokens
+    // la IA queda bloqueada hasta el día siguiente (la academia ya paga la plataforma).
+    if (useAuthStore.getState().user?.tenant?.is_academy) return false;
+
+    try {
+      const [t, a] = await Promise.all([api.get('/ads/tokens'), api.get('/ads')]);
+      if (t.success && a.success) {
+        const ads = a.data.ads || [];
+        const tokens = t.data;
+        const promoAd = ads.find((ad) => ad.kind === 'promo');
+        const extraAds = ads.filter((ad) => ad.kind === 'extra');
+        const ad = (tokens.can_watch_promo && promoAd) ? promoAd : extraAds[0];
+        
+        if (ad && (tokens.can_watch_promo || tokens.can_watch_extra)) {
+          set({ showAdModal: true, adToPlay: ad });
+          return false;
+        }
+      }
+    } catch (err) { /* ignore */ }
+    return false;
+  },
 
   setPersona: (persona) => {
+    const isKids = useAuthStore.getState().user?.age_range === 'kids';
+    const welcome = isKids ? (persona.welcomeMessageKids || persona.welcomeMessage) : persona.welcomeMessage;
+    
     set({
       activePersona: persona,
       sessionId: null,
@@ -80,7 +116,7 @@ export const useAiStore = create((set, get) => ({
         {
           id: Date.now(),
           role: 'assistant',
-          text: persona.welcomeMessage,
+          text: welcome,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ],
@@ -133,6 +169,22 @@ export const useAiStore = create((set, get) => ({
    */
   sendMessage: async (userText, options = {}) => {
     if (!userText || !userText.trim()) return;
+
+    // Check tokens before sending
+    const hasTokens = await get().checkTokensAndTriggerAd();
+    if (!hasTokens) {
+      // If modal was triggered, we return a special status
+      if (get().showAdModal) {
+        return { success: false, message: 'out_of_tokens_trigger_ad' };
+      }
+      const isAcademy = useAuthStore.getState().user?.tenant?.is_academy;
+      return {
+        success: false,
+        message: isAcademy
+          ? 'Alcanzaste tu límite diario de IA. Vuelve mañana para seguir practicando.'
+          : 'No te quedan tokens de IA hoy. Mira un video en la sección de Recompensas para ganar más.',
+      };
+    }
 
     const userMessage = {
       id: Date.now(),
@@ -206,13 +258,16 @@ export const useAiStore = create((set, get) => ({
 
   clearChat: () => {
     const persona = get().activePersona;
+    const isKids = useAuthStore.getState().user?.age_range === 'kids';
+    const welcome = isKids ? (persona.welcomeMessageKids || persona.welcomeMessage) : persona.welcomeMessage;
+
     set({
       sessionId: null,
       messages: [
         {
           id: Date.now(),
           role: 'assistant',
-          text: persona.welcomeMessage,
+          text: welcome,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ],

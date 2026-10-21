@@ -26,6 +26,7 @@ export default function VoiceTutorPage() {
     sendMessage,
     clearChat,
     fetchUsage,
+    checkTokensAndTriggerAd,
   } = useAiStore();
 
   const [inputMessage, setInputMessage] = useState('');
@@ -76,13 +77,11 @@ export default function VoiceTutorPage() {
   }, []);
 
   const handleSendVoice = async (text) => {
-    if (usageStats.interactionsRemaining <= 0) {
-      toast.error('Has alcanzado tu límite gratuito de hoy. Se reinicia a medianoche ⏳');
-      return;
-    }
+    const hasTokens = await checkTokensAndTriggerAd();
+    if (!hasTokens) return;
 
     const result = await sendMessage(text, {
-      context: `Estudiante nivel: ${user?.current_level || 'A1'}`,
+      context: `Estudiante nivel: ${user?.current_level || 'A1'}, Edad: ${user?.age_range || 'adults'}`,
     });
     if (result.success && autoSpeak) {
       speak(result.reply, slowAudio ? 0.75 : activePersona.voiceRate, activePersona.voicePitch, activePersona.accent, activePersona.voiceGender);
@@ -96,27 +95,23 @@ export default function VoiceTutorPage() {
     const text = inputMessage.trim();
     setInputMessage('');
 
-    if (usageStats.interactionsRemaining <= 0) {
-      toast.error('Has alcanzado tu límite gratuito de hoy. Se reinicia a medianoche ⏳');
-      return;
-    }
+    const hasTokens = await checkTokensAndTriggerAd();
+    if (!hasTokens) return;
 
     const result = await sendMessage(text, {
-      context: `Estudiante nivel: ${user?.current_level || 'A1'}`,
+      context: `Estudiante nivel: ${user?.current_level || 'A1'}, Edad: ${user?.age_range || 'adults'}`,
     });
     if (result.success && autoSpeak) {
       speak(result.reply, slowAudio ? 0.75 : activePersona.voiceRate, activePersona.voicePitch, activePersona.accent, activePersona.voiceGender);
     }
   };
 
-  const toggleListen = () => {
+  const toggleListen = async () => {
     if (isListening) {
       stopListening();
     } else {
-      if (usageStats.interactionsRemaining <= 0) {
-        toast.error('Límite diario alcanzado. Podrás seguir mañana gratis.');
-        return;
-      }
+      const hasTokens = await checkTokensAndTriggerAd();
+      if (!hasTokens) return;
       startListening();
     }
   };
@@ -141,6 +136,13 @@ export default function VoiceTutorPage() {
         { text: "Explain how to run and lead a daily stand-up meeting in English.", label: "🗣️ Daily stand-up" },
         { text: "Role-play a job interview for a software developer position.", label: "💼 Entrevista de trabajo" },
         { text: "Teach me useful English vocabulary for code reviews and pull requests.", label: "🔍 Code review" },
+      ]
+    : user?.age_range === 'kids'
+    ? [
+        { text: "Hello! My name is Jose. 🍎", label: "👋 Saludar" },
+        { text: "Look! A big elephant! 🐘", label: "🐘 Animales" },
+        { text: "I like the color blue. 🔵", label: "🎨 Colores" },
+        { text: "One, two, three! 🔢", label: "🔢 Contar" },
       ]
     : [
         { text: "Hello! How are you today? What's your name?", label: "👋 Saludar y conocerse" },

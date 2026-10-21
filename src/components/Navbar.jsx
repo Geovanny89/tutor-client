@@ -18,6 +18,9 @@ import {
   Target,
   Sun,
   Moon,
+  MessageSquare,
+  Gift,
+  GraduationCap,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -56,17 +59,30 @@ export default function Navbar() {
   };
 
   const isActive = (path) => location.pathname === path;
+  const isHome = location.pathname === '/';
 
   const isAdmin = user?.role === 'super_admin' || user?.role === 'tenant_admin';
+  const isStaff = isAdmin || user?.role === 'professor';
 
   const navLinks = [
-    { to: '/dashboard',  label: 'Módulos',      icon: BookOpen },
-    { to: '/practice',   label: 'Práctica IA',  icon: Target },
-    { to: '/vocabulary', label: 'Vocabulario',   icon: Library },
-    { to: '/tutor',      label: 'Tutor IA',      icon: Mic,      highlight: true },
-    { to: '/progress',   label: 'Mi Historial',  icon: BarChart3 },
+    // Solo para estudiantes (no staff)
+    ...(!isStaff ? [
+      { to: '/dashboard',  label: 'Módulos',      icon: BookOpen },
+      { to: '/practice',   label: 'Práctica IA',  icon: Target },
+      ...(user?.age_range !== 'kids' ? [{ to: '/vocabulary', label: 'Vocabulario', icon: Library }] : []),
+      { to: '/tutor',      label: 'Tutor IA',      icon: Mic,      highlight: true },
+      ...(user?.age_range !== 'kids' ? [{ to: '/progress',   label: 'Mi Historial',  icon: BarChart3 }] : []),
+    ] : []),
+    // Para todos (incluyendo staff)
+    { to: '/messages',   label: 'Mensajes',      icon: MessageSquare },
+    // Solo para staff/admin
+    ...(isStaff ? [{ to: '/professor', label: 'Mi Academia', icon: GraduationCap }] : []),
     ...(isAdmin ? [{ to: '/admin', label: 'Admin', icon: ShieldCheck }] : []),
   ];
+
+  // Si el usuario pertenece a una academia y no es super_admin, intentamos mostrar su logo
+  const academyLogo = user?.tenant?.logo_url;
+  const academyName = user?.tenant?.name;
 
   return (
     <>
@@ -91,38 +107,48 @@ export default function Navbar() {
 
           {/* ── Brand ── */}
           <Link
-            to={isAuthenticated ? '/dashboard' : '/'}
+            to={isAuthenticated ? (isStaff ? '/professor' : '/dashboard') : '/'}
             style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', minWidth: 0, flexShrink: 0 }}
           >
-            <div style={{
-              width: '38px', height: '38px', borderRadius: '10px',
-              background: 'linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(5,150,105,0.22)',
-              flexShrink: 0,
-            }}>
-              <Sparkles size={19} color="var(--text-on-primary)" />
-            </div>
+            {academyLogo ? (
+              <img
+                src={academyLogo}
+                alt={academyName}
+                style={{ width: '38px', height: '38px', borderRadius: '10px', objectFit: 'cover' }}
+              />
+            ) : (
+              <div style={{
+                width: '38px', height: '38px', borderRadius: '10px',
+                background: 'linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(5,150,105,0.22)',
+                flexShrink: 0,
+              }}>
+                <Sparkles size={19} color="var(--text-on-primary)" />
+              </div>
+            )}
             <div>
               <span style={{
                 fontFamily: 'var(--font-display)', fontWeight: 800,
                 fontSize: '1.1rem', letterSpacing: '-0.02em', color: 'var(--text-primary)',
                 display: 'block', lineHeight: 1.15,
               }}>
-                KDice <span style={{ color: 'var(--primary)' }}>English</span>
+                {academyName ? academyName : <>KDice <span style={{ color: 'var(--primary)' }}>English</span></>}
               </span>
-              <span className="brand-subtitle" style={{
-                display: 'block', fontSize: '0.62rem', color: 'var(--primary)',
-                fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase',
-              }}>
-                Aprende Hablando
-              </span>
+              {!academyName && (
+                <span className="brand-subtitle" style={{
+                  display: 'block', fontSize: '0.62rem', color: 'var(--primary)',
+                  fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase',
+                }}>
+                  Aprende Hablando
+                </span>
+              )}
             </div>
           </Link>
 
           {/* ── Desktop Nav (≥ 880 px) ── */}
           {isAuthenticated && (
-            <div className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <div className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               {navLinks.map(({ to, label, icon: Icon, highlight }) => (
                 <Link
                   key={to}
@@ -167,9 +193,10 @@ export default function Navbar() {
 
             {isAuthenticated ? (
               <>
-                {/* Token pill - Desktop only */}
-                <div
-                  title="Interacciones diarias con el Tutor IA"
+                {/* Token pill - Desktop only (lleva a la zona de recompensas) */}
+                <Link
+                  to="/rewards"
+                  title="Ver anuncios y ganar tokens de IA"
                   className="token-pill-desktop"
                   style={{
                     display: 'flex', alignItems: 'center', gap: '0.35rem',
@@ -177,11 +204,12 @@ export default function Navbar() {
                     background: 'var(--accent-gold-soft)', border: '1px solid var(--accent-gold-border)',
                     borderRadius: '999px', fontSize: '0.78rem',
                     fontWeight: 700, color: 'var(--accent-gold-text)',
+                    textDecoration: 'none',
                   }}
                 >
                   <Zap size={13} fill="var(--accent-gold)" color="var(--accent-gold)" />
                   <span>{usageStats.interactionsRemaining}/{usageStats.dailyLimit}</span>
-                </div>
+                </Link>
 
                 {/* Level pill - Desktop & tablet */}
                 <div

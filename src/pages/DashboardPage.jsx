@@ -4,11 +4,23 @@ import { useAuthStore } from '../stores/authStore';
 import { useAiStore } from '../stores/aiStore';
 import api from '../services/api';
 import toast from 'react-hot-toast';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, School, ExternalLink } from 'lucide-react';
 
 import DashboardHero from '../components/dashboard/DashboardHero';
 import BloqueSelectorTabs from '../components/dashboard/BloqueSelectorTabs';
 import ModuleCard from '../components/dashboard/ModuleCard';
+import KidsStudyPanel from '../components/dashboard/KidsStudyPanel';
+import TeensStudyPanel from '../components/dashboard/TeensStudyPanel';
+import AdBanner from '../components/ads/AdBanner';
+
+const CONTAINER_STYLE = {
+  maxWidth: '1200px',
+  margin: '0 auto',
+  padding: '1.25rem 1rem 3rem',
+  color: 'var(--text-primary)',
+  width: '100%',
+  boxSizing: 'border-box',
+};
 
 const BLOQUES = [
   {
@@ -18,8 +30,8 @@ const BLOQUES = [
     subtitle: 'Nivel A1 · Estructura mínima para formular tus primeras oraciones',
     color: 'var(--primary)',
     badge: 'A1',
-    orderMin: 1,
-    orderMax: 8,
+    orderMin: 0,
+    orderMax: 7,
   },
   {
     id: 'B2',
@@ -28,8 +40,8 @@ const BLOQUES = [
     subtitle: 'Nivel A2 · Conecta ideas en pasado y describe planes elementales',
     color: 'var(--secondary)',
     badge: 'A2',
-    orderMin: 9,
-    orderMax: 16,
+    orderMin: 8,
+    orderMax: 15,
   },
   {
     id: 'B3',
@@ -38,8 +50,8 @@ const BLOQUES = [
     subtitle: 'Nivel B1 · Deja de traducir mentalmente y matiza tus opiniones',
     color: '#2563EB',
     badge: 'B1',
-    orderMin: 17,
-    orderMax: 24,
+    orderMin: 16,
+    orderMax: 23,
   },
   {
     id: 'B4',
@@ -48,8 +60,8 @@ const BLOQUES = [
     subtitle: 'Nivel B2 · Debates formales, entorno profesional y oraciones complejas',
     color: 'var(--accent-purple)',
     badge: 'B2',
-    orderMin: 25,
-    orderMax: 32,
+    orderMin: 24,
+    orderMax: 31,
   },
   {
     id: 'B5',
@@ -58,8 +70,8 @@ const BLOQUES = [
     subtitle: 'Nivel C1/C2 · Refinamiento idiomático, inversión y expresiones nativas',
     color: '#DB2777',
     badge: 'C1/C2',
-    orderMin: 33,
-    orderMax: 36,
+    orderMin: 32,
+    orderMax: 35,
   },
 ];
 
@@ -67,6 +79,13 @@ export default function DashboardPage() {
   const { user } = useAuthStore();
   const { usageStats } = useAiStore();
   const navigate = useNavigate();
+
+  // Segmento pedagógico: define qué panel de estudio se muestra.
+  const ageRange = user?.age_range || 'adults';
+
+  // Estudiante de una academia (con profesor/dueño): mostramos su marca y sin publicidad,
+  // porque la academia ya paga la plataforma.
+  const isAcademy = Boolean(user?.tenant?.is_academy);
 
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -106,9 +125,29 @@ export default function DashboardPage() {
         return ord >= currentBlock.orderMin && ord <= currentBlock.orderMax;
       });
 
+  // Adaptación por edad: cada segmento ve su propio panel de estudio.
+  if (ageRange === 'kids') {
+    return (
+      <div style={CONTAINER_STYLE}>
+        {isAcademy ? <AcademyBanner user={user} /> : <AdBanner />}
+        <KidsStudyPanel user={user} />
+      </div>
+    );
+  }
+
+  if (ageRange === 'teens') {
+    return (
+      <div style={CONTAINER_STYLE}>
+        {isAcademy ? <AcademyBanner user={user} /> : <AdBanner />}
+        <TeensStudyPanel user={user} usageStats={usageStats} modules={modules} loading={loading} />
+      </div>
+    );
+  }
+
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.25rem 1rem 3rem', color: 'var(--text-primary)', width: '100%', boxSizing: 'border-box' }}>
-      
+    <div style={CONTAINER_STYLE}>
+      {isAcademy ? <AcademyBanner user={user} /> : <AdBanner />}
+
       {/* Hero Welcome Card */}
       <DashboardHero
         user={user}
@@ -198,6 +237,66 @@ export default function DashboardPage() {
         )}
       </div>
 
+    </div>
+  );
+}
+
+/** Franja de marca de la academia del estudiante (reemplaza la publicidad). */
+function AcademyBanner({ user }) {
+  const tenant = user?.tenant || {};
+  const color = tenant.primary_color || 'var(--primary)';
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.85rem',
+      flexWrap: 'wrap',
+      background: 'var(--bg-surface)',
+      border: '1px solid var(--border)',
+      borderLeft: `4px solid ${color}`,
+      borderRadius: '14px',
+      padding: '0.85rem 1.1rem',
+      marginBottom: '1.25rem',
+    }}>
+      {tenant.logo_url ? (
+        <img
+          src={tenant.logo_url}
+          alt={tenant.name || 'Academia'}
+          style={{ width: '42px', height: '42px', borderRadius: '10px', objectFit: 'cover', flexShrink: 0 }}
+        />
+      ) : (
+        <div style={{
+          width: '42px', height: '42px', borderRadius: '10px', background: color,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>
+          <School size={20} color="#fff" />
+        </div>
+      )}
+
+      <div style={{ flex: 1, minWidth: '150px' }}>
+        <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Tu academia
+        </div>
+        <div style={{ fontWeight: 800, fontSize: '1.02rem', color: 'var(--text-primary)' }}>
+          {tenant.name || 'Academia'}
+        </div>
+      </div>
+
+      {tenant.slug && (
+        <button
+          type="button"
+          onClick={() => window.open(`/academia/${tenant.slug}`, '_blank', 'noopener')}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '0.4rem',
+            background: 'var(--bg-base)', border: '1px solid var(--border-strong)',
+            borderRadius: '10px', padding: '0.5rem 0.85rem',
+            fontWeight: 700, fontSize: '0.82rem', color: 'var(--text-secondary)', cursor: 'pointer',
+          }}
+        >
+          <ExternalLink size={14} /> Ver página de la academia
+        </button>
+      )}
     </div>
   );
 }

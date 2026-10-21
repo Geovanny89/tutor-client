@@ -277,4 +277,48 @@ export const VOCABULARY_DATA = {
     { word: 'dozen / 12', translation: 'docena', pronunciation: '/ˈdʌzən/', type: 'group', level: 'B1', example: 'I bought a dozen eggs at the market.', tags: ['grupo', 'B1', 'compras'] },
     { word: 'percent / %', translation: 'por ciento', pronunciation: '/pərˈsɛnt/', type: 'percentage', level: 'B1', example: 'Ninety percent of students passed the exam.', tags: ['porcentaje', 'B1', 'estadísticas'] },
   ],
+
+  /* ─────────────────── ANIMALS ─────────────────── */
+  animals: [
+    { word: 'dog', translation: 'perro', pronunciation: '/dɔːɡ/', type: 'concrete', level: 'A1', example: 'The dog is barking.', tags: ['animales', 'A1'] },
+    { word: 'cat', translation: 'gato', pronunciation: '/kæt/', type: 'concrete', level: 'A1', example: 'The cat is sleeping.', tags: ['animales', 'A1'] },
+    { word: 'bird', translation: 'pájaro', pronunciation: '/bɜːrd/', type: 'concrete', level: 'A1', example: 'The bird is singing.', tags: ['animales', 'A1'] },
+    { word: 'fish', translation: 'pez / pescado', pronunciation: '/fɪʃ/', type: 'concrete', level: 'A1', example: 'The fish is swimming.', tags: ['animales', 'A1'] },
+    { word: 'lion', translation: 'león', pronunciation: '/ˈlaɪən/', type: 'concrete', level: 'A1', example: 'The lion is the king of the jungle.', tags: ['animales', 'A1'] },
+    { word: 'elephant', translation: 'elefante', pronunciation: '/ˈɛlɪfənt/', type: 'concrete', level: 'A1', example: 'The elephant is very big.', tags: ['animales', 'A1'] },
+    { word: 'monkey', translation: 'mono', pronunciation: '/ˈmʌŋki/', type: 'concrete', level: 'A1', example: 'The monkey likes bananas.', tags: ['animales', 'A1'] },
+    { word: 'rabbit', translation: 'conejo', pronunciation: '/ˈræbɪt/', type: 'concrete', level: 'A1', example: 'The rabbit is fast.', tags: ['animales', 'A1'] },
+    { word: 'horse', translation: 'caballo', pronunciation: '/hɔːrs/', type: 'concrete', level: 'A1', example: 'The horse is running.', tags: ['animales', 'A1'] },
+    { word: 'cow', translation: 'vaca', pronunciation: '/kaʊ/', type: 'concrete', level: 'A1', example: 'The cow gives milk.', tags: ['animales', 'A1'] },
+    { word: 'pig', translation: 'cerdo', pronunciation: '/pɪɡ/', type: 'concrete', level: 'A1', example: 'The pig is pink.', tags: ['animales', 'A1'] },
+    { word: 'chicken', translation: 'pollo', pronunciation: '/ˈtʃɪkɪn/', type: 'concrete', level: 'A1', example: 'The chicken lays eggs.', tags: ['animales', 'A1'] },
+  ],
+
+  /* ─────────────────── COLORS ─────────────────── */
+  colors: [
+    { word: 'red', translation: 'rojo', pronunciation: '/rɛd/', type: 'descriptive', level: 'A1', example: 'The apple is red.', tags: ['colores', 'A1'] },
+    { word: 'blue', translation: 'azul', pronunciation: '/bluː/', type: 'descriptive', level: 'A1', example: 'The sky is blue.', tags: ['colores', 'A1'] },
+    { word: 'green', translation: 'verde', pronunciation: '/ɡriːn/', type: 'descriptive', level: 'A1', example: 'The grass is green.', tags: ['colores', 'A1'] },
+    { word: 'yellow', translation: 'amarillo', pronunciation: '/ˈjɛloʊ/', type: 'descriptive', level: 'A1', example: 'The sun is yellow.', tags: ['colores', 'A1'] },
+    { word: 'black', translation: 'negro', pronunciation: '/blæk/', type: 'descriptive', level: 'A1', example: 'My car is black.', tags: ['colores', 'A1'] },
+    { word: 'white', translation: 'blanco', pronunciation: '/waɪt/', type: 'descriptive', level: 'A1', example: 'The clouds are white.', tags: ['colores', 'A1'] },
+    { word: 'orange', translation: 'naranja', pronunciation: '/ˈɔːrɪndʒ/', type: 'descriptive', level: 'A1', example: 'The orange is orange.', tags: ['colores', 'A1'] },
+    { word: 'pink', translation: 'rosa / rosado', pronunciation: '/pɪŋk/', type: 'descriptive', level: 'A1', example: 'The flower is pink.', tags: ['colores', 'A1'] },
+    { word: 'purple', translation: 'púrpura / morado', pronunciation: '/ˈpɜːrpəl/', type: 'descriptive', level: 'A1', example: 'The grapes are purple.', tags: ['colores', 'A1'] },
+    { word: 'brown', translation: 'marrón / café', pronunciation: '/braʊn/', type: 'descriptive', level: 'A1', example: 'The chocolate is brown.', tags: ['colores', 'A1'] },
+  ],
+
+  /* ─────────────────── NATURE ─────────────────── */
+  nature: [
+    { word: 'tree', translation: 'árbol', pronunciation: '/triː/', type: 'concrete', level: 'A1', example: 'The tree is tall.', tags: ['naturaleza', 'A1'] },
+    { word: 'flower', translation: 'flor', pronunciation: '/ˈflaʊər/', type: 'concrete', level: 'A1', example: 'The flower is beautiful.', tags: ['naturaleza', 'A1'] },
+    { word: 'sun', translation: 'sol', pronunciation: '/sʌn/', type: 'concrete', level: 'A1', example: 'The sun is shining.', tags: ['naturaleza', 'A1'] },
+    { word: 'moon', translation: 'luna', pronunciation: '/muːn/', type: 'concrete', level: 'A1', example: 'The moon is bright.', tags: ['naturaleza', 'A1'] },
+    { word: 'star', translation: 'estrella', pronunciation: '/stɑːr/', type: 'concrete', level: 'A1', example: 'The star is far away.', tags: ['naturaleza', 'A1'] },
+    { word: 'sky', translation: 'cielo', pronunciation: '/skaɪ/', type: 'concrete', level: 'A1', example: 'The sky is clear.', tags: ['naturaleza', 'A1'] },
+    { word: 'river', translation: 'río', pronunciation: '/ˈrɪvər/', type: 'concrete', level: 'A1', example: 'The river is long.', tags: ['naturaleza', 'A1'] },
+    { word: 'mountain', translation: 'montaña', pronunciation: '/ˈmaʊntən/', type: 'concrete', level: 'A1', example: 'The mountain is high.', tags: ['naturaleza', 'A1'] },
+    { word: 'rain', translation: 'lluvia', pronunciation: '/reɪn/', type: 'concrete', level: 'A1', example: 'I like the rain.', tags: ['naturaleza', 'A1'] },
+    { word: 'snow', translation: 'nieve', pronunciation: '/snoʊ/', type: 'concrete', level: 'A1', example: 'The snow is white.', tags: ['naturaleza', 'A1'] },
+  ],
 };

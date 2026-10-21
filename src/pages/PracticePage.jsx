@@ -4,6 +4,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import { useVoice } from '../hooks/useVoice';
 import { useAiStore } from '../stores/aiStore';
+import { useAuthStore } from '../stores/authStore';
 import {
   ArrowLeft,
   Sparkles,
@@ -18,13 +19,20 @@ import {
   Loader2,
 } from 'lucide-react';
 
-const EXERCISE_TYPES = [
+const ALL_EXERCISE_TYPES = [
   { id: 'fill_blank', name: 'Completar frase', icon: '✏️', hint: 'Elige la palabra que falta' },
   { id: 'pronunciation', name: 'Pronunciación', icon: '🎤', hint: 'Lee la frase en voz alta' },
   { id: 'technical', name: 'Inglés técnico', icon: '🛠️', hint: 'Vocabulario profesional' },
   { id: 'vocabulary', name: 'Vocabulario', icon: '📚', hint: 'Usa la palabra en una frase' },
   { id: 'mixed', name: 'Mixto', icon: '🎲', hint: 'Una mezcla de todos los tipos' },
 ];
+
+// "technical" no es apropiado para niños; el mixto se ofrece solo a niveles avanzados.
+const exerciseTypesFor = (ageRange) => {
+  if (ageRange === 'kids') return ALL_EXERCISE_TYPES.filter((t) => ['fill_blank', 'pronunciation', 'vocabulary'].includes(t.id));
+  if (ageRange === 'teens') return ALL_EXERCISE_TYPES.filter((t) => t.id !== 'technical');
+  return ALL_EXERCISE_TYPES;
+};
 
 const cardStyle = {
   background: 'var(--bg-surface)',
@@ -37,7 +45,11 @@ const cardStyle = {
 export default function PracticePage() {
   const { id: routeModuleId } = useParams();
   const navigate = useNavigate();
-  const { connected, checkStatus, usageStats, fetchUsage } = useAiStore();
+  const { connected, checkStatus, usageStats, fetchUsage, checkTokensAndTriggerAd } = useAiStore();
+  const { user } = useAuthStore();
+
+  const ageRange = user?.age_range || 'adults';
+  const exerciseTypes = exerciseTypesFor(ageRange);
 
   const [modules, setModules] = useState([]);
   const [selectedModuleId, setSelectedModuleId] = useState(routeModuleId || '');
@@ -88,6 +100,9 @@ export default function PracticePage() {
   };
 
   const handleGenerate = async () => {
+    const hasTokens = await checkTokensAndTriggerAd();
+    if (!hasTokens) return;
+
     setGenerating(true);
     setResults({});
     setAnswers({});
@@ -96,6 +111,7 @@ export default function PracticePage() {
         module_id: selectedModuleId || undefined,
         type: exerciseType,
         count,
+        age_range: ageRange,
       });
       if (res.success && res.data?.exercises?.length) {
         setExercises(res.data.exercises);
@@ -118,6 +134,9 @@ export default function PracticePage() {
       return;
     }
 
+    const hasTokens = await checkTokensAndTriggerAd();
+    if (!hasTokens) return;
+
     setCheckingId(exercise.id);
     try {
       const res = await api.post('/ai/practice/check', {
@@ -137,6 +156,10 @@ export default function PracticePage() {
 
   const submitPronunciation = async (exercise, spokenText) => {
     if (!spokenText?.trim()) return;
+
+    const hasTokens = await checkTokensAndTriggerAd();
+    if (!hasTokens) return;
+
     setCheckingId(exercise.id);
     try {
       const res = await api.post('/ai/grade', {
@@ -293,7 +316,7 @@ export default function PracticePage() {
           Tipo de práctica
         </label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '1.25rem' }}>
-          {EXERCISE_TYPES.map((type) => {
+          {exerciseTypes.map((type) => {
             const isActive = exerciseType === type.id;
             return (
               <button

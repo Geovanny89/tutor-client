@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { Search, Pencil, Trash2, UserCheck, UserX, RefreshCw, Shield, Zap } from 'lucide-react';
+import { Search, Pencil, Trash2, UserCheck, UserX, RefreshCw, Shield, Zap, LogIn } from 'lucide-react';
 import { Modal, Field, inputStyle, ModalActions } from './Modal';
+import { useAuthStore } from '../../stores/authStore';
+import { useNavigate } from 'react-router-dom';
 
 const ROLES = [
   { value: 'student', label: 'Estudiante' },
@@ -19,6 +21,7 @@ export default function AdminUsers({ users, pagination, loading, filters, onFilt
   const [deleting, setDeleting] = useState(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({});
+  const navigate = useNavigate();
 
   const openEdit = (user) => {
     setEditing(user);
@@ -73,6 +76,30 @@ export default function AdminUsers({ users, pagination, loading, filters, onFilt
       }
     } catch (err) {
       toast.error(err.message || 'No se pudo cambiar el estado.');
+    }
+  };
+
+  const handleImpersonate = async (user) => {
+    if (user.id === currentUser?.id) return;
+    
+    const confirm = window.confirm(`¿Seguro que quieres entrar como "${user.name}"? Tu sesión actual de administrador se cerrará.`);
+    if (!confirm) return;
+
+    try {
+      const res = await api.post(`/admin/users/${user.id}/impersonate`);
+      if (res.success && res.data) {
+        const { user: targetUser, token } = res.data;
+        
+        // Update local storage and store
+        localStorage.setItem('kdice_token', token);
+        localStorage.setItem('kdice_user', JSON.stringify(targetUser));
+        
+        // Refresh the app state by redirecting to dashboard
+        toast.success(`Ahora navegando como ${targetUser.name}`);
+        window.location.href = targetUser.role === 'student' ? '/dashboard' : '/admin';
+      }
+    } catch (err) {
+      toast.error(err.message || 'Error al intentar acceder como este usuario.');
     }
   };
 
@@ -180,6 +207,11 @@ export default function AdminUsers({ users, pagination, loading, filters, onFilt
                     </td>
                     <td style={{ padding: '0.85rem 1rem' }}>
                       <div style={{ display: 'flex', gap: '0.35rem' }}>
+                        {currentUser?.role === 'super_admin' && u.id !== currentUser?.id && (
+                          <button onClick={() => handleImpersonate(u)} title="Acceder como este usuario" style={iconBtnStyle('var(--primary)')}>
+                            <LogIn size={14} />
+                          </button>
+                        )}
                         <button onClick={() => openEdit(u)} title="Editar" style={iconBtnStyle('var(--text-secondary)')}>
                           <Pencil size={14} />
                         </button>

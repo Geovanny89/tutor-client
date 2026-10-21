@@ -1,9 +1,10 @@
 import React from 'react';
-import { BookOpen, Award, CheckCircle, PlayCircle, Mic } from 'lucide-react';
+import { BookOpen, Award, CheckCircle, PlayCircle, Mic, Lock } from 'lucide-react';
 
 export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracticeTutor }) {
   const lessonsCount = module.Lessons?.length || module.lessons?.length || module.total_lessons || 1;
-  const hasPassedEval = module.evaluation_status === 'passed';
+  const hasPassedEval = module.evaluation_passed === true || module.evaluation_status === 'passed';
+  const locked = module.is_locked === true;
 
   return (
     <div
@@ -17,13 +18,16 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
         justifyContent: 'space-between',
         boxShadow: '0 4px 12px rgba(15, 23, 42, 0.04)',
         transition: 'transform 0.2s, box-shadow 0.2s',
+        opacity: locked ? 0.72 : 1,
       }}
       onMouseEnter={(e) => {
+        if (locked) return;
         e.currentTarget.style.transform = 'translateY(-2px)';
         e.currentTarget.style.boxShadow = '0 10px 24px rgba(5, 150, 105, 0.1)';
         e.currentTarget.style.borderColor = 'var(--primary-soft-2)';
       }}
       onMouseLeave={(e) => {
+        if (locked) return;
         e.currentTarget.style.transform = 'translateY(0)';
         e.currentTarget.style.boxShadow = '0 4px 12px rgba(15, 23, 42, 0.04)';
         e.currentTarget.style.borderColor = 'var(--border)';
@@ -48,6 +52,21 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
           </span>
 
           <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+            {locked && (
+              <span style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                color: 'var(--text-subtle)',
+                background: 'var(--bg-muted)',
+                padding: '0.2rem 0.5rem',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem',
+              }}>
+                <Lock size={12} /> Bloqueado
+              </span>
+            )}
             {hasPassedEval && (
               <span style={{
                 fontSize: '0.75rem',
@@ -124,6 +143,7 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button
             onClick={() => onStudyLesson(module.id)}
+            disabled={locked}
             style={{
               flex: 1,
               display: 'flex',
@@ -134,10 +154,10 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
               borderRadius: '10px',
               fontSize: '0.88rem',
               fontWeight: 700,
-              background: 'var(--primary)',
-              color: 'var(--text-on-primary)',
+              background: locked ? 'var(--bg-muted)' : 'var(--primary)',
+              color: locked ? 'var(--text-muted)' : 'var(--text-on-primary)',
               border: 'none',
-              cursor: 'pointer',
+              cursor: locked ? 'not-allowed' : 'pointer',
               transition: 'background 0.2s',
             }}
           >
@@ -146,6 +166,7 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
 
           <button
             onClick={() => onTakeExam(module.id)}
+            disabled={locked}
             title="Realizar el examen evaluativo de este módulo"
             style={{
               display: 'flex',
@@ -158,7 +179,7 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
               color: 'var(--accent-gold-text)',
               fontSize: '0.85rem',
               fontWeight: 700,
-              cursor: 'pointer',
+              cursor: locked ? 'not-allowed' : 'pointer',
             }}
           >
             <Award size={16} color="var(--accent-gold-strong)" /> Examen
@@ -185,6 +206,15 @@ export default function ModuleCard({ module, onStudyLesson, onTakeExam, onPracti
         >
           <Mic size={14} /> Practicar este tema por voz con la IA
         </button>
+
+        {locked && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem',
+            fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-subtle)',
+          }}>
+            <Lock size={12} /> Aprueba el módulo anterior para desbloquear
+          </div>
+        )}
       </div>
     </div>
   );

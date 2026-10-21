@@ -23,9 +23,11 @@ export default function LoginPage() {
     const res = await login(email, password);
     if (res.success) {
       toast.success('¡Bienvenido de vuelta!');
-      // Admins go straight to their management panel
+      // Cada rol aterriza en su panel correspondiente
       const role = useAuthStore.getState().user?.role;
-      navigate(role === 'super_admin' || role === 'tenant_admin' ? '/admin' : '/dashboard');
+      if (role === 'super_admin' || role === 'tenant_admin') navigate('/admin');
+      else if (role === 'professor') navigate('/professor');
+      else navigate('/dashboard');
     } else {
       toast.error(res.message || 'Credenciales incorrectas');
     }
@@ -181,11 +183,23 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.88rem', color: 'var(--text-subtle)' }}>
+        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+          <Link to="/forgot-password" style={{ color: 'var(--text-subtle)', fontWeight: 600, textDecoration: 'none', fontSize: '0.85rem' }}>
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.88rem', color: 'var(--text-subtle)' }}>
           ¿No tienes una cuenta aún?{' '}
           <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>
             Regístrate Gratis
           </Link>
+          <div style={{ marginTop: '0.5rem' }}>
+            ¿Eres profesor?{' '}
+            <Link to="/register-academy" style={{ color: 'var(--accent-purple)', fontWeight: 700, textDecoration: 'none' }}>
+              Registra tu Academia aquí
+            </Link>
+          </div>
         </div>
       </div>
     </div>

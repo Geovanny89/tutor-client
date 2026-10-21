@@ -26,7 +26,7 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  register: async ({ name, email, password, target_level, tenant_id }) => {
+  register: async ({ name, email, password, target_level, tenant_id, tenant_slug, age_range }) => {
     set({ loading: true, error: null });
     try {
       const res = await api.post('/auth/register', {
@@ -35,6 +35,8 @@ export const useAuthStore = create((set, get) => ({
         password,
         target_level: target_level || 'B2',
         tenant_id,
+        tenant_slug,
+        age_range,
       });
       if (res.success && res.data) {
         const { user, token } = res.data;
@@ -44,6 +46,30 @@ export const useAuthStore = create((set, get) => ({
         return { success: true };
       }
       throw new Error(res.message || 'Error al registrarse');
+    } catch (err) {
+      set({ error: err.message, loading: false });
+      return { success: false, message: err.message };
+    }
+  },
+
+  registerAcademy: async ({ academyName, academySlug, name, email, password }) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await api.post('/auth/register-academy', {
+        academyName,
+        academySlug,
+        name,
+        email,
+        password,
+      });
+      if (res.success && res.data) {
+        const { user, token } = res.data;
+        localStorage.setItem('kdice_token', token);
+        localStorage.setItem('kdice_user', JSON.stringify(user));
+        set({ user, token, isAuthenticated: true, loading: false });
+        return { success: true };
+      }
+      throw new Error(res.message || 'Error al registrar la academia');
     } catch (err) {
       set({ error: err.message, loading: false });
       return { success: false, message: err.message };

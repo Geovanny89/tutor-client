@@ -10,6 +10,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [targetLevel, setTargetLevel] = useState('B2');
+  const [ageRange, setAgeRange] = useState('adults');
 
   const { register, loading } = useAuthStore();
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export default function RegisterPage() {
       email,
       password,
       target_level: targetLevel,
+      age_range: ageRange,
     });
 
     if (res.success) {
@@ -215,6 +217,43 @@ export default function RegisterPage() {
 
           <div>
             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.45rem' }}>
+              ¿Qué grupo de edad eres?
+            </label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.6rem' }}>
+              {[
+                { value: 'kids', label: 'Niños', range: '3-7 años', emoji: '🧸' },
+                { value: 'teens', label: 'Adolescentes', range: '8-16 años', emoji: '🎮' },
+                { value: 'adults', label: 'Adultos', range: '17+ años', emoji: '💼' },
+              ].map((o) => {
+                const active = ageRange === o.value;
+                return (
+                  <button
+                    key={o.value}
+                    type="button"
+                    onClick={() => setAgeRange(o.value)}
+                    style={{
+                      padding: '0.7rem 0.4rem',
+                      borderRadius: '12px',
+                      border: `1.5px solid ${active ? 'var(--primary)' : 'var(--border-strong)'}`,
+                      background: active ? 'var(--primary-bg)' : 'var(--bg-base)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '0.15rem',
+                    }}
+                  >
+                    <span style={{ fontSize: '1.2rem' }}>{o.emoji}</span>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 700, color: active ? 'var(--primary)' : 'var(--text-secondary)' }}>{o.label}</span>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{o.range}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.45rem' }}>
               ¿Cuál es tu nivel meta que deseas alcanzar?
             </label>
             <select
@@ -270,6 +309,12 @@ export default function RegisterPage() {
           <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>
             Inicia Sesión aquí
           </Link>
+          <div style={{ marginTop: '0.5rem' }}>
+            ¿Eres profesor?{' '}
+            <Link to="/register-academy" style={{ color: 'var(--accent-purple)', fontWeight: 700, textDecoration: 'none' }}>
+              Registra tu Academia aquí
+            </Link>
+          </div>
         </div>
       </div>
     </div>
