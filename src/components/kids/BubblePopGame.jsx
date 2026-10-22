@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Volume2, Sparkles, RefreshCw, Star } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { KIDS_ITEMS } from '../../data/kidsVocabulary';
 import { kidAudio } from '../../utils/kidAudio';
+import TobyBubble from './TobyBubble';
 
 const BUBBLE_COLORS = [
   'radial-gradient(circle at 30% 30%, #fef08a, #f59e0b)',
@@ -13,17 +14,24 @@ const BUBBLE_COLORS = [
   'radial-gradient(circle at 30% 30%, #fed7aa, #ea580c)',
 ];
 
-export default function BubblePopGame({ onEarnStar, speak }) {
+export default function BubblePopGame({ onEarnStar, kidSpeak, speak, items }) {
   const [bubbles, setBubbles] = useState([]);
   const [target, setTarget] = useState(null);
   const [poppedId, setPoppedId] = useState(null);
   const [score, setScore] = useState(0);
+  const [tobyMessage, setTobyMessage] = useState('');
+  const [tobyMood, setTobyMood] = useState('happy');
+  const timerRef = useRef(null);
+
+  const pool = items && items.length >= 4 ? items : KIDS_ITEMS;
 
   const spawnBubbles = useCallback(() => {
-    // Select 5 random items
-    const selected = [...KIDS_ITEMS]
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    // Select up to 5 items from pool
+    const selected = [...pool]
       .sort(() => 0.5 - Math.random())
-      .slice(0, 5);
+      .slice(0, Math.min(5, pool.length));
 
     // Pick 1 as the target
     const currentTarget = selected[Math.floor(Math.random() * selected.length)];
@@ -40,13 +48,25 @@ export default function BubblePopGame({ onEarnStar, speak }) {
     setBubbles(newBubbles);
     setPoppedId(null);
 
-    setTimeout(() => {
-      speak(`Pop the ${currentTarget.word}!`, 0.85);
-    }, 250);
-  }, [speak]);
+    const promptText = kidSpeak?.phrases?.bubblePrompt
+      ? kidSpeak.phrases.bubblePrompt(currentTarget.word)
+      : `¡Revienta la burbuja con [[ENGLISH: ${currentTarget.word}]]! ¡Rápido, toca [[ENGLISH: ${currentTarget.word}]]!`;
+
+    setTobyMessage(promptText);
+    setTobyMood('happy');
+
+    timerRef.current = setTimeout(() => {
+      kidSpeak?.speakToby
+        ? kidSpeak.speakToby(promptText)
+        : speak?.(`Pop the ${currentTarget.word}!`, 0.85);
+    }, 300);
+  }, [kidSpeak, speak, items]);
 
   useEffect(() => {
     spawnBubbles();
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, [spawnBubbles]);
 
   const handlePop = (item) => {
@@ -59,17 +79,35 @@ export default function BubblePopGame({ onEarnStar, speak }) {
         spread: 50,
         origin: { y: 0.6 },
       });
-      speak(`Pop! ${target.word}!`, 0.9);
-      setScore((s) => s + 10);
-      if (onEarnStar) onEarnStar(10);
 
-      setTimeout(() => {
-        spawnBubbles();
-      }, 1200);
+      const winMsg = kidSpeak?.phrases?.bubblePopped
+        ? kidSpeak.phrases.bubblePopped(target.word)
+        : `¡Pop! ¡Genial! Reventaste [[ENGLISH: ${target.word}]]. ¡Woof woof!`;
+
+      let transitioned = false;
+      const proceed = () => {
+        if (transitioned) return;
+        transitioned = true;
+        setTimeout(() => {
+          spawnBubbles();
+        }, 700);
+      };
+
+      setTimeout(proceed, 5000);
+
+      kidSpeak?.speakToby
+        ? kidSpeak.speakToby(winMsg, { onEnd: proceed })
+        : speak?.(`Pop! ${target.word}!`, 0.9);
     } else {
       // Incorrect bubble
       kidAudio.playTryAgain();
-      speak(target.word, 0.85);
+      const tryAgainMsg = kidSpeak?.phrases?.bubbleWrong
+        ? kidSpeak.phrases.bubbleWrong(target.word)
+        : `¡Ups, esa burbuja no era! Busca donde dice [[ENGLISH: ${target.word}]].`;
+
+      setTobyMessage(tryAgainMsg);
+      setTobyMood('thinking');
+      kidSpeak?.speakToby ? kidSpeak.speakToby(tryAgainMsg) : speak?.(target.word, 0.85);
     }
   };
 
@@ -87,6 +125,17 @@ export default function BubblePopGame({ onEarnStar, speak }) {
       overflow: 'hidden',
       boxShadow: '0 20px 30px -10px rgba(59, 130, 246, 0.25)',
     }}>
+      {/* Toby Coach */}
+      <TobyBubble
+        message={tobyMessage}
+        mood={tobyMood}
+        onRepeat={(style) => {
+          kidSpeak?.speakToby
+            ? kidSpeak.speakToby(tobyMessage, { style })
+            : speak?.(target.word, 0.85);
+        }}
+      />
+
       {/* Header bar */}
       <div style={{
         display: 'flex',
@@ -129,43 +178,6 @@ export default function BubblePopGame({ onEarnStar, speak }) {
           }}
         >
           <RefreshCw size={16} /> Nuevas burbujas
-        </button>
-      </div>
-
-      {/* Target prompt */}
-      <div style={{
-        background: '#ffffff',
-        borderRadius: '24px',
-        padding: '1rem 1.5rem',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '1rem',
-        border: '3px solid #60a5fa',
-        boxShadow: '0 8px 16px rgba(59, 130, 246, 0.15)',
-        marginBottom: '2rem',
-      }}>
-        <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1e40af' }}>
-          ¡Revienta la burbuja con:
-        </span>
-        <button
-          onClick={() => speak(target.word, 0.85)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-            color: '#ffffff',
-            border: 'none',
-            borderRadius: '999px',
-            padding: '0.6rem 1.2rem',
-            fontWeight: 900,
-            fontSize: '1.3rem',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.35)',
-          }}
-        >
-          <Volume2 size={24} />
-          <span>"{target.word}"</span>
         </button>
       </div>
 

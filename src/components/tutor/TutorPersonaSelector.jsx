@@ -1,7 +1,11 @@
-import React from 'react';
-import { TUTOR_PERSONAS } from '../../stores/aiStore';
+import React, { useMemo } from 'react';
+import { getPersonasForAge } from '../../stores/aiStore';
+import { useAuthStore } from '../../stores/authStore';
 
 export default function TutorPersonaSelector({ activePersona, onSelectPersona }) {
+  const ageRange = useAuthStore((s) => s.user?.age_range) || 'adults';
+  const personas = useMemo(() => getPersonasForAge(ageRange), [ageRange]);
+
   return (
     <div style={{
       display: 'flex',
@@ -10,7 +14,7 @@ export default function TutorPersonaSelector({ activePersona, onSelectPersona })
       paddingBottom: '0.5rem',
       marginBottom: '1.25rem',
     }}>
-      {TUTOR_PERSONAS.map((persona) => {
+      {personas.map((persona) => {
         const isSelected = activePersona.id === persona.id;
         return (
           <button
@@ -34,6 +38,7 @@ export default function TutorPersonaSelector({ activePersona, onSelectPersona })
             <div style={{ textAlign: 'left' }}>
               <div style={{ fontWeight: 800, fontSize: '0.95rem', color: isSelected ? 'var(--primary-text)' : 'var(--text-primary)' }}>
                 {persona.name}
+                {persona.bilingual ? ' 🇪🇸🇺🇸' : ''}
               </div>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: isSelected ? 'var(--primary)' : 'var(--text-subtle)' }}>
                 {persona.role} ({persona.accent})

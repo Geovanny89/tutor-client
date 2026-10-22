@@ -1,20 +1,28 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { RefreshCw, Star, Trophy } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { KIDS_ITEMS } from '../../data/kidsVocabulary';
 import { kidAudio } from '../../utils/kidAudio';
+import TobyBubble from './TobyBubble';
 
-export default function VisualMemoryGame({ onEarnStar, speak }) {
+export default function VisualMemoryGame({ onEarnStar, kidSpeak, speak, items }) {
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]); // indices of currently flipped cards
   const [matched, setMatched] = useState([]); // matched item ids
   const [isWon, setIsWon] = useState(false);
+  const [tobyMessage, setTobyMessage] = useState('');
+  const [tobyMood, setTobyMood] = useState('happy');
+  const timerRef = useRef(null);
+
+  const pool = items && items.length >= 2 ? items : KIDS_ITEMS;
 
   const initGame = useCallback(() => {
-    // Select 4 distinct items
-    const selected = [...KIDS_ITEMS]
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    // Select up to 4 distinct items
+    const selected = [...pool]
       .sort(() => 0.5 - Math.random())
-      .slice(0, 4);
+      .slice(0, Math.min(4, pool.length));
 
     // Create pairs (8 cards total)
     const deck = [];
@@ -28,10 +36,26 @@ export default function VisualMemoryGame({ onEarnStar, speak }) {
     setFlipped([]);
     setMatched([]);
     setIsWon(false);
-  }, []);
+
+    const introMsg = kidSpeak?.phrases?.memoryIntro
+      ? kidSpeak.phrases.memoryIntro()
+      : `¡Vamos a jugar a las Parejas Mágicas! Toca una carta para descubrir el dibujo.`;
+
+    setTobyMessage(introMsg);
+    setTobyMood('happy');
+
+    timerRef.current = setTimeout(() => {
+      kidSpeak?.speakToby
+        ? kidSpeak.speakToby(introMsg)
+        : speak?.('Find the matching pairs!', 0.9);
+    }, 350);
+  }, [kidSpeak, speak, items]);
 
   useEffect(() => {
     initGame();
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, [initGame]);
 
   const handleCardClick = (idx) => {
@@ -42,12 +66,19 @@ export default function VisualMemoryGame({ onEarnStar, speak }) {
 
     const clickedCard = cards[idx];
     kidAudio.playFlip();
-    speak(clickedCard.word, 0.9);
 
     const newFlipped = [...flipped, idx];
     setFlipped(newFlipped);
 
-    if (newFlipped.length === 2) {
+    if (newFlipped.length === 1) {
+      const flipMsg = kidSpeak?.phrases?.memoryFlip
+        ? kidSpeak.phrases.memoryFlip(clickedCard.word)
+        : `¡Mira, es [[ENGLISH: ${clickedCard.word}]]! ¿Dónde está el otro [[ENGLISH: ${clickedCard.word}]]?`;
+
+      setTobyMessage(flipMsg);
+      setTobyMood('curious');
+      kidSpeak?.speakToby ? kidSpeak.speakToby(flipMsg) : speak?.(clickedCard.word, 0.9);
+    } else if (newFlipped.length === 2) {
       const [firstIdx, secondIdx] = newFlipped;
       const firstCard = cards[firstIdx];
       const secondCard = cards[secondIdx];
@@ -58,7 +89,6 @@ export default function VisualMemoryGame({ onEarnStar, speak }) {
         setMatched(nextMatched);
         setFlipped([]);
         kidAudio.playSuccess();
-        speak(`Match! ${firstCard.word}!`, 0.9);
 
         if (nextMatched.length === 4) {
           // Completed!
@@ -69,13 +99,38 @@ export default function VisualMemoryGame({ onEarnStar, speak }) {
             spread: 70,
             origin: { y: 0.6 },
           });
+
+          const winMsg = kidSpeak?.phrases?.memoryWin
+            ? kidSpeak.phrases.memoryWin()
+            : `¡Increíble! ¡Encontraste todas las parejas mágicas! ¡Eres un campeón!`;
+
+          setTobyMessage(winMsg);
+          setTobyMood('celebrate');
+          kidSpeak?.speakToby ? kidSpeak.speakToby(winMsg) : speak?.('You won! Excellent!', 0.9);
+
           if (onEarnStar) onEarnStar(25);
+        } else {
+          const matchMsg = kidSpeak?.phrases?.memoryMatch
+            ? kidSpeak.phrases.memoryMatch(firstCard.word)
+            : `¡Woof woof! ¡Hiciste match con [[ENGLISH: ${firstCard.word}]]! ¡Súper bien!`;
+
+          setTobyMessage(matchMsg);
+          setTobyMood('celebrate');
+          kidSpeak?.speakToby ? kidSpeak.speakToby(matchMsg) : speak?.(`Match! ${firstCard.word}!`, 0.9);
         }
       } else {
         // No match -> flip back after 1.1s
+        const missMsg = kidSpeak?.phrases?.memoryMiss
+          ? kidSpeak.phrases.memoryMiss(secondCard.word)
+          : `Eran diferentes. ¡No te preocupes, sigue buscando!`;
+
+        setTobyMessage(missMsg);
+        setTobyMood('thinking');
+        kidSpeak?.speakToby ? kidSpeak.speakToby(missMsg) : speak?.(secondCard.word, 0.9);
+
         setTimeout(() => {
           setFlipped([]);
-        }, 1100);
+        }, 1200);
       }
     }
   };
@@ -89,6 +144,17 @@ export default function VisualMemoryGame({ onEarnStar, speak }) {
       textAlign: 'center',
       boxShadow: '0 20px 30px -10px rgba(236, 72, 153, 0.2)',
     }}>
+      {/* Toby Coach */}
+      <TobyBubble
+        message={tobyMessage}
+        mood={tobyMood}
+        onRepeat={(style) => {
+          kidSpeak?.speakToby
+            ? kidSpeak.speakToby(tobyMessage, { style })
+            : speak?.('Find the pairs!', 0.9);
+        }}
+      />
+
       {/* Top Bar */}
       <div style={{
         display: 'flex',

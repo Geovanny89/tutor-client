@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useVoice } from '../hooks/useVoice';
 import toast from 'react-hot-toast';
+import { useAuthStore } from '../stores/authStore';
 
 import LessonHeader from '../components/lesson/LessonHeader';
 import LessonStepper from '../components/lesson/LessonStepper';
@@ -11,10 +12,12 @@ import LessonVocabularyStep from '../components/lesson/LessonVocabularyStep';
 import LessonRoleplayStep from '../components/lesson/LessonRoleplayStep';
 import LessonSpeechStep from '../components/lesson/LessonSpeechStep';
 import FloatingTutorChat from '../components/lesson/FloatingTutorChat';
+import TeensGameDispatcher from '../components/teens/TeensGameDispatcher';
 
 export default function LessonPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -294,6 +297,11 @@ export default function LessonPage() {
   };
 
   const targetPhrase = getTargetPracticePhrase();
+  const teensGameId = (content.teens_game && content.teens_game !== 'default')
+    ? content.teens_game
+    : (user?.age_range === 'teens' || lesson.age_range === 'teens')
+    ? 'boss_battle'
+    : null;
 
   return (
     <div style={{ maxWidth: '1050px', margin: '0 auto', padding: '2rem 1.25rem 6rem 1.25rem', color: 'var(--text-primary)', position: 'relative' }}>
@@ -310,6 +318,7 @@ export default function LessonPage() {
       <LessonStepper
         activeStep={activeStep}
         onSelectStep={setActiveStep}
+        hasTeenGame={Boolean(teensGameId)}
       />
 
       {/* Step 1: Explanation */}
@@ -365,17 +374,85 @@ export default function LessonPage() {
 
       {/* Step 4: Speech */}
       {activeStep === 'speech' && (
-        <LessonSpeechStep
-          targetPhrase={targetPhrase}
-          isListening={isListening}
-          studentSpokenText={studentSpokenText}
-          evaluationResult={evaluationResult}
-          completed={completed}
-          onStartListening={startListening}
-          onStopListening={stopListening}
-          onSpeakTarget={() => speak(targetPhrase, 0.85, 1.0, 'en-US')}
-          onCompleteLesson={handleCompleteLesson}
-        />
+        <div>
+          <LessonSpeechStep
+            targetPhrase={targetPhrase}
+            isListening={isListening}
+            studentSpokenText={studentSpokenText}
+            evaluationResult={evaluationResult}
+            completed={completed}
+            onStartListening={startListening}
+            onStopListening={stopListening}
+            onSpeakTarget={() => speak(targetPhrase, 0.85, 1.0, 'en-US')}
+            onCompleteLesson={handleCompleteLesson}
+          />
+          {teensGameId && (
+            <div style={{ marginTop: '1.25rem', textAlign: 'center' }}>
+              <button
+                type="button"
+                onClick={() => setActiveStep('game')}
+                style={{
+                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '14px',
+                  padding: '0.85rem 1.6rem',
+                  fontSize: '0.96rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  boxShadow: '0 4px 16px rgba(99, 102, 241, 0.35)',
+                }}
+              >
+                ⚔️ Ir a la Misión Arcade / Minijuego de la Lección →
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Step 5: Teen Game */}
+      {activeStep === 'game' && teensGameId && (
+        <div style={{
+          background: 'var(--bg-surface)',
+          borderRadius: '24px',
+          border: '1.5px solid var(--border)',
+          padding: '1.5rem',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
+          maxWidth: '760px',
+          margin: '0 auto',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+            <span style={{ fontSize: '1.15rem', fontWeight: 900 }}>
+              ⚔️ Misión Interactiva de la Lección
+            </span>
+            <button
+              onClick={() => setActiveStep('speech')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--text-subtle)',
+                cursor: 'pointer',
+                fontWeight: 700,
+              }}
+            >
+              ← Volver al Desafío de Voz
+            </button>
+          </div>
+          <TeensGameDispatcher
+            missionId={teensGameId}
+            items={vocabulary}
+            onWin={() => {
+              toast.success('¡Has superado la misión de la lección! 🏆');
+              handleCompleteLesson();
+            }}
+            onLose={() => {
+              toast.error('¡Casi lo logras! Inténtalo de nuevo.');
+            }}
+          />
+        </div>
       )}
 
       {/* Floating In-Lesson AI Tutor Chat */}

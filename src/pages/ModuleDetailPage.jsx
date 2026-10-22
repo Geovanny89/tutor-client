@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { useAuthStore } from '../stores/authStore';
 import {
   ArrowLeft,
   BookOpen,
@@ -17,19 +18,28 @@ import {
 export default function ModuleDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   const [module, setModule] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (user?.age_range === 'kids') {
+      navigate('/dashboard', { replace: true });
+      return;
+    }
     fetchModule();
-  }, [id]);
+  }, [id, user?.age_range]);
 
   const fetchModule = async () => {
     setLoading(true);
     try {
       const res = await api.get(`/modules/${id}`);
       if (res.success && res.data) {
+        if (res.data.age_range === 'kids') {
+          navigate('/dashboard', { replace: true });
+          return;
+        }
         setModule(res.data);
       }
     } catch (err) {
@@ -300,7 +310,13 @@ export default function ModuleDetailPage() {
                         <Clock size={14} color="var(--primary)" /> {lesson.duration_minutes || 10} min
                       </span>
                       <span>•</span>
-                      <span style={{ color: 'var(--primary-hover)', fontWeight: 600 }}>Práctica de Voz & Pronunciación</span>
+                      {lesson.content?.teens_game ? (
+                        <span style={{ color: '#8b5cf6', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                          ⚔️ Con Minijuego RPG / Arcade
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--primary-hover)', fontWeight: 600 }}>Práctica de Voz & Pronunciación</span>
+                      )}
                     </div>
                   </div>
                 </div>

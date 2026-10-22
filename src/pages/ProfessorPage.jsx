@@ -5,6 +5,7 @@ import { TABS } from '../components/professor/constants';
 import { PublicLink } from '../components/professor/ProfessorUI';
 import OverviewTab from '../components/professor/OverviewTab';
 import AcademyTab from '../components/professor/AcademyTab';
+import TeamTab from '../components/professor/TeamTab';
 import StudentsTab from '../components/professor/StudentsTab';
 import LessonsTab from '../components/professor/LessonsTab';
 import EvaluationsTab from '../components/professor/EvaluationsTab';
@@ -16,6 +17,15 @@ export default function ProfessorPage() {
   const [academy, setAcademy] = useState(null);
   const [canCreate, setCanCreate] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const refreshOverview = useCallback(async () => {
+    try {
+      const ov = await api.get('/professor/overview');
+      if (ov.success) setOverview(ov.data);
+    } catch (err) {
+      /* ignore */
+    }
+  }, []);
 
   const loadCore = useCallback(async () => {
     setLoading(true);
@@ -39,6 +49,12 @@ export default function ProfessorPage() {
   useEffect(() => {
     loadCore();
   }, [loadCore]);
+
+  useEffect(() => {
+    if (tab === 'overview' && academy) {
+      refreshOverview();
+    }
+  }, [tab, academy, refreshOverview]);
 
   if (loading) {
     return (
@@ -103,7 +119,8 @@ export default function ProfessorPage() {
           onUpdate={loadCore}
         />
       )}
-      {tab === 'students' && <StudentsTab academyExists={!!academy} />}
+      {tab === 'team' && <TeamTab academyExists={!!academy} />}
+      {tab === 'students' && <StudentsTab academyExists={!!academy} onStatusChange={refreshOverview} />}
       {tab === 'lessons' && <LessonsTab academyExists={!!academy} />}
       {tab === 'evaluations' && <EvaluationsTab academyExists={!!academy} />}
 

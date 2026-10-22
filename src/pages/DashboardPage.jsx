@@ -108,6 +108,9 @@ export default function DashboardPage() {
       const res = await api.get('/modules');
       if (res.success && res.data) {
         setModules(res.data);
+        if (res.data.some((m) => m.tenant_id)) {
+          setActiveTab('ALL');
+        }
       }
     } catch (err) {
       toast.error('Error al cargar los módulos.');
@@ -120,6 +123,12 @@ export default function DashboardPage() {
   const displayedModules = activeTab === 'ALL'
     ? modules
     : modules.filter((m) => {
+        if (m.tenant_id) {
+          if (currentBlock?.level && m.level) {
+            return m.level === currentBlock.level;
+          }
+          return true;
+        }
         if (!currentBlock) return true;
         const ord = m.order_index;
         return ord >= currentBlock.orderMin && ord <= currentBlock.orderMax;
@@ -127,10 +136,11 @@ export default function DashboardPage() {
 
   // Adaptación por edad: cada segmento ve su propio panel de estudio.
   if (ageRange === 'kids') {
+    const kidsModules = modules.filter((m) => m.age_range === 'kids');
     return (
       <div style={CONTAINER_STYLE}>
         {isAcademy ? <AcademyBanner user={user} /> : <AdBanner />}
-        <KidsStudyPanel user={user} />
+        <KidsStudyPanel user={user} modules={kidsModules} loading={loading} />
       </div>
     );
   }

@@ -26,7 +26,7 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  register: async ({ name, email, password, target_level, tenant_id, tenant_slug, age_range }) => {
+  register: async ({ name, email, password, target_level, tenant_id, tenant_slug, age_range, professor_id }) => {
     set({ loading: true, error: null });
     try {
       const res = await api.post('/auth/register', {
@@ -37,6 +37,7 @@ export const useAuthStore = create((set, get) => ({
         tenant_id,
         tenant_slug,
         age_range,
+        professor_id: professor_id || null,
       });
       if (res.success && res.data) {
         const { user, token } = res.data;
@@ -52,7 +53,7 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  registerAcademy: async ({ academyName, academySlug, name, email, password }) => {
+  registerAcademy: async ({ academyName, academySlug, name, email, password, accountType = 'academy' }) => {
     set({ loading: true, error: null });
     try {
       const res = await api.post('/auth/register-academy', {
@@ -61,6 +62,7 @@ export const useAuthStore = create((set, get) => ({
         name,
         email,
         password,
+        accountType,
       });
       if (res.success && res.data) {
         const { user, token } = res.data;

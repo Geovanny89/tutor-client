@@ -11,7 +11,8 @@ export default function OverviewTab({ overview, academy }) {
     { label: 'Estudiantes', value: m.students ?? 0 },
     { label: 'Activos', value: m.active ?? 0 },
     { label: 'Bloqueados', value: m.blocked ?? 0 },
-    { label: 'Cupos disponibles', value: m.spots_left ?? 0 },
+    { label: 'Cupos estudiantes', value: m.spots_left ?? 0 },
+    { label: 'Profesores equipo', value: `${m.professors ?? 1} / ${m.max_professors ?? 5}` },
     { label: 'Módulos propios', value: m.own_modules ?? 0 },
     { label: 'Lecciones propias', value: m.own_lessons ?? 0 },
   ];

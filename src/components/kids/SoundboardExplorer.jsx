@@ -1,22 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Volume2, Turtle, Sparkles } from 'lucide-react';
 import { KIDS_CATEGORIES, KIDS_ITEMS } from '../../data/kidsVocabulary';
 import { kidAudio } from '../../utils/kidAudio';
+import TobyBubble from './TobyBubble';
 
-export default function SoundboardExplorer({ onEarnStar, speak }) {
+export default function SoundboardExplorer({ onEarnStar, kidSpeak, speak, items }) {
   const [activeCategory, setActiveCategory] = useState('animals');
   const [activeId, setActiveId] = useState(null);
   const [slowMode, setSlowMode] = useState(false);
+  const [tobyMessage, setTobyMessage] = useState(
+    items && items.length > 0
+      ? '¡Toca los dibujos de tu clase para escuchar cómo se dicen!'
+      : '¡Hola amiguito! Toca cualquier dibujo de la pizarra y te diré cómo se dice en inglés.'
+  );
+  const [tobyMood, setTobyMood] = useState('happy');
 
-  const filteredItems = KIDS_ITEMS.filter((i) => i.category === activeCategory);
+  const filteredItems = items && items.length > 0 ? items : KIDS_ITEMS.filter((i) => i.category === activeCategory);
+
+  const handleCategoryChange = (cat) => {
+    setActiveCategory(cat.id);
+    const catMsg = `¡Vamos a aprender sobre ${cat.label}! Toca cualquier dibujo.`;
+    setTobyMessage(catMsg);
+    setTobyMood('happy');
+    kidSpeak?.speakToby ? kidSpeak.speakToby(catMsg) : speak?.(cat.label, 0.9);
+  };
 
   const handleCardClick = (item) => {
     setActiveId(item.id);
     kidAudio.playPop();
 
-    const rate = slowMode ? 0.6 : 0.85;
     const textToSpeak = item.soundText || item.word;
-    speak(textToSpeak, rate);
+    const phrase = kidSpeak?.phrases?.explorerWord
+      ? kidSpeak.phrases.explorerWord(item.word, item.soundText)
+      : `En inglés se dice [[ENGLISH: ${item.word}]]. ¡Dilo conmigo: [[ENGLISH: ${item.word}]]!`;
+
+    setTobyMessage(phrase);
+    setTobyMood('celebrate');
+
+    if (kidSpeak?.speakToby) {
+      kidSpeak.speakToby(phrase, { slow: slowMode });
+    } else {
+      speak?.(textToSpeak, slowMode ? 0.6 : 0.85);
+    }
 
     if (onEarnStar) onEarnStar(2);
 
@@ -25,8 +50,29 @@ export default function SoundboardExplorer({ onEarnStar, speak }) {
     }, 600);
   };
 
+  const handleToggleSlow = () => {
+    const nextSlow = !slowMode;
+    setSlowMode(nextSlow);
+    const slowMsg = nextSlow
+      ? '¡Modo tortuga activado! 🐢 Hablaré más despacio para que escuches cada sonido.'
+      : '¡Modo normal activado! 🚀';
+    setTobyMessage(slowMsg);
+    setTobyMood(nextSlow ? 'curious' : 'happy');
+    kidSpeak?.speakToby ? kidSpeak.speakToby(slowMsg, { slow: nextSlow }) : null;
+  };
+
   return (
     <div>
+      {/* Toby Coach */}
+      <TobyBubble
+        message={tobyMessage}
+        mood={tobyMood}
+        onRepeat={(style) => {
+          kidSpeak?.speakToby
+            ? kidSpeak.speakToby(tobyMessage, { slow: slowMode, style })
+            : null;
+        }}
+      />
       {/* Category Pills */}
       <div style={{
         display: 'flex',
@@ -41,7 +87,7 @@ export default function SoundboardExplorer({ onEarnStar, speak }) {
           return (
             <button
               key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
+              onClick={() => handleCategoryChange(cat)}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -75,7 +121,7 @@ export default function SoundboardExplorer({ onEarnStar, speak }) {
         marginBottom: '1.5rem',
       }}>
         <button
-          onClick={() => setSlowMode(!slowMode)}
+          onClick={handleToggleSlow}
           style={{
             display: 'inline-flex',
             alignItems: 'center',

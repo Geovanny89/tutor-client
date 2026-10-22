@@ -100,7 +100,7 @@ export default function TutorInputControls({
               onToggleRecognitionLang();
             }}
             disabled={isListening}
-            title={`Cambiado a ${recognitionLang === 'en-US' ? 'Inglés' : 'Español'}. Haz clic para cambiar.`}
+            title={`Idioma del micrófono: ${recognitionLang}. Haz clic para cambiar (es-CO / en-US).`}
             style={{
               position: 'absolute',
               bottom: '-4px',
@@ -120,7 +120,7 @@ export default function TutorInputControls({
               gap: '2px',
             }}
           >
-            {recognitionLang === 'en-US' ? '🇺🇸 EN' : '🇪🇸 ES'}
+            {recognitionLang.startsWith('en') ? '🇺🇸 EN' : '🇨🇴 ES'}
           </button>
         </div>
 
@@ -145,16 +145,16 @@ export default function TutorInputControls({
               animation: 'fadeIn 0.2s ease',
               zIndex: 10,
             }}>
-              {recognitionLang === 'en-US' 
-                ? '🎙️ Habla en Inglés (o toca 🇺🇸 para cambiar a Español)' 
-                : '🎙️ Habla en Español (o toca 🇪🇸 para cambiar a Inglés)'}
+              {recognitionLang.startsWith('en')
+                ? '🎙️ Habla en inglés (o toca 🇺🇸 para cambiar a español)'
+                : '🎙️ Habla en español / spanglish (o toca 🇨🇴 para inglés)'}
             </div>
           )}
           <input
             type="text"
             value={inputMessage}
             onChange={(e) => onChangeInput(e.target.value)}
-            placeholder={isListening ? 'Escuchando...' : `Escribe en ${recognitionLang === 'en-US' ? 'inglés' : 'español'}...`}
+            placeholder={isListening ? 'Escuchando...' : `Escribe en ${recognitionLang.startsWith('en') ? 'inglés' : 'español'}...`}
             disabled={isLoading || isListening}
             style={{
               flex: 1,

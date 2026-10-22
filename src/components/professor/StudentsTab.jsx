@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { Lock, Unlock } from 'lucide-react';
+import { Lock, Unlock, Sparkles } from 'lucide-react';
 import { input, smallBtn, primaryBtn, overlay, modal } from './constants';
 import { EmptyState } from './ProfessorUI';
 
-export default function StudentsTab({ academyExists }) {
+export default function StudentsTab({ academyExists, onStatusChange }) {
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
@@ -35,6 +35,7 @@ export default function StudentsTab({ academyExists }) {
       if (res.success) {
         toast.success(s.is_active ? 'Estudiante bloqueado' : 'Estudiante desbloqueado');
         load();
+        if (onStatusChange) onStatusChange();
       }
     } catch (err) {
       toast.error(err.message || 'No se pudo actualizar el estado');
@@ -158,18 +159,82 @@ export default function StudentsTab({ academyExists }) {
 }
 
 export function StudentDetailModal({ detail, onClose }) {
+  const [report, setReport] = useState(null);
+  const [loadingReport, setLoadingReport] = useState(false);
+
+  const generateReport = async () => {
+    if (!detail.student?.id) return;
+    setLoadingReport(true);
+    setReport(null);
+    try {
+      const res = await api.post(`/professor/students/${detail.student.id}/progress-report`);
+      if (res.success) {
+        setReport(res.data.report);
+        toast.success('Reporte pedagógico listo');
+      }
+    } catch (err) {
+      toast.error(err.message || 'No se pudo generar el reporte');
+    } finally {
+      setLoadingReport(false);
+    }
+  };
+
   return (
     <div style={overlay} onClick={onClose}>
-      <div style={{ ...modal, maxWidth: '560px' }} onClick={(e) => e.stopPropagation()}>
+      <div
+        style={{ ...modal, maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto' }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <h3 style={{ margin: '0 0 0.25rem' }}>{detail.student?.name}</h3>
         <p style={{ margin: '0 0 1rem', color: 'var(--text-subtle)', fontSize: '0.88rem' }}>
           {detail.student?.email}
         </p>
 
+        <button
+          type="button"
+          onClick={generateReport}
+          disabled={loadingReport}
+          style={{ ...primaryBtn, width: '100%', justifyContent: 'center', marginBottom: '1rem' }}
+        >
+          <Sparkles size={16} />
+          {loadingReport ? 'Analizando conversaciones...' : 'Reporte IA para profesor/padres'}
+        </button>
+
+        {report && (
+          <div
+            style={{
+              marginBottom: '1.25rem',
+              padding: '0.9rem 1rem',
+              background: 'var(--primary-bg)',
+              border: '1px solid var(--primary-soft-2)',
+              borderRadius: '12px',
+              fontSize: '0.86rem',
+              lineHeight: 1.5,
+              color: 'var(--text-primary)',
+            }}
+          >
+            <div style={{ marginBottom: '0.55rem' }}>
+              <strong>1. Fortalezas:</strong> {report.fortalezas}
+            </div>
+            <div style={{ marginBottom: '0.55rem' }}>
+              <strong>2. Oportunidades de mejora:</strong> {report.oportunidades_mejora}
+            </div>
+            <div style={{ marginBottom: '0.55rem' }}>
+              <strong>3. Palabras aprendidas:</strong>{' '}
+              {(report.palabras_aprendidas || []).length
+                ? report.palabras_aprendidas.join(', ')
+                : '—'}
+            </div>
+            <div>
+              <strong>4. Sugerencia pedagógica:</strong> {report.sugerencia_pedagogica}
+            </div>
+          </div>
+        )}
+
         <strong style={{ fontSize: '0.9rem' }}>Progreso reciente</strong>
         <div
           style={{
-            maxHeight: '320px',
+            maxHeight: '280px',
             overflowY: 'auto',
             marginTop: '0.5rem',
             display: 'flex',

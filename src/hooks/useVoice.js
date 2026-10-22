@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { splitBilingualSegments, stripEnglishMarkers, cleanForSpeech } from '../utils/bilingualSpeech';
 
 // Keep the mic open long enough to capture full sentences, but close it
 // automatically once the user has clearly stopped talking.
-const SILENCE_TIMEOUT_MS = 2500;
-const INITIAL_SILENCE_TIMEOUT_MS = 8000;
+// Kids need a longer pause (spanglish / slow answers) — default 2.5–3s.
+const DEFAULT_SILENCE_TIMEOUT_MS = 2500;
+const DEFAULT_INITIAL_SILENCE_TIMEOUT_MS = 8000;
 
 // Name hints used to infer the gender of a browser voice so each tutor
 // persona keeps a consistent voice.
@@ -19,7 +21,27 @@ const FEMALE_VOICE_HINTS = [
   'sara', 'catherine', 'allison', 'ava', 'joanna', 'kendra', 'kimberly',
   'salli', 'nicole', 'olivia', 'clara', 'emily', 'linda', 'heather', 'amber',
   'ashley', 'jessa', 'misty', 'kayla', 'courtney', 'monica', 'paulina',
-  'vicki', 'ximena', 'serena', 'veena',
+  'vicki', 'ximena', 'serena', 'veena', 'dalia', 'sabina', 'salome', 'luciana',
+  'maria', 'sofia', 'camila', 'valentina', 'isabella',
+];
+
+// Known warm Latin American Spanish voices (Chrome/Edge/Windows).
+const LATAM_VOICE_NAME_BONUS = [
+  'dalia', 'sabina', 'salome', 'jorge', 'carlos', 'juan', 'raul', 'luciana',
+  'paulina', 'ximena', 'catalina', 'gerardo', 'ricardo', 'andres', 'camila',
+  'google español de estados unidos', 'google español', 'microsoft dalia',
+  'microsoft sabina', 'microsoft salome', 'microsoft jorge',
+];
+
+// Spain / robotic desktop voices to avoid for kids bilingual UX.
+const AVOID_VOICE_HINTS = [
+  'helena', 'laura', 'enrique', 'pablo', 'desktop', 'compact', 'mobile',
+  'es-es', 'españa', 'spain', 'castilian',
+];
+
+const LATAM_LANG_PREFIXES = [
+  'es-mx', 'es-co', 'es-us', 'es-ar', 'es-cl', 'es-pe', 'es-ve', 'es-cr',
+  'es-ec', 'es-uy', 'es-pa', 'es-gt', 'es-hn', 'es-ni', 'es-bo', 'es-py', 'es-do',
 ];
 
 const voiceGenderOf = (name) => {
@@ -31,16 +53,81 @@ const voiceGenderOf = (name) => {
   return null;
 };
 
+const isLatamLang = (lang = '') => {
+  const l = lang.toLowerCase();
+  return LATAM_LANG_PREFIXES.some((p) => l.startsWith(p));
+};
+
+/**
+ * Score a voice for warm Latin American Spanish (higher = better).
+ * Penalizes Spain accents and local "Desktop" robotic voices.
+ */
+const scoreLatinSpanishVoice = (voice, preferredGender = null) => {
+  const name = (voice.name || '').toLowerCase();
+  const lang = (voice.lang || '').toLowerCase();
+  let score = 0;
+
+  if (isLatamLang(lang)) score += 120;
+  if (lang.startsWith('es-mx')) score += 40; // warm neutral LatAm (Dalia)
+  if (lang.startsWith('es-co')) score += 45; // Colombia
+  if (lang.startsWith('es-us')) score += 35; // Google US Spanish = LatAm
+  if (lang === 'es' || lang.startsWith('es-419')) score += 25;
+
+  // Neural / cloud voices sound natural; desktop locals sound robotic.
+  if (name.includes('natural') || name.includes('neural')) score += 100;
+  if (name.includes('online')) score += 90;
+  if (name.includes('google')) score += 70;
+  if (name.includes('microsoft') && (name.includes('online') || name.includes('natural'))) {
+    score += 80;
+  }
+
+  if (LATAM_VOICE_NAME_BONUS.some((h) => name.includes(h))) score += 50;
+
+  if (preferredGender && voiceGenderOf(name) === preferredGender) score += 15;
+
+  // Hard penalties
+  if (lang.startsWith('es-es')) score -= 150;
+  if (AVOID_VOICE_HINTS.some((h) => name.includes(h) || lang.includes(h))) score -= 120;
+  if (name.includes('desktop') || name.includes('compact')) score -= 100;
+
+  // Non-Spanish should never win for Spanish segments
+  if (!lang.startsWith('es')) score -= 500;
+
+  return score;
+};
+
+const pickBestLatinSpanishVoice = (availableVoices, preferredGender = null) => {
+  const spanish = availableVoices.filter((v) => (v.lang || '').toLowerCase().startsWith('es'));
+  if (!spanish.length) return null;
+
+  const ranked = [...spanish].sort(
+    (a, b) => scoreLatinSpanishVoice(b, preferredGender) - scoreLatinSpanishVoice(a, preferredGender)
+  );
+
+  const best = ranked[0];
+  // If the "best" is still a Spain/desktop voice, try again ignoring gender.
+  if (best && scoreLatinSpanishVoice(best, null) < 50 && preferredGender) {
+    return [...spanish].sort(
+      (a, b) => scoreLatinSpanishVoice(b, null) - scoreLatinSpanishVoice(a, null)
+    )[0];
+  }
+  return best;
+};
+
 /**
  * useVoice Hook
  * Uses 100% FREE Native Web Speech API
- * - SpeechRecognition (Speech-to-Text)
- * - SpeechSynthesis (Text-to-Speech with native English voices)
+ * - SpeechRecognition (Speech-to-Text) with es-CO / en-US
+ * - SpeechSynthesis (Text-to-Speech) with bilingual segment switching
  */
 export function useVoice({
   lang = 'en-US',
   pitch = 1.0,
   rate = 0.95,
+  /** Post-speech silence before auto-stop (kids: 2800–3000). */
+  silenceTimeoutMs = DEFAULT_SILENCE_TIMEOUT_MS,
+  /** Wait before first word before giving up. */
+  initialSilenceTimeoutMs = DEFAULT_INITIAL_SILENCE_TIMEOUT_MS,
   onResult,
   onError,
 } = {}) {
@@ -54,6 +141,8 @@ export function useVoice({
   const recognitionRef = useRef(null);
   const currentUtteranceRef = useRef(null);
   const silenceTimerRef = useRef(null);
+  const bilingualQueueRef = useRef([]);
+  const bilingualActiveRef = useRef(false);
 
   // Check support and load voices
   useEffect(() => {
@@ -143,7 +232,7 @@ export function useVoice({
         setIsListening(true);
         setTranscript('');
         setInterimTranscript('');
-        resetSilenceTimer(INITIAL_SILENCE_TIMEOUT_MS);
+        resetSilenceTimer(initialSilenceTimeoutMs);
       };
 
       recognition.onresult = (event) => {
@@ -161,7 +250,7 @@ export function useVoice({
         setTranscript(finalText);
         setInterimTranscript(interim);
         // The user is still talking: keep the mic open a little longer.
-        resetSilenceTimer(SILENCE_TIMEOUT_MS);
+        resetSilenceTimer(silenceTimeoutMs);
       };
 
       recognition.onerror = (event) => {
@@ -191,7 +280,7 @@ export function useVoice({
       setIsListening(false);
       if (onError) onError(err.message);
     }
-  }, [lang, onResult, onError]);
+  }, [lang, silenceTimeoutMs, initialSilenceTimeoutMs, onResult, onError]);
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
@@ -204,106 +293,252 @@ export function useVoice({
     }
   }, []);
 
-  // Speak text with native voice
+  const pickVoice = useCallback((availableVoices, customLang, customGender) => {
+    const langPrefix = (customLang || 'en').split('-')[0].toLowerCase();
+    const langFull = (customLang || 'en-US').toLowerCase();
+
+    // Spanish: always prefer warm Latin American neural voices (never Spain Desktop).
+    if (langPrefix === 'es') {
+      const latam = pickBestLatinSpanishVoice(availableVoices, customGender);
+      if (latam) return latam;
+    }
+
+    const exactPool = availableVoices.filter((v) => (v.lang || '').toLowerCase() === langFull);
+    const langPool = availableVoices.filter((v) =>
+      (v.lang || '').toLowerCase().startsWith(langPrefix)
+    );
+    const enPool = availableVoices.filter((v) => (v.lang || '').toLowerCase().startsWith('en'));
+    const pool = exactPool.length ? exactPool : (langPool.length ? langPool : enPool);
+
+    const qualityRank = (name) => {
+      const n = (name || '').toLowerCase();
+      // Expressive child-friendly & animated neural voices first
+      if (n.includes('salome') || n.includes('dalia') || n.includes('jenny') || n.includes('aria') || n.includes('ana')) return -2;
+      if (n.includes('natural') || n.includes('online') || n.includes('neural')) return 0;
+      if (n.includes('google')) return 1;
+      if (n.includes('samantha') || n.includes('victoria')) return 1;
+      if (n.includes('microsoft') && !n.includes('desktop')) return 2;
+      if (n.includes('desktop') || n.includes('compact') || n.includes('mobile')) return 9;
+      return 3;
+    };
+    const pickFrom = (list) =>
+      [...list].sort((a, b) => qualityRank(a.name) - qualityRank(b.name))[0];
+
+    let preferredVoice = null;
+    if (customGender) {
+      const gendered = pool.filter((v) => voiceGenderOf(v.name) === customGender);
+      if (gendered.length) preferredVoice = pickFrom(gendered);
+    }
+    if (!preferredVoice && customGender && langPrefix === 'en') {
+      const genderedEn = enPool.filter((v) => voiceGenderOf(v.name) === customGender);
+      if (genderedEn.length) preferredVoice = pickFrom(genderedEn);
+    }
+    if (!preferredVoice && pool.length) preferredVoice = pickFrom(pool);
+    if (!preferredVoice && enPool.length) preferredVoice = pickFrom(enPool);
+    if (!preferredVoice) preferredVoice = availableVoices[0];
+    return preferredVoice;
+  }, []);
+
+  const resolveVoices = useCallback(() => {
+    let list = window.speechSynthesis.getVoices() || [];
+    if (!list.length && voices.length) list = voices;
+    return list;
+  }, [voices]);
+
+  // Speak text with a single native voice (markers stripped)
   const speak = useCallback(
-    (text, customRate = rate, customPitch = pitch, customLang = lang, customGender = null) => {
+    (text, customRate = rate, customPitch = pitch, customLang = lang, customGender = null, onEnd = null) => {
       if (!('speechSynthesis' in window) || !text) return;
 
-      const cleanText = text
-        .replace(/[*_#`~[\]()]/g, '') // remove markdown artifacts
-        .trim();
+      bilingualQueueRef.current = [];
+      bilingualActiveRef.current = false;
 
-      if (!cleanText) return;
+      const cleanText = stripEnglishMarkers(text);
+      if (!cleanText) {
+        if (onEnd) onEnd();
+        return;
+      }
 
-      // Cancel previous speech and resume in case Chrome is stuck in paused state
+      const run = (availableVoices) => {
+        window.speechSynthesis.cancel();
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = customRate;
+        utterance.pitch = customPitch;
+
+        const preferredVoice = pickVoice(availableVoices, customLang, customGender);
+        if (preferredVoice) {
+          utterance.voice = preferredVoice;
+          const vLang = (preferredVoice.lang || '').toLowerCase();
+          // Keep LatAm locale for Spanish even if voice reports generic "es"
+          if ((customLang || '').toLowerCase().startsWith('es')) {
+            utterance.lang = isLatamLang(vLang) ? preferredVoice.lang : (customLang || 'es-MX');
+          } else {
+            utterance.lang = preferredVoice.lang;
+          }
+        } else {
+          utterance.lang = customLang || 'en-US';
+        }
+
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => {
+          setIsSpeaking(false);
+          window.__kdiceUtterance = null;
+          if (onEnd) {
+            try { onEnd(); } catch (e) {}
+          }
+        };
+        utterance.onerror = (e) => {
+          console.warn('SpeechSynthesis error:', e);
+          setIsSpeaking(false);
+          window.__kdiceUtterance = null;
+          if (onEnd) {
+            try { onEnd(); } catch (err) {}
+          }
+        };
+
+        window.__kdiceUtterance = utterance;
+        currentUtteranceRef.current = utterance;
+
+        setTimeout(() => {
+          try {
+            window.speechSynthesis.speak(utterance);
+          } catch (err) {
+            console.error('Failed to trigger speech:', err);
+          }
+        }, 50);
+      };
+
+      let availableVoices = resolveVoices();
+      // Chrome often returns [] on first call — wait briefly for neural/online voices
+      if (!availableVoices.length) {
+        setTimeout(() => run(resolveVoices()), 280);
+        return;
+      }
+      run(availableVoices);
+    },
+    [lang, pitch, rate, pickVoice, resolveVoices]
+  );
+
+  /**
+   * Multilingual TTS: Spanish latino for narrative + native English for [[ENGLISH:]] words.
+   * Avoids robotic Spanglish accent by switching browser voices mid-reply.
+   */
+  const speakBilingual = useCallback(
+    (text, {
+      // Upbeat, warm and lively Latin American Spanish (never dragging/bored)
+      esRate = 1.02,
+      esPitch = 1.30,
+      esLang = 'es-MX',
+      enRate = 0.98,
+      enPitch = 1.35,
+      enLang = 'en-US',
+      gender = null, // null = pick best LatAm neural (quality over gender)
+      onEnd = null,
+    } = {}) => {
+      if (!('speechSynthesis' in window) || !text) {
+        if (onEnd) onEnd();
+        return;
+      }
+
+      const segments = splitBilingualSegments(text);
+      if (!segments.length) {
+        if (onEnd) onEnd();
+        return;
+      }
+
+      // Wait for voices if Chrome hasn't loaded them yet
+      let availableVoices = window.speechSynthesis.getVoices() || [];
+      if (!availableVoices.length) {
+        availableVoices = voices.length ? voices : window.speechSynthesis.getVoices() || [];
+      }
+
+      // Fallback: no markers → single Spanish utterance with LatAm voice
+      if (segments.length === 1 && segments[0].lang === 'es' && !/\[\[ENGLISH:/i.test(text)) {
+        speak(segments[0].text, esRate, esPitch, esLang, gender, onEnd);
+        return;
+      }
+
       window.speechSynthesis.cancel();
-      if (window.speechSynthesis.paused) {
-        window.speechSynthesis.resume();
-      }
+      if (window.speechSynthesis.paused) window.speechSynthesis.resume();
 
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.rate = customRate;
-      utterance.pitch = customPitch;
+      bilingualActiveRef.current = true;
+      bilingualQueueRef.current = segments;
 
-      // Get available voices
-      let availableVoices = window.speechSynthesis.getVoices();
-      if (!availableVoices || availableVoices.length === 0) {
-        // Retry getting voices once
-        availableVoices = window.speechSynthesis.getVoices() || [];
-      }
+      // Pre-select the best LatAm Spanish voice once for consistency
+      const latamVoice = pickBestLatinSpanishVoice(availableVoices, gender)
+        || pickVoice(availableVoices, esLang, gender);
 
-      const langPrefix = (customLang || 'en').split('-')[0].toLowerCase();
-      const langPool = availableVoices.filter((v) =>
-        (v.lang || '').toLowerCase().startsWith(langPrefix)
-      );
-      const enPool = availableVoices.filter((v) => (v.lang || '').toLowerCase().includes('en'));
-      const pool = langPool.length ? langPool : enPool;
+      const speakNext = () => {
+        if (!bilingualActiveRef.current) return;
+        const next = bilingualQueueRef.current.shift();
+        if (!next) {
+          setIsSpeaking(false);
+          bilingualActiveRef.current = false;
+          window.__kdiceUtterance = null;
+          if (onEnd) {
+            try { onEnd(); } catch (err) { console.error(err); }
+          }
+          return;
+        }
 
-      // Prefer high-quality neural/online voices, then Google voices.
-      const qualityRank = (name) => {
-        const n = (name || '').toLowerCase();
-        if (n.includes('natural') || n.includes('online')) return 0;
-        if (n.includes('google')) return 1;
-        return 2;
-      };
-      const pickFrom = (list) =>
-        [...list].sort((a, b) => qualityRank(a.name) - qualityRank(b.name))[0];
+        const isEn = next.lang === 'en';
+        const spokenContent = cleanForSpeech(next.text);
+        if (!spokenContent) {
+          speakNext();
+          return;
+        }
 
-      let preferredVoice = null;
+        const utterance = new SpeechSynthesisUtterance(spokenContent);
+        utterance.rate = isEn ? enRate : esRate;
+        utterance.pitch = isEn ? enPitch : esPitch;
 
-      // 1) Same gender as the persona + same accent (e.g. David → male en-GB)
-      if (customGender) {
-        const gendered = pool.filter((v) => voiceGenderOf(v.name) === customGender);
-        if (gendered.length) preferredVoice = pickFrom(gendered);
-      }
-      // 2) Same gender in any English accent (keeps the persona's voice consistent
-      //    when the exact accent has no voice of that gender available)
-      if (!preferredVoice && customGender) {
-        const genderedEn = enPool.filter((v) => voiceGenderOf(v.name) === customGender);
-        if (genderedEn.length) preferredVoice = pickFrom(genderedEn);
-      }
-      // 3) Any voice with the requested accent
-      if (!preferredVoice && pool.length) preferredVoice = pickFrom(pool);
-      // 4) Any English voice
-      if (!preferredVoice && enPool.length) preferredVoice = pickFrom(enPool);
-      // 5) Whatever the browser offers
-      if (!preferredVoice) preferredVoice = availableVoices[0];
+        if (isEn) {
+          const preferred = pickVoice(availableVoices, enLang, gender);
+          if (preferred) {
+            utterance.voice = preferred;
+            utterance.lang = preferred.lang;
+          } else {
+            utterance.lang = enLang;
+          }
+        } else if (latamVoice) {
+          utterance.voice = latamVoice;
+          // Force LatAm locale even if the voice reports a generic "es"
+          const vLang = (latamVoice.lang || '').toLowerCase();
+          utterance.lang = isLatamLang(vLang) ? latamVoice.lang : (esLang || 'es-MX');
+        } else {
+          utterance.lang = esLang || 'es-MX';
+        }
 
-      if (preferredVoice) {
-        utterance.voice = preferredVoice;
-        utterance.lang = preferredVoice.lang;
-      } else {
-        utterance.lang = customLang || 'en-US';
-      }
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => {
+          setTimeout(speakNext, 90);
+        };
+        utterance.onerror = () => {
+          setTimeout(speakNext, 40);
+        };
 
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => {
-        setIsSpeaking(false);
-        window.__kdiceUtterance = null;
-      };
-      utterance.onerror = (e) => {
-        console.warn('SpeechSynthesis error:', e);
-        setIsSpeaking(false);
-        window.__kdiceUtterance = null;
-      };
-
-      // CRITICAL CHROME BUG FIX: Prevent Garbage Collection of Utterance mid-speech
-      window.__kdiceUtterance = utterance;
-      currentUtteranceRef.current = utterance;
-
-      // Small timeout to allow cancel() to clear cleanly on Windows
-      setTimeout(() => {
+        window.__kdiceUtterance = utterance;
+        currentUtteranceRef.current = utterance;
         try {
           window.speechSynthesis.speak(utterance);
         } catch (err) {
-          console.error('Failed to trigger speech:', err);
+          console.error('Bilingual TTS failed:', err);
+          speakNext();
         }
-      }, 50);
+      };
+
+      setTimeout(speakNext, 50);
     },
-    [lang, pitch, rate]
+    [speak, pickVoice, voices]
   );
 
   const stopSpeaking = useCallback(() => {
+    bilingualQueueRef.current = [];
+    bilingualActiveRef.current = false;
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
@@ -320,6 +555,7 @@ export function useVoice({
     startListening,
     stopListening,
     speak,
+    speakBilingual,
     stopSpeaking,
   };
 }

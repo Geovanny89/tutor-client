@@ -1,4 +1,4 @@
-import { LayoutDashboard, School, Users, BookOpen, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, School, Users, BookOpen, ClipboardList, GraduationCap } from 'lucide-react';
 
 export const AGE_OPTIONS = [
   { value: 'kids', label: 'Niños (3-7)' },
@@ -9,6 +9,7 @@ export const AGE_OPTIONS = [
 export const TABS = [
   { id: 'overview', label: 'Resumen', icon: LayoutDashboard },
   { id: 'academy', label: 'Mi Academia', icon: School },
+  { id: 'team', label: 'Profesores (5)', icon: GraduationCap },
   { id: 'students', label: 'Estudiantes', icon: Users },
   { id: 'lessons', label: 'Lecciones', icon: BookOpen },
   { id: 'evaluations', label: 'Evaluaciones', icon: ClipboardList },

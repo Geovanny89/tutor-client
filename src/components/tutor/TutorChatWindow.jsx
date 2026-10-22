@@ -1,6 +1,39 @@
 import React from 'react';
 import { Volume2, Volume1, VolumeX, RotateCcw, Languages, Loader2 } from 'lucide-react';
 import { useAiStore } from '../../stores/aiStore';
+import { tokenizeEnglishMarkers } from '../../utils/bilingualSpeech';
+
+function MessageBody({ text, isUser }) {
+  if (isUser || !text || !/\[\[ENGLISH:/i.test(text)) {
+    return <>{text}</>;
+  }
+  return (
+    <>
+      {tokenizeEnglishMarkers(text).map((part) =>
+        part.type === 'en' ? (
+          <span
+            key={part.key}
+            style={{
+              display: 'inline-block',
+              margin: '0 0.15rem',
+              padding: '0.1rem 0.45rem',
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #dbeafe, #eff6ff)',
+              color: '#1d4ed8',
+              fontWeight: 800,
+              letterSpacing: '0.02em',
+              border: '1px solid #93c5fd',
+            }}
+          >
+            {part.value}
+          </span>
+        ) : (
+          <span key={part.key}>{part.value}</span>
+        )
+      )}
+    </>
+  );
+}
 
 export default function TutorChatWindow({
   activePersona,
@@ -177,7 +210,7 @@ export default function TutorChatWindow({
                 boxShadow: '0 4px 14px rgba(15, 23, 42, 0.04)',
               }}>
                 <div style={{ fontSize: '1rem', lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
-                  {msg.text}
+                  <MessageBody text={msg.text} isUser={isUser} />
                 </div>
 
                 {!isUser && msg.translation && (

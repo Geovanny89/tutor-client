@@ -14,7 +14,7 @@ export default function AcademyTab({ academy, canCreate, onCreate, onUpdate }) {
     contact_phone: academy?.contact_phone || '',
     logo_url: academy?.logo_url || '',
     enabled_age_ranges: academy?.enabled_age_ranges || ['kids', 'teens', 'adults'],
-    max_students: academy?.max_students || 100,
+
     is_public_page_active: academy?.is_public_page_active ?? true,
   });
   const [saving, setSaving] = useState(false);
@@ -142,15 +142,7 @@ export default function AcademyTab({ academy, canCreate, onCreate, onUpdate }) {
             style={input}
           />
         </Field>
-        <Field label="Límite de estudiantes">
-          <input
-            type="number"
-            min={1}
-            value={form.max_students}
-            onChange={(e) => setForm({ ...form, max_students: Number(e.target.value) })}
-            style={input}
-          />
-        </Field>
+
       </div>
 
       <Field label="Grupos de edad que ofreces">

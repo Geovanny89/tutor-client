@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAiStore, TUTOR_MODES } from '../stores/aiStore';
+import { useAiStore, TUTOR_MODES, getPersonasForAge } from '../stores/aiStore';
 import { useAuthStore } from '../stores/authStore';
 import { useVoice } from '../hooks/useVoice';
 import toast from 'react-hot-toast';
@@ -11,6 +11,7 @@ import TutorInputControls from '../components/tutor/TutorInputControls';
 
 export default function VoiceTutorPage() {
   const { user } = useAuthStore();
+  const isKids = user?.age_range === 'kids';
   const {
     activePersona,
     setPersona,
@@ -33,7 +34,8 @@ export default function VoiceTutorPage() {
   const [showGuide, setShowGuide] = useState(true);
   const [slowAudio, setSlowAudio] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(true);
-  const [recognitionLang, setRecognitionLang] = useState('en-US');
+  // Kids: es-CO first (spanglish / Spanish answers); adults: en-US
+  const [recognitionLang, setRecognitionLang] = useState(isKids ? 'es-CO' : 'en-US');
   const [customDomain, setCustomDomain] = useState(domain);
   const messagesEndRef = useRef(null);
 
@@ -44,12 +46,16 @@ export default function VoiceTutorPage() {
     startListening,
     stopListening,
     speak,
+    speakBilingual,
     stopSpeaking,
     isSupported,
   } = useVoice({
     lang: recognitionLang,
     rate: slowAudio ? 0.75 : activePersona.voiceRate || 0.9,
     pitch: activePersona.voicePitch || 1.0,
+    // Kids need longer silence tolerance for short / imperfect answers
+    silenceTimeoutMs: isKids ? 3000 : 2500,
+    initialSilenceTimeoutMs: isKids ? 10000 : 8000,
     onResult: (text) => {
       if (text && text.trim()) {
         handleSendVoice(text);
@@ -59,6 +65,30 @@ export default function VoiceTutorPage() {
       toast.error(err);
     },
   });
+
+  const playTutorReply = (text) => {
+    if (!text) return;
+    if (activePersona.bilingual || isKids) {
+      // gender null → elige la mejor voz neural latinoamericana (Dalia/Sabina/Google es-US)
+      speakBilingual(text, {
+        esRate: slowAudio ? 0.78 : 0.88,
+        esPitch: 1.08,
+        esLang: 'es-MX',
+        enRate: slowAudio ? 0.8 : 0.95,
+        enPitch: 1.12,
+        enLang: 'en-US',
+        gender: null,
+      });
+    } else {
+      speak(
+        text,
+        slowAudio ? 0.75 : activePersona.voiceRate,
+        activePersona.voicePitch,
+        activePersona.accent,
+        activePersona.voiceGender
+      );
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -71,8 +101,12 @@ export default function VoiceTutorPage() {
   useEffect(() => {
     fetchUsage();
     checkStatus();
-    if (messages.length === 0) {
-      setPersona(activePersona);
+    const personas = getPersonasForAge(user?.age_range || 'adults');
+    const preferred = isKids
+      ? (personas.find((p) => p.id === 'toby') || personas[0])
+      : (personas.find((p) => p.id === activePersona.id) || personas[0]);
+    if (messages.length === 0 && preferred) {
+      setPersona(preferred);
     }
   }, []);
 
@@ -84,7 +118,7 @@ export default function VoiceTutorPage() {
       context: `Estudiante nivel: ${user?.current_level || 'A1'}, Edad: ${user?.age_range || 'adults'}`,
     });
     if (result.success && autoSpeak) {
-      speak(result.reply, slowAudio ? 0.75 : activePersona.voiceRate, activePersona.voicePitch, activePersona.accent, activePersona.voiceGender);
+      playTutorReply(result.reply);
     }
   };
 
@@ -102,7 +136,7 @@ export default function VoiceTutorPage() {
       context: `Estudiante nivel: ${user?.current_level || 'A1'}, Edad: ${user?.age_range || 'adults'}`,
     });
     if (result.success && autoSpeak) {
-      speak(result.reply, slowAudio ? 0.75 : activePersona.voiceRate, activePersona.voicePitch, activePersona.accent, activePersona.voiceGender);
+      playTutorReply(result.reply);
     }
   };
 
@@ -121,13 +155,34 @@ export default function VoiceTutorPage() {
       toast.error('Este mensaje aún no contiene texto para reproducir');
       return;
     }
+    if (activePersona.bilingual || isKids) {
+      speakBilingual(text, {
+        esRate: customSlow ? 0.75 : 0.88,
+        esPitch: 1.08,
+        esLang: 'es-MX',
+        enRate: customSlow ? 0.75 : 0.95,
+        enPitch: 1.12,
+        enLang: 'en-US',
+        gender: null,
+      });
+      return;
+    }
     speak(
-      text, 
-      customSlow ? 0.7 : activePersona.voiceRate, 
-      activePersona.voicePitch, 
+      text,
+      customSlow ? 0.7 : activePersona.voiceRate,
+      activePersona.voicePitch,
       activePersona.accent,
       activePersona.voiceGender
     );
+  };
+
+  const cycleRecognitionLang = () => {
+    // Kids: es-CO ↔ en-US (Colombian Spanish + clear US English)
+    if (isKids) {
+      setRecognitionLang((prev) => (prev === 'en-US' ? 'es-CO' : 'en-US'));
+      return;
+    }
+    setRecognitionLang((prev) => (prev === 'en-US' ? 'es-ES' : 'en-US'));
   };
 
   const starterPrompts = tutorMode === 'technical'
@@ -167,7 +222,22 @@ export default function VoiceTutorPage() {
         onSelectPersona={(persona) => {
           setPersona(persona);
           if (autoSpeak) {
-            speak(persona.welcomeMessage, persona.voiceRate, persona.voicePitch, persona.accent, persona.voiceGender);
+            const welcome = isKids
+              ? (persona.welcomeMessageKids || persona.welcomeMessage)
+              : persona.welcomeMessage;
+            if (persona.bilingual || isKids) {
+              speakBilingual(welcome, {
+                esRate: 0.88,
+                esPitch: 1.08,
+                esLang: 'es-MX',
+                enRate: 0.95,
+                enPitch: 1.12,
+                enLang: 'en-US',
+                gender: null,
+              });
+            } else {
+              speak(welcome, persona.voiceRate, persona.voicePitch, persona.accent, persona.voiceGender);
+            }
           }
         }}
       />
@@ -180,7 +250,7 @@ export default function VoiceTutorPage() {
         gap: '0.65rem',
         marginBottom: '1.25rem',
       }}>
-        {TUTOR_MODES.map((mode) => {
+        {!isKids && TUTOR_MODES.map((mode) => {
           const isActive = tutorMode === mode.id;
           return (
             <button
@@ -207,6 +277,19 @@ export default function VoiceTutorPage() {
             </button>
           );
         })}
+        {isKids && (
+          <div style={{
+            padding: '0.55rem 1rem',
+            borderRadius: '999px',
+            background: 'var(--primary-bg)',
+            border: '1px solid var(--primary-soft-2)',
+            fontSize: '0.85rem',
+            fontWeight: 700,
+            color: 'var(--primary-text)',
+          }}>
+            🐶 Modo bilingüe niños · español + [[ENGLISH]]
+          </div>
+        )}
 
         {/* Connection status pill */}
         <div style={{
@@ -296,7 +379,7 @@ export default function VoiceTutorPage() {
           isLoading={isLoading}
           isListening={isListening}
           recognitionLang={recognitionLang}
-          onToggleRecognitionLang={() => setRecognitionLang(prev => prev === 'en-US' ? 'es-ES' : 'en-US')}
+          onToggleRecognitionLang={cycleRecognitionLang}
           starterPrompts={starterPrompts}
           onSelectStarter={handleSendVoice}
           onToggleListen={toggleListen}

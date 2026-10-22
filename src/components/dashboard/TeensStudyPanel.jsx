@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModuleCard from './ModuleCard';
-import { Flame, Star, Zap, Trophy, Target, Shield, Award, Sparkles } from 'lucide-react';
+import { Flame, Star, Zap, Trophy, Target, Shield, Award, Sparkles, Globe } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import DailyQuestsCard from '../teens/DailyQuestsCard';
+import TeensGlobalMissions from '../teens/TeensGlobalMissions';
 import { TEEN_RANKS, getRankByXp, INITIAL_DAILY_QUESTS } from '../../data/teensMissions';
+import { DEFAULT_TEEN_STUDY_MODULES } from '../../data/teensMissionsConstants';
 import { kidAudio } from '../../utils/kidAudio';
 
 export default function TeensStudyPanel({ user, usageStats, modules, loading }) {
@@ -37,7 +39,8 @@ export default function TeensStudyPanel({ user, usageStats, modules, loading }) 
   const progressPercent = Math.min(100, Math.round((xpInTier / tierRange) * 100));
 
   const streak = user?.streak_days || 1;
-  const completedModules = modules.filter((m) => m.evaluation_status === 'passed').length;
+  const availableModules = (modules && modules.length > 0) ? modules : DEFAULT_TEEN_STUDY_MODULES;
+  const completedModules = availableModules.filter((m) => m.evaluation_status === 'passed').length;
 
   const saveTeenData = (newData) => {
     setTeenData(newData);
@@ -68,11 +71,14 @@ export default function TeensStudyPanel({ user, usageStats, modules, loading }) 
 
   // Filter modules
   const [filter, setFilter] = useState('all'); // 'all' | 'in_progress' | 'passed'
-  const filteredModules = modules.filter((m) => {
+  const filteredModules = availableModules.filter((m) => {
     if (filter === 'passed') return m.evaluation_status === 'passed';
     if (filter === 'in_progress') return m.evaluation_status !== 'passed';
     return true;
   });
+
+  // Pestaña principal
+  const [mainTab, setMainTab] = useState('campaigns'); // 'campaigns' | 'quests' | 'global'
 
   return (
     <div style={{ color: 'var(--text-primary)', maxWidth: '1080px', margin: '0 auto', paddingBottom: '3rem' }}>
@@ -179,110 +185,156 @@ export default function TeensStudyPanel({ user, usageStats, modules, loading }) 
         </div>
       </div>
 
-      {/* 1. Misiones Diarias Gamificadas */}
-      <DailyQuestsCard
-        quests={teenData.quests}
-        onCompleteQuest={handleCompleteQuest}
-        onClaimChest={handleClaimChest}
-        chestClaimed={teenData.chestClaimed}
-      />
-
-      {/* 2. Misiones de Campaña (Módulos de Estudio) */}
+      {/* Tabs de navegación */}
       <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem',
-        marginBottom: '1.25rem',
+        display: 'flex', gap: '0.5rem', marginBottom: '1.75rem',
+        background: 'var(--bg-surface)', border: '1px solid var(--border)',
+        borderRadius: '16px', padding: '0.4rem', flexWrap: 'wrap',
       }}>
-        <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 900, margin: '0 0 0.2rem', fontFamily: 'var(--font-display)' }}>
-            🗺️ Misiones de Campaña ({modules.length})
-          </h2>
-          <span style={{ fontSize: '0.88rem', color: 'var(--text-subtle)', fontWeight: 600 }}>
-            {completedModules} misiones conquistadas
-          </span>
-        </div>
-
-        {/* Module Filter Tabs */}
-        <div style={{
-          display: 'flex',
-          gap: '0.4rem',
-          background: 'var(--bg-surface)',
-          border: '1px solid var(--border)',
-          borderRadius: '12px',
-          padding: '0.3rem',
-        }}>
-          {[
-            { id: 'all', label: 'Todas' },
-            { id: 'in_progress', label: 'Por completar' },
-            { id: 'passed', label: 'Conquistadas 🏆' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setFilter(tab.id)}
-              style={{
-                padding: '0.45rem 0.9rem',
-                borderRadius: '8px',
-                border: 'none',
-                background: filter === tab.id ? 'var(--primary)' : 'transparent',
-                color: filter === tab.id ? '#ffffff' : 'var(--text-secondary)',
-                fontSize: '0.82rem',
-                fontWeight: 800,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        {[
+          { id: 'global', label: '🌍 Misiones Globales', badge: 'FREE' },
+          { id: 'quests', label: '🎯 Misiones Diarias' },
+          { id: 'campaigns', label: '🗺️ Campaña' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setMainTab(tab.id)}
+            style={{
+              flex: 1, minWidth: '120px', padding: '0.6rem 1rem',
+              borderRadius: '12px', border: 'none',
+              background: mainTab === tab.id ? 'var(--primary)' : 'transparent',
+              color: mainTab === tab.id ? '#ffffff' : 'var(--text-secondary)',
+              fontSize: '0.88rem', fontWeight: 800, cursor: 'pointer',
+              transition: 'all 0.2s', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', gap: '0.4rem',
+            }}
+          >
+            {tab.label}
+            {tab.badge && mainTab !== tab.id && (
+              <span style={{
+                background: '#10b981', color: '#fff',
+                fontSize: '0.65rem', fontWeight: 900, padding: '0.1rem 0.45rem',
+                borderRadius: '999px', letterSpacing: '0.04em',
+              }}>{tab.badge}</span>
+            )}
+          </button>
+        ))}
       </div>
 
-      {loading ? (
-        <div style={{
-          textAlign: 'center',
-          padding: '3rem 2rem',
-          color: 'var(--text-subtle)',
-          background: 'var(--bg-surface)',
-          borderRadius: '20px',
-          border: '1px solid var(--border)',
-        }}>
-          ⏳ Cargando mapa de misiones...
-        </div>
-      ) : filteredModules.length === 0 ? (
-        <div style={{
-          background: 'var(--bg-surface)',
-          border: '1px dashed var(--border-strong)',
-          borderRadius: '20px',
-          padding: '3rem 2rem',
-          textAlign: 'center',
-          color: 'var(--text-subtle)',
-        }}>
-          No hay misiones en esta categoría. ¡Sigue explorando! 🎮
-        </div>
-      ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 310px), 1fr))',
-          gap: '1.25rem',
-        }}>
-          {filteredModules.map((module) => (
-            <ModuleCard
-              key={module.id}
-              module={module}
-              onStudyLesson={(modId) => {
-                handleCompleteQuest('module_quest', 100);
-                navigate(`/modules/${modId}`);
-              }}
-              onTakeExam={(modId) => navigate(`/evaluations/${modId}`)}
-              onPracticeTutor={() => {
-                handleCompleteQuest('tutor_chat', 50);
-                navigate('/tutor');
-              }}
-            />
-          ))}
+      {/* Tab: Misiones Globales */}
+      {mainTab === 'global' && <TeensGlobalMissions />}
+
+      {/* Tab: Misiones Diarias */}
+      {mainTab === 'quests' && (
+        <DailyQuestsCard
+          quests={teenData.quests}
+          onCompleteQuest={handleCompleteQuest}
+          onClaimChest={handleClaimChest}
+          chestClaimed={teenData.chestClaimed}
+        />
+      )}
+
+      {/* Tab: Misiones de Campaña (Módulos de Estudio) */}
+      {/* Tab: Misiones de Campaña (Módulos de Estudio) */}
+      {mainTab === 'campaigns' && (
+        <div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            marginBottom: '1.25rem',
+          }}>
+            <div>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 900, margin: '0 0 0.2rem', fontFamily: 'var(--font-display)' }}>
+                🗺️ Misiones de Campaña ({availableModules.length})
+              </h2>
+              <span style={{ fontSize: '0.88rem', color: 'var(--text-subtle)', fontWeight: 600 }}>
+                {completedModules} misiones conquistadas
+              </span>
+            </div>
+
+            {/* Module Filter Tabs */}
+            <div style={{
+              display: 'flex',
+              gap: '0.4rem',
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border)',
+              borderRadius: '12px',
+              padding: '0.3rem',
+            }}>
+              {[
+                { id: 'all', label: 'Todas' },
+                { id: 'in_progress', label: 'Por completar' },
+                { id: 'passed', label: 'Conquistadas 🏆' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setFilter(tab.id)}
+                  style={{
+                    padding: '0.45rem 0.9rem',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: filter === tab.id ? 'var(--primary)' : 'transparent',
+                    color: filter === tab.id ? '#ffffff' : 'var(--text-secondary)',
+                    fontSize: '0.82rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {loading ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '3rem 2rem',
+              color: 'var(--text-subtle)',
+              background: 'var(--bg-surface)',
+              borderRadius: '20px',
+              border: '1px solid var(--border)',
+            }}>
+              ⏳ Cargando mapa de misiones...
+            </div>
+          ) : filteredModules.length === 0 ? (
+            <div style={{
+              background: 'var(--bg-surface)',
+              border: '1px dashed var(--border-strong)',
+              borderRadius: '20px',
+              padding: '3rem 2rem',
+              textAlign: 'center',
+              color: 'var(--text-subtle)',
+            }}>
+              No hay misiones en esta categoría. ¡Sigue explorando! 🎮
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 310px), 1fr))',
+              gap: '1.25rem',
+            }}>
+              {filteredModules.map((module) => (
+                <ModuleCard
+                  key={module.id}
+                  module={module}
+                  onStudyLesson={(modId) => {
+                    handleCompleteQuest('module_quest', 100);
+                    navigate(`/modules/${modId}`);
+                  }}
+                  onTakeExam={(modId) => navigate(`/evaluations/${modId}`)}
+                  onPracticeTutor={() => {
+                    handleCompleteQuest('tutor_chat', 50);
+                    navigate('/tutor');
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

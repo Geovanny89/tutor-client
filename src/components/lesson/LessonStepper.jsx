@@ -1,13 +1,17 @@
 import React from 'react';
 
-const STEPS = [
+const DEFAULT_STEPS = [
   { id: 'explanation', label: '1. Explicación & Teoría', icon: '💡' },
   { id: 'vocabulary', label: '2. Vocabulario & Audio', icon: '📚' },
   { id: 'roleplay', label: '3. Diálogo en Vivo con IA', icon: '💬' },
   { id: 'speech', label: '4. Desafío de Pronunciación', icon: '🎙️' },
 ];
 
-export default function LessonStepper({ activeStep, onSelectStep }) {
+export default function LessonStepper({ activeStep, onSelectStep, hasTeenGame }) {
+  const steps = hasTeenGame
+    ? [...DEFAULT_STEPS, { id: 'game', label: '5. Minijuego Arcade / RPG', icon: '⚔️' }]
+    : DEFAULT_STEPS;
+
   return (
     <div style={{
       display: 'grid',
@@ -15,7 +19,7 @@ export default function LessonStepper({ activeStep, onSelectStep }) {
       gap: '0.75rem',
       marginBottom: '1.75rem',
     }}>
-      {STEPS.map((step) => {
+      {steps.map((step) => {
         const isCurrent = activeStep === step.id;
         return (
           <button

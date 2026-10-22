@@ -4,6 +4,22 @@ import { useAuthStore } from './authStore';
 
 export const TUTOR_PERSONAS = [
   {
+    id: 'toby',
+    name: 'Toby',
+    role: 'Perro Explorador',
+    avatar: '🐶',
+    accent: 'es-MX',
+    // Prefer warm LatAm neural (Dalia/Sabina); gender left flexible for quality
+    voiceGender: 'female',
+    voicePitch: 1.08,
+    voiceRate: 0.88,
+    bilingual: true,
+    kidsOnly: true,
+    description: 'Español latino + palabras en inglés. Adivinanzas y vocabulario para niños de 5 a 9 años.',
+    welcomeMessage: '¡Woof woof! 🐶 ¡Hola! Soy Toby el perro explorador. ¿Listo para aprender inglés jugando?',
+    welcomeMessageKids: '¡Woof woof! 🐶 ¡Hola amiguito! Soy Toby. Adivina: ¿de qué color es el sol? Se dice [[ENGLISH: YELLOW]]. ¡Repite conmigo!',
+  },
+  {
     id: 'beyli',
     name: 'Beyli',
     role: 'Friendly Native Tutor',
@@ -12,6 +28,7 @@ export const TUTOR_PERSONAS = [
     voiceGender: 'female',
     voicePitch: 1.0,
     voiceRate: 0.9,
+    bilingual: false,
     description: 'Habla con paciencia y ritmo claro. Ideal para niveles A0, A1 y A2.',
     welcomeMessage: "Hi there! I'm Beyli, your personal English tutor. Don't worry about making mistakes—I'm here to help you practice! How are you doing today?",
     welcomeMessageKids: "Hello! 👋 I am Beyli. Look! 🍎 How are you?",
@@ -25,6 +42,7 @@ export const TUTOR_PERSONAS = [
     voiceGender: 'male',
     voicePitch: 0.95,
     voiceRate: 0.95,
+    bilingual: false,
     description: 'Acento británico moderno. Conversaciones prácticas de viajes, trabajo y vida cotidiana.',
     welcomeMessage: "Hello! David here. Ready to practice natural British English? Tell me about your plans for this week or where you'd like to travel!",
     welcomeMessageKids: "Hi! 🦁 I am David. I like lions. And you?",
@@ -38,11 +56,20 @@ export const TUTOR_PERSONAS = [
     voiceGender: 'female',
     voicePitch: 1.05,
     voiceRate: 1.0,
+    bilingual: false,
     description: 'Correcciones avanzadas de modismos, vocabulario rico y debates para niveles B1 a C2.',
     welcomeMessage: "Hey! Gema here. Let's elevate your English to the next level. What topic are you passionate about discussing today?",
     welcomeMessageKids: "Hello! 🎨 I am Gema. Do you like colors?",
   },
 ];
+
+/** Personas visibles según edad del estudiante */
+export const getPersonasForAge = (ageRange) => {
+  if (ageRange === 'kids') {
+    return TUTOR_PERSONAS.filter((p) => p.kidsOnly || p.id === 'beyli');
+  }
+  return TUTOR_PERSONAS.filter((p) => !p.kidsOnly);
+};
 
 export const TUTOR_MODES = [
   {
@@ -201,12 +228,17 @@ export const useAiStore = create((set, get) => ({
 
     try {
       const { activePersona, tutorMode, domain } = get();
+      const ageRange = useAuthStore.getState().user?.age_range || 'adults';
       const res = await api.post('/ai/chat', {
         message: userText.trim(),
         session_id: get().sessionId,
-        mode: tutorMode,
+        mode: activePersona.bilingual ? 'kids_bilingual' : tutorMode,
         domain,
         persona: `${activePersona.name} (${activePersona.role})`,
+        persona_name: activePersona.name,
+        persona_role: activePersona.role,
+        bilingual: !!activePersona.bilingual,
+        age_range: ageRange,
         context: options.context || '',
       });
 

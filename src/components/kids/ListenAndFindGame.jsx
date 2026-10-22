@@ -1,22 +1,35 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Volume2, Sparkles, RefreshCw, Star, Heart } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Volume2, RefreshCw, Star } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { KIDS_ITEMS } from '../../data/kidsVocabulary';
 import { kidAudio } from '../../utils/kidAudio';
+import TobyBubble from './TobyBubble';
 
-export default function ListenAndFindGame({ onEarnStar, speak }) {
+export default function ListenAndFindGame({ onEarnStar, kidSpeak, items }) {
   const [target, setTarget] = useState(null);
   const [options, setOptions] = useState([]);
-  const [feedback, setFeedback] = useState(null); // 'correct' | 'wrong' | null
+  const [feedback, setFeedback] = useState(null);
   const [streak, setStreak] = useState(0);
   const [shakingId, setShakingId] = useState(null);
+  const [tobyMessage, setTobyMessage] = useState('');
+  const [tobyMood, setTobyMood] = useState('happy');
+  const speakTimerRef = useRef(null);
+  const nextRoundTimerRef = useRef(null);
 
-  const startRound = useCallback(() => {
-    // Pick random target
-    const randomTarget = KIDS_ITEMS[Math.floor(Math.random() * KIDS_ITEMS.length)];
-    
-    // Pick 3 random distractors from different words
-    const others = KIDS_ITEMS
+  const pool = items && items.length >= 4 ? items : KIDS_ITEMS;
+
+  const startRound = useCallback((withIntro = false) => {
+    if (speakTimerRef.current) {
+      clearTimeout(speakTimerRef.current);
+      speakTimerRef.current = null;
+    }
+    if (nextRoundTimerRef.current) {
+      clearTimeout(nextRoundTimerRef.current);
+      nextRoundTimerRef.current = null;
+    }
+
+    const randomTarget = pool[Math.floor(Math.random() * pool.length)];
+    const others = pool
       .filter((i) => i.id !== randomTarget.id)
       .sort(() => 0.5 - Math.random())
       .slice(0, 3);
@@ -28,21 +41,39 @@ export default function ListenAndFindGame({ onEarnStar, speak }) {
     setFeedback(null);
     setShakingId(null);
 
-    // Speak prompt automatically
-    setTimeout(() => {
-      speak(randomTarget.word, 0.85);
-    }, 250);
-  }, [speak]);
+    const promptText = kidSpeak?.phrases?.listenIntro
+      ? kidSpeak.phrases.listenIntro(randomTarget.word)
+      : `¡Guau guau! ¡Aventura! ¿Dónde se esconde [[ENGLISH: ${randomTarget.word}]]? ¡Toca rápido [[ENGLISH: ${randomTarget.word}]]!`;
+
+    setTobyMessage(promptText);
+    setTobyMood('happy');
+
+    // Toby speaks the FULL dynamic sentence
+    speakTimerRef.current = setTimeout(() => {
+      if (kidSpeak?.speakToby) {
+        kidSpeak.speakToby(promptText);
+      } else {
+        kidSpeak?.speakEnglish?.(randomTarget.word);
+      }
+    }, 320);
+  }, [kidSpeak, items]);
 
   useEffect(() => {
-    startRound();
+    startRound(true);
+    return () => {
+      if (speakTimerRef.current) clearTimeout(speakTimerRef.current);
+      if (nextRoundTimerRef.current) clearTimeout(nextRoundTimerRef.current);
+    };
   }, [startRound]);
 
   const handlePick = (item) => {
-    if (feedback === 'correct') return;
+    // Block clicks while feedback/speech is in progress
+    if (feedback !== null) return;
+
+    // Clear any pending start round timers
+    if (speakTimerRef.current) clearTimeout(speakTimerRef.current);
 
     if (item.id === target.id) {
-      // Correct!
       setFeedback('correct');
       kidAudio.playSuccess();
       confetti({
@@ -51,23 +82,61 @@ export default function ListenAndFindGame({ onEarnStar, speak }) {
         origin: { y: 0.7 },
         colors: ['#10b981', '#f59e0b', '#3b82f6', '#ec4899'],
       });
-      speak(`Yes! ${target.word}!`, 0.9);
+
+      const winMsg = kidSpeak?.phrases?.listenCorrect
+        ? kidSpeak.phrases.listenCorrect(target.word)
+        : `¡Yuuupiii! ¡Excelente trabajo! ¡Se dice [[ENGLISH: ${target.word}]]! Repite fuerte conmigo: [[ENGLISH: ${target.word}]]!`;
+
+      setTobyMessage(winMsg);
+      setTobyMood('celebrate');
+
       setStreak((s) => s + 1);
       if (onEarnStar) onEarnStar(10);
 
-      setTimeout(() => {
-        startRound();
-      }, 1400);
+      // Only advance to the next round AFTER Toby finishes saying the whole celebration!
+      let transitioned = false;
+      const proceedToNextRound = () => {
+        if (transitioned) return;
+        transitioned = true;
+        // 800ms natural pause after speech ends before loading the next card
+        nextRoundTimerRef.current = setTimeout(() => {
+          startRound(false);
+        }, 800);
+      };
+
+      // Failsafe timeout in case browser TTS event doesn't fire
+      nextRoundTimerRef.current = setTimeout(proceedToNextRound, 5500);
+
+      kidSpeak?.speakToby
+        ? kidSpeak.speakToby(winMsg, { onEnd: proceedToNextRound })
+        : kidSpeak?.speakSpanish('¡Excelente!');
     } else {
-      // Try again
       setFeedback('wrong');
       setShakingId(item.id);
       kidAudio.playTryAgain();
-      speak(target.word, 0.85);
-      setTimeout(() => {
-        setShakingId(null);
+
+      const tryAgainMsg = kidSpeak?.phrases?.listenWrong
+        ? kidSpeak.phrases.listenWrong(target.word)
+        : `¡Oh oh! ¡Casi casi! Escucha de nuevo: estamos buscando [[ENGLISH: ${target.word}]]. ¡Tú puedes, amiguito!`;
+
+      setTobyMessage(tryAgainMsg);
+      setTobyMood('thinking');
+
+      // Unblock cards only after Toby finishes explaining the hint
+      let unlocked = false;
+      const unlockAfterSpeech = () => {
+        if (unlocked) return;
+        unlocked = true;
         setFeedback(null);
-      }, 700);
+        setShakingId(null);
+      };
+
+      // Failsafe unlock after 4.5s
+      setTimeout(unlockAfterSpeech, 4500);
+
+      kidSpeak?.speakToby
+        ? kidSpeak.speakToby(tryAgainMsg, { onEnd: unlockAfterSpeech })
+        : kidSpeak?.speakSpanish('¡Intenta otra vez!');
     }
   };
 
@@ -83,7 +152,17 @@ export default function ListenAndFindGame({ onEarnStar, speak }) {
       boxShadow: '0 20px 30px -10px rgba(6, 182, 212, 0.2)',
       position: 'relative',
     }}>
-      {/* Top Bar: Streaks & Repeat Audio */}
+      {/* Toby coach bubble */}
+      <TobyBubble
+        message={tobyMessage}
+        mood={tobyMood}
+        onRepeat={(style) => {
+          kidSpeak?.speakToby
+            ? kidSpeak.speakToby(tobyMessage, { style })
+            : kidSpeak?.speakEnglish(target.word);
+        }}
+      />
+
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -109,7 +188,7 @@ export default function ListenAndFindGame({ onEarnStar, speak }) {
         </div>
 
         <button
-          onClick={startRound}
+          onClick={() => startRound(true)}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -128,7 +207,6 @@ export default function ListenAndFindGame({ onEarnStar, speak }) {
         </button>
       </div>
 
-      {/* Big Audio Prompt */}
       <div style={{ marginBottom: '2rem' }}>
         <p style={{
           fontSize: '1.35rem',
@@ -136,15 +214,20 @@ export default function ListenAndFindGame({ onEarnStar, speak }) {
           color: '#0e7490',
           margin: '0 0 1rem',
         }}>
-          ¿Dónde está? ¡Toca el dibujo! 👇
+          ¡Vamos a jugar! ¿Dónde está? ¡Toca el dibujo! 👇
         </p>
 
         <button
           onClick={() => {
-            kidAudio.playPop();
-            speak(target.word, 0.85);
+            kidAudio?.playPop?.();
+            const promptMsg = `¿Dónde está? ¡Toca rápido [[ENGLISH: ${target?.word}]]!`;
+            if (kidSpeak?.speakToby) {
+              kidSpeak.speakToby(promptMsg);
+            } else {
+              kidSpeak?.speakEnglish?.(target?.word);
+            }
           }}
-          title="Toca para escuchar otra vez"
+          title="Toca para escuchar otra vez con Toby"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -170,7 +253,6 @@ export default function ListenAndFindGame({ onEarnStar, speak }) {
         </button>
       </div>
 
-      {/* Visual Options Grid (Cards) */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
@@ -230,8 +312,6 @@ export default function ListenAndFindGame({ onEarnStar, speak }) {
               }}>
                 {item.emoji}
               </span>
-
-              {/* Subtítulo visual sutil para que asocien imagen con letras */}
               <span style={{
                 fontSize: '1.15rem',
                 fontWeight: 800,
@@ -255,7 +335,7 @@ export default function ListenAndFindGame({ onEarnStar, speak }) {
           color: '#15803d',
           animation: 'bounce 0.6s infinite alternate',
         }}>
-          ¡Increíble! ¡Es {target.word}! ⭐🎉
+          ¡Woof woof! ¡Es {target.word}! 🐶⭐
         </div>
       )}
     </div>
